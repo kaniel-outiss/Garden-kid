@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v1.4.2 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v1.4.3 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -122,7 +122,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='1.4.2';
+const VERSION='1.4.3';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -130,7 +130,7 @@ const FR={0:'do',1:'do♯',2:'ré',3:'mi♭',4:'mi',5:'fa',6:'fa♯',7:'sol',8:'
 const FRK={0:'do',1:'ré♭',2:'ré',3:'mi♭',4:'mi',5:'fa',6:'fa♯',7:'sol',8:'la♭',9:'la',10:'si♭',11:'si'};
 function frn(pc){return FRK[((pc%12)+12)%12];}
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
-function noteFr(m){return frn(m%12)+(Math.floor(m/12)-1);}
+function noteFr(m){return frn(m%12)+(Math.floor(m/12)-2);} /* convention française : do du milieu = do3 */
 const TRI={maj:[0,4,7],min:[0,3,7]};
 const SEV={'7':[0,4,7,10],m7:[0,3,7,10],maj7:[0,4,7,11]};
 const IVN={1:'seconde mineure',2:'seconde',3:'tierce mineure',4:'tierce majeure',5:'quarte',6:'triton',7:'quinte',8:'sixte mineure',9:'sixte',10:'septième mineure',11:'septième majeure',12:'octave'};
@@ -151,7 +151,7 @@ function say(t){if(!DB.voice||!window.speechSynthesis)return;try{speechSynthesis
 
 /* ─────────── clavier ─────────── */
 const held=new Set();let KB={lo:48,hi:72};
-function kbHTML(id,lo,hi,w,kh){w=26;kh=kh||120;let h='',wi=0;for(let m=lo;m<=hi;m++){if(WPC.indexOf(m%12)>=0){h+='<div class="wk" data-n="'+m+'" style="left:'+(wi*w)+'px;width:'+(w-1)+'px;height:'+kh+'px"><span class="nl">'+(m%12===0?'do'+(Math.floor(m/12)-1):'')+'</span></div>';wi++;}}
+function kbHTML(id,lo,hi,w,kh){w=26;kh=kh||120;let h='',wi=0;for(let m=lo;m<=hi;m++){if(WPC.indexOf(m%12)>=0){h+='<div class="wk" data-n="'+m+'" style="left:'+(wi*w)+'px;width:'+(w-1)+'px;height:'+kh+'px"><span class="nl">'+(m%12===0?'do'+(Math.floor(m/12)-2):'')+'</span></div>';wi++;}}
   let wj=0;for(let m=lo;m<=hi;m++){if(WPC.indexOf(m%12)>=0){wj++;continue;}h+='<div class="bk" data-n="'+m+'" style="left:'+(wj*w-w*.32)+'px;width:'+(w*.62)+'px;height:'+(kh*.62)+'px"></div>';}
   const el=document.getElementById(id);if(!el)return;el.style.width=(wi*w+2)+'px';el.style.height=kh+'px';el.innerHTML=h;el._lo=lo;el._w=w;
   el.querySelectorAll('.wk,.bk').forEach(function(k){
@@ -632,7 +632,7 @@ function vLesson(sid){
 }
 /* l'exemple de la leçon : un petit clavier qui montre le geste */
 function lessonExample(s){const d=s.drill;
-  if(d.type==='note')return {notes:[60+(d.pcs[Math.min(1,d.pcs.length-1)]||0)],map:{}};
+  if(d.type==='note'){const b=d.lo?48:60,ns=d.pcs.map(function(pc){return b+pc;}),mp={};ns.forEach(function(m,i){mp[m]=i?'c5':'c1';});return {notes:ns,map:mp,seq:ns.length>1};}
   if(d.type==='chord'||d.type==='inv'){const q=d.q==='both'?'maj':d.q,iv=TRI[q]||SEV[q];const r=d.roots==='all'?0:d.roots[0];let ns=iv.map(function(x){return 60+r+x;});if(d.type==='inv'&&d.inv[0]){const k=d.inv[0];ns=ns.slice(k).concat(ns.slice(0,k).map(function(m){return m+12;}));}return {notes:ns,map:colorMap(ns,60+r)};}
   if(d.type==='prog'){const k=d.key!=null?d.key:(d.keys==='all'?0:d.keys[0]);const st=d.st[0],iv=TRI[st[1]]||SEV[st[1]];const ns=iv.map(function(x){return 60+k+st[0]+x;});return {notes:ns,map:colorMap(ns,60+k+st[0])};}
   if(d.type==='staff')return {notes:[d.notes[0]],map:{}};
@@ -652,8 +652,9 @@ function lessonKb(s,i){const ex=lessonExample(s);const lo=Math.max(36,12*Math.fl
   setTimeout(function(){kbHTML('lkb',lo,hi,34);const map={};ex.notes.forEach(function(m){map[m]=ex.map[m]||'c1';});kbPaint('lkb',map);},0);
   return '<div class="kbw"><div class="kb" id="lkb"></div></div>';}
 /* joue une suite de notes en respectant les figures (noire = 1 temps) */
-function playSeq(ns,ds,beat){let t=0;ns.forEach(function(m,i){const d=ds&&ds[i]!=null?ds[i]:1;setTimeout(function(){play([m],Math.max(.25,d*beat*.92));},t*beat*1000);t+=d;});}
-function lessonDemo(s){const ex=lessonExample(s);if(ex.durs){playSeq(ex.notes,ex.durs,.5);return;}if(s.drill.type==='melody'||ex.seq){ex.notes.forEach(function(m,i){setTimeout(function(){play([m],.5);},i*420);});}else play(ex.notes,1.2);}
+function keyLit(m,ms){const k=document.querySelector('#lkb [data-n="'+m+'"]');if(!k)return;k.classList.add('held','hMD');setTimeout(function(){k.classList.remove('held','hMD');},ms);}
+function playSeq(ns,ds,beat){let t=0;ns.forEach(function(m,i){const d=ds&&ds[i]!=null?ds[i]:1;setTimeout(function(){play([m],Math.max(.25,d*beat*.92));keyLit(m,Math.max(200,d*beat*900));},t*beat*1000);t+=d;});}
+function lessonDemo(s){const ex=lessonExample(s);if(ex.durs){playSeq(ex.notes,ex.durs,.5);return;}if(s.drill.type==='melody'||ex.seq){ex.notes.forEach(function(m,i){setTimeout(function(){play([m],.5);keyLit(m,380);},i*420);});}else{play(ex.notes,1.2);ex.notes.forEach(function(m){keyLit(m,900);});}}
 
 /* ═══════════════════════ LE DRILL ═══════════════════════ */
 let DR={on:false};
