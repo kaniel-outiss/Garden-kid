@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v1.6 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v1.6.1 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -54,6 +54,20 @@ input[type=text],input[type=password]{font:inherit;font-size:22px;padding:12px 1
 .isle .tro{position:absolute;top:12px;right:14px;font-size:34px}
 .isle.sug{border-color:var(--or);box-shadow:0 0 0 4px rgba(255,200,61,.2)}
 .steps{display:flex;flex-direction:column;gap:10px}
+.unit{display:flex;align-items:center;gap:12px;background:var(--c);color:#10142a;border-radius:22px;padding:16px 18px;box-shadow:0 6px 0 color-mix(in srgb,var(--c) 60%,black);margin-bottom:8px}
+.unit .ut{font-weight:900;font-size:13px;letter-spacing:1px;opacity:.75}.unit .un{font:900 26px Nunito,sans-serif}.unit .ud{font-weight:700;font-size:14px;opacity:.85}.unit .up{margin-left:auto;font:900 22px Nunito,sans-serif;background:rgba(255,255,255,.35);border-radius:14px;padding:6px 12px}
+.path{display:flex;flex-direction:column;align-items:center;gap:20px;padding:26px 0 10px}
+.pn{display:flex;flex-direction:column;align-items:center;transform:translateX(var(--x));position:relative;max-width:180px}
+.node{width:80px;height:74px;border-radius:50%;background:#3a4166;box-shadow:0 8px 0 #262b47;display:flex;align-items:center;justify-content:center;font:900 28px Nunito,sans-serif;color:#cdd3ee;cursor:pointer;transition:transform .1s}
+.node:active{transform:translateY(6px);box-shadow:0 2px 0 #262b47}
+.node.done{background:var(--c);color:#fff;box-shadow:0 8px 0 color-mix(in srgb,var(--c) 60%,black)}
+.node.gold{background:linear-gradient(#FFE27A,#FFC83D);color:#7a5200;box-shadow:0 8px 0 #b8860b}
+.node.cur{background:var(--c);color:#fff;box-shadow:0 8px 0 color-mix(in srgb,var(--c) 60%,black),0 0 0 10px color-mix(in srgb,var(--c) 30%,transparent);animation:bob 1.3s ease-in-out infinite}
+.node.end{width:92px;height:84px;font-size:40px;filter:grayscale(1);opacity:.6}.node.end.gold{filter:none;opacity:1}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.pn:has(.gob){margin-top:34px}
+.nst{font-size:13px;margin-top:6px;letter-spacing:1px}.nlb{font-size:13px;font-weight:800;text-align:center;color:#c8cde6;margin-top:2px;line-height:1.2}
+.gob{position:absolute;top:-38px;background:#fff;color:#10142a;font:900 13px Nunito,sans-serif;padding:6px 12px;border-radius:12px;white-space:nowrap;animation:bob 1.3s ease-in-out infinite;z-index:2}.gob::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
 .step{display:flex;align-items:center;gap:14px;background:var(--bg3);border-radius:18px;padding:14px 16px;cursor:pointer}
 .step .n{width:40px;height:40px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:900}
 .step .lb{flex:1;font-size:19px;font-weight:800}
@@ -155,7 +169,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='1.6';
+const VERSION='1.6.1';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -402,25 +416,33 @@ const ISLES=[
     ['⭐','Lis vite, joue juste.']],drill:{type:'staff',notes:[48,50,52,53,55,57,59,60,62,64,65,67,69,71,72],n:12}},
  ]},
  {id:'renv',ic:'🔄',t:'Les renversements',d:'le même accord, retourné',col:'#FF9F43',steps:[
-  {id:'r1',lb:'On met le do en haut',les:[
-    ['🔄','Do mi sol… et si on prend le do d’en bas et qu’on le met en haut ? Mi sol do. C’est le MÊME accord, retourné.'],
-    ['🏷️','Quand la note du bas est la 1re note de l’accord, on dit « position fondamentale » (PF).'],
-    ['⭐','Joue do majeur avec le MI en bas : c’est le 1er renversement (R1).']],drill:{type:'inv',roots:[0],q:'maj',inv:[1],n:5}},
-  {id:'r2',lb:'Et encore une fois',les:[
-    ['🔄','Mi sol do → on remonte le mi : sol do mi. 2e renversement (R2), avec le SOL en bas.'],
-    ['🎨','PF : la verte en bas. R1 : la jaune en bas. R2 : la bleue en bas.'],
-    ['⭐','PF, R1 ou R2, comme demandé.']],drill:{type:'inv',roots:[0,5,7],q:'maj',inv:[0,1,2],n:10}},
+  {id:'rt1',lb:'Où est la tonique ?',les:[
+    ['👑','La TONIQUE, c’est la note qui donne son nom à l’accord : le do dans do majeur, le fa dans fa majeur.'],
+    ['🔄','On repère un renversement à la place de la tonique : PF = tonique en BAS · R1 = tonique en HAUT · R2 = tonique au MILIEU.'],
+    ['🧠','Retiens la phrase : « Bas, Haut, Milieu » — PF, R1, R2.']],drill:{type:'qtonic',n:9}},
+  {id:'rt2',lb:'Quel renversement ?',les:[
+    ['👀','Regarde l’accord allumé et cherche où se cache la tonique.'],
+    ['👑','Tonique en bas → PF · en haut → R1 · au milieu → R2.'],
+    ['⭐','Réponds sans jouer : PF, R1 ou R2 ?']],drill:{type:'qinv',roots:[0,5,7,2,9],n:9}},
+  {id:'r1',lb:'R1 : la tonique monte en haut',les:[
+    ['🔄','Do mi sol… on prend le do d’en bas et on le met en haut : mi sol do. C’est le MÊME accord, retourné.'],
+    ['👑','En R1, la tonique (le do) est tout en HAUT.'],
+    ['⭐','Joue do majeur en R1 : la tonique en haut.']],drill:{type:'inv',roots:[0],q:'maj',inv:[1],n:5}},
+  {id:'r2',lb:'R2 : la tonique au milieu',les:[
+    ['🔄','Mi sol do → on remonte encore la note du bas : sol do mi. 2e renversement (R2).'],
+    ['👑','En R2, la tonique est au MILIEU. PF : en bas · R1 : en haut · R2 : au milieu.'],
+    ['⭐','PF, R1 ou R2, comme demandé — cherche toujours la tonique.']],drill:{type:'inv',roots:[0,5,7],q:'maj',inv:[0,1,2],n:10}},
   {id:'r3',lb:'Pourquoi ? Pour ne pas sauter',les:[
     ['🤝','Do (do mi sol) puis fa (fa la do) : gros saut. Mais do (do mi sol) puis fa en R2 (do fa la) : les mains bougent à peine !'],
     ['🎹','Un bon pianiste choisit le renversement qui garde les doigts proches.'],
     ['⭐','do PF · fa R2 · sol R1 · do PF : le chemin le plus court.']],drill:{type:'prog',key:0,st:[[0,'maj',0],[5,'maj',2],[7,'maj',1],[0,'maj',0]],exact:true,n:4}},
   {id:'r4',lb:'Les renversements des 12 majeurs',les:[
     ['🌍','La même idée sur toutes les notes.'],
-    ['⭐','Regarde la pastille : PF, R1 ou R2.'],
-    ['⭐','La bonne note en bas, les deux autres au-dessus.']],drill:{type:'inv',roots:'all',q:'maj',inv:[0,1,2],n:12}},
+    ['👑','PF : tonique en bas · R1 : tonique en haut · R2 : tonique au milieu.'],
+    ['⭐','Quand tu maîtrises (2 étoiles), l’aide disparaît : juste « Fa R1 » !']],drill:{type:'inv',roots:'all',q:'maj',inv:[0,1,2],n:12}},
   {id:'r5',lb:'Les mineurs aussi',les:[
     ['😢','Les accords mineurs se retournent pareil.'],
-    ['⭐','La mineur R1 = do mi la. Ré mineur R2 = la ré fa.'],
+    ['⭐','La mineur R1 = do mi LA (tonique en haut). Ré mineur R2 = la RÉ fa (tonique au milieu).'],
     ['⭐','Majeurs et mineurs, dans tous les sens.']],drill:{type:'inv',roots:'all',q:'both',inv:[0,1,2],n:12}},
  ]},
  {id:'solf',ic:'🎼',t:'Solfège',d:'figures, mesures, altérations, armure — sur la portée et le clavier',col:'#FF6FB5',steps:[
@@ -649,7 +671,11 @@ function vHome(){
 }
 function vIsle(id){
   const p=P(),I=ISLES.filter(function(x){return x.id===id;})[0];const sug=suggested(p);
-  M.innerHTML='<h1>'+I.ic+' '+I.t+'</h1><div class="hint">'+I.d+'</div><div class="steps" style="margin-top:12px">'+I.steps.map(function(s,i){return '<div class="step'+(sug&&sug.s.id===s.id?' sug':'')+'" data-s="'+s.id+'"><div class="n">'+(i+1)+'</div><div class="lb">'+s.lb+'</div><div class="stars">'+starsOf(p,s.id)+'</div></div>';}).join('')+'</div>'
+  const S=p.stars||{},cur=I.steps.filter(function(s){return !(S[s.id]>=1);})[0],num=ISLES.indexOf(I)+1,C=cupOf(I.id),done=I.steps.filter(function(s){return S[s.id]>=1;}).length;
+  M.innerHTML='<div class="unit" style="--c:'+I.col+'"><div><div class="ut">'+(C?C.ic+' '+C.t+' · ':'')+'ÎLE '+num+'</div><div class="un">'+I.ic+' '+I.t+'</div><div class="ud">'+I.d+'</div></div><div class="up">'+done+'/'+I.steps.length+'</div></div>'
+    +'<div class="path" style="--c:'+I.col+'">'+I.steps.map(function(s,i){const st=S[s.id]||0,x=Math.round(Math.sin(i*1.05)*78);const cls=st>=3?'gold':(st>=1?'done':(cur&&cur.id===s.id?'cur':''));
+      return '<div class="pn" style="--x:'+x+'px">'+(cls==='cur'?'<div class="gob">C’EST PARTI !</div>':'')+'<div class="node '+cls+'" data-s="'+s.id+'">'+(st>=3?'👑':(st>=1?'✔':(cls==='cur'?'⭐':(i+1))))+'</div><div class="nst">'+starsOf(p,s.id)+'</div><div class="nlb">'+s.lb+'</div></div>';}).join('')
+    +'<div class="pn" style="--x:0px"><div class="node end'+(done===I.steps.length?' gold':'')+'">🏆</div><div class="nlb">'+(done===I.steps.length?'Île terminée !':'Le trophée de l’île')+'</div></div></div>'
     +(I.grid?'<div class="card" style="margin-top:14px"><h2>🗺 Ta carte des 12 tonalités</h2>'+keyGrid(p,I)+'</div>':'')+'<div class="row" style="margin-top:14px"><button class="btn g" id="back">← Les îles</button></div>';
   M.querySelectorAll('[data-s]').forEach(function(e){e.onclick=function(){go('lesson',e.dataset.s);};});
   document.getElementById('back').onclick=function(){go('home');};
@@ -704,7 +730,7 @@ function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function buildQs(d){const qs=[];const roots=function(){return d.roots==='all'?[0,1,2,3,4,5,6,7,8,9,10,11]:d.roots;};
   if(d.type==='note'){for(let i=0;i<d.n;i++){const pc=pick(d.pcs);qs.push({pc:pc,lo:d.lo,hi:d.hi,any:d.any,lb:'Joue : <b>'+frn(pc).toUpperCase()+'</b>'+(d.lo?' <small>main gauche</small>':'')});}}
   else if(d.type==='chord'){for(let i=0;i<d.n;i++){const r=d.srs?srsPick(DR.sid,roots()):pick(roots()),q=Array.isArray(d.q)?pick(d.q):(d.q==='both'?pick(['maj','min']):d.q);const iv=CHQ(q);qs.push({r:r,q:q,ivs:d.colors?iv:null,pcs:iv.map(function(x){return (r+x)%12;}),lb:'Joue : <b>'+chordName(r,q)+'</b>'});}}
-  else if(d.type==='inv'){for(let i=0;i<d.n;i++){const r=d.srs?srsPick(DR.sid,roots()):pick(roots()),q=d.q==='both'?pick(['maj','min']):d.q,k=pick(d.inv);const iv=TRI[q];qs.push({r:r,q:q,pcs:iv.map(function(x){return (r+x)%12;}),bass:(r+iv[k])%12,inv:k,lb:'Joue : <b>'+chordName(r,q)+'</b> <small>'+['PF — '+frn(r)+' en bas','R1 — '+frn((r+iv[1])%12)+' en bas','R2 — '+frn((r+iv[2])%12)+' en bas'][k]+'</small>'});}}
+  else if(d.type==='inv'){for(let i=0;i<d.n;i++){const r=d.srs?srsPick(DR.sid,roots()):pick(roots()),q=d.q==='both'?pick(['maj','min']):d.q,k=pick(d.inv);const iv=TRI[q];const bare=d.bare||(((P()||{}).stars||{})[DR.sid]||0)>=2;qs.push({r:r,q:q,pcs:iv.map(function(x){return (r+x)%12;}),bass:(r+iv[k])%12,inv:k,lb:bare?'Joue : <b>'+chordName(r,q)+' '+['PF','R1','R2'][k]+'</b>':'Joue : <b>'+chordName(r,q)+'</b> <small>'+['PF — tonique en bas','R1 — tonique en haut','R2 — tonique au milieu'][k]+'</small>'});}}
   else if(d.type==='prog'){const keys=d.key!=null?[d.key]:(d.keys==='all'?[0,1,2,3,4,5,6,7,8,9,10,11]:d.keys);for(let i=0;i<d.n;i++){const k=d.srs?srsPick(DR.sid,keys):keys[i%keys.length];d.st.forEach(function(st,j){const r=(k+st[0])%12,q=st[1],iv=CHQ(q);const dg=MAJ.indexOf(st[0])+1;const o={r:r,q:q,key:d.num?k:null,pcs:iv.map(function(x){return (r+x)%12;}),reveal:d.num?'C’était '+chordName(r,q)+'.':null,lb:'<small>en '+frn(k)+(d.minorKey?' mineur':'')+' · accord '+(j+1)+'/'+d.st.length+'</small><br><b>'+(d.num?(d.roman?ROM[dg]+(q==='min'?'m':''):'le '+dg+(q==='min'?' mineur':'')):chordName(r,q))+'</b>'};if(st[2]!=null){o.bass=(r+iv[st[2]])%12;o.lb+=' <small>'+['PF','R1','R2'][st[2]]+'</small>';}qs.push(o);});}}
   else if(d.type==='step'){for(let i=0;i<d.n;i++){const st=55+Math.floor(Math.random()*14),dd=Array.isArray(d.d)?pick(d.d):d.d,dir=Array.isArray(d.dir)?pick(d.dir):d.dir;const t=st+dd*dir;
       qs.push({m:t,from:st,lb:'Depuis <b>'+frn(st%12)+'</b> : '+(dd===1?'un demi-ton':'un ton')+' '+(dir>0?'au-dessus ↑':'en dessous ↓')});}}
@@ -773,7 +799,7 @@ function showQ(){
   else st.innerHTML=(DR.help||DR.wrong)?staffSVG([{notes:tn.map(function(m){return {m:m,col:'#FFC83D',ghost:true};})}],{sp:7}):'';
   KBMAP={};
   if(q.from!=null)KBMAP[q.from]='c1';
-  if(q.show&&!q.hide){q.show.forEach(function(m,i){KBMAP[m]=i?'c5':'c1';});}
+  if(q.show&&!q.hide){q.show.forEach(function(m,i){KBMAP[m]=(q.choices&&q.choices[0]==='PF')?'c5':(i?'c5':'c1');});}
   if(q.flash&&(!DR.flashOff||DR.help))KBMAP=etageMap(q.r,q.ivs,q.notes);
   if(q.scalePcs&&!DR.wrong){for(let x=KB.lo;x<=KB.hi;x++)if(q.scalePcs.indexOf(x%12)>=0)KBMAP[x]='c5';}
   if(q.free&&q.home&&DR.freeOn)KBMAP=Object.assign({},KBMAP);else if(q.free){const sc=q.sc||(q.blues?[0,3,5,6,7,10]:[0,2,4,7,9]);for(let x=KB.lo;x<=KB.hi;x++)if(sc.indexOf(((x-q.key)%12+12)%12)>=0)KBMAP[x]=((x-q.key)%12+12)%12===0?'c1':'c3';}
@@ -841,7 +867,7 @@ function fail(m,want){if(!DR.wrong){DR.err++;DR.res[DR.i]=false;keyStat(DR.qs[DR
   document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent=t;say(t.replace('✕','Oups,'));
   KBMAP={};KBMAP[m]='bad';showQ();KBMAP[m]='bad';kbPaint('kb',KBMAP);}
 function failBass(lowest,q){if(!DR.wrong){DR.err++;DR.res[DR.i]=false;}DR.wrong=true;flash(false);ding(false);
-  const t='✕ Les bonnes notes, mais '+frn(lowest%12)+' est en bas. Il faut '+frn(q.bass)+' en bas.';document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent=t;say(t.replace('✕',''));DR.fresh=new Set();showQ();}
+  const t=(q.inv!=null&&q.r!=null)?'✕ Les bonnes notes, mais pas le bon renversement : en '+['PF','R1','R2'][q.inv]+', la tonique ('+frn(q.r)+') est '+['en bas','en haut','au milieu'][q.inv]+'.':'✕ Les bonnes notes, mais '+frn(lowest%12)+' est en bas. Il faut '+frn(q.bass)+' en bas.';document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent=t;say(t.replace('✕',''));DR.fresh=new Set();showQ();}
 function halo(){const st=document.getElementById('stage');if(!st)return;const cb=DR.combo||0,hc=cb>=10?'#FF6FB5':(cb>=5?'#FF9F43':'#3ECF8E');let sv=document.getElementById('halo');if(!sv){sv=document.createElementNS('http://www.w3.org/2000/svg','svg');sv.id='halo';st.insertBefore(sv,st.firstChild);}
   const w=st.clientWidth+8,h=st.clientHeight+8,r=26;sv.setAttribute('viewBox','0 0 '+w+' '+h);const per=2*(w-2*r)+2*(h-2*r)+2*Math.PI*r,frac=(DR.i+1)/DR.qs.length;
   const d='M'+(w/2)+',2 H'+(w-r)+' A'+r+','+r+' 0 0 1 '+(w-2)+','+r+' V'+(h-r)+' A'+r+','+r+' 0 0 1 '+(w-r)+','+(h-2)+' H'+r+' A'+r+','+r+' 0 0 1 2,'+(h-r)+' V'+r+' A'+r+','+r+' 0 0 1 '+r+',2 Z';
@@ -1174,7 +1200,11 @@ function dropVoicing(r,ivs4,k,kind,base){let c=[];for(let i=0;i<4;i++){const iv=
   n.sort(function(a,b2){return a-b2;});return n;}
 function etOf(r,ivs,m){const iv=ivs.filter(function(x){return (r+x)%12===m%12;})[0];return iv==null?'?':ETN[iv%12];}
 function buildQs3(d,qs){const ALL=[0,1,2,3,4,5,6,7,8,9,10,11];const roots=d.roots==='all'?ALL:(d.roots||ALL);
-  if(d.type==='qpenta'){for(let i=0;i<d.n;i++){const k=pick(roots);const out=pick([5,11]);const inn=shuffle([0,2,4,7,9]).slice(0,3);const ch=shuffle(inn.concat([out]));
+  if(d.type==='qtonic'){const P3=[['PF','en bas'],['R1','en haut'],['R2','au milieu']];for(let i=0;i<d.n;i++){const k=i%3,rev=i>=3&&Math.random()<.5;
+      if(rev)qs.push({show:[],hide:true,ans:P3[k][0],choices:['PF','R1','R2'],lb:'La tonique est <b>'+P3[k][1]+'</b> : quel renversement ?'});else qs.push({show:[],hide:true,ans:P3[k][1],choices:['en bas','au milieu','en haut'],lb:'En <b>'+P3[k][0]+'</b>, où est la tonique ?'});}}
+  else if(d.type==='qinv'){for(let i=0;i<d.n;i++){const r=pick(roots),q=pick(['maj','min']),k=Math.floor(Math.random()*3);const b=60+r-(r>=7?12:0);let ns=TRI[q].map(function(x){return b+x;});ns=ns.slice(k).concat(ns.slice(0,k).map(function(m){return m+12;}));
+      qs.push({show:ns,ans:['PF','R1','R2'][k],choices:['PF','R1','R2'],lb:'<b>'+chordName(r,q)+'</b> : PF, R1 ou R2 ?',r:r});}}
+  else if(d.type==='qpenta'){for(let i=0;i<d.n;i++){const k=pick(roots);const out=pick([5,11]);const inn=shuffle([0,2,4,7,9]).slice(0,3);const ch=shuffle(inn.concat([out]));
       qs.push({show:[],hide:true,key:k,ans:frn((k+out)%12),choices:ch.map(function(x){return frn((k+x)%12);}),lb:'Dans la pentatonique de <b>'+frn(k)+'</b>, quelle note n’y est PAS ?'});}}
   else if(d.type==='quiz'){const it=shuffle(d.items);for(let i=0;i<Math.min(d.n,it.length);i++){qs.push({show:[],hide:true,ans:it[i][1],choices:shuffle(it[i][2]),lb:it[i][0]});}}
   else if(d.type==='drop'){if(d.seq){for(let i=0;i<d.n;i++){const k=d.keys[i%d.keys.length];d.seq.forEach(function(sq,j){const r=(k+sq[0])%12,q=sq[1],iv=CHQ(q);
