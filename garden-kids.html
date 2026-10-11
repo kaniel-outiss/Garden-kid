@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Garden Kids 🌱 v1.4 — J'apprends le piano</title>
+<style>
+:root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
+  --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--blanc);font-family:'Nunito','Segoe UI',system-ui,sans-serif;font-size:18px;min-height:100%}
+body{padding-bottom:40px}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:16px;font-weight:800}
+.top{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--bg2);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.top .logo{font-size:26px;font-weight:900;color:var(--or)}
+.top .sp{flex:1}
+.pill{background:var(--bg3);color:var(--blanc);padding:10px 16px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:8px}
+.pill.on{background:var(--vert);color:#0b1a12}
+.pill.midi{background:var(--or);color:#2a1d00}
+.pill.midi.ok{background:var(--vert);color:#0b1a12}
+main{max-width:1100px;margin:0 auto;padding:18px}
+h1{font-size:34px;margin:10px 0 6px;font-weight:900}
+h2{font-size:26px;margin:8px 0;font-weight:900}
+.hint{color:var(--gris);font-size:16px}
+.card{background:var(--bg2);border:2px solid var(--gris2);border-radius:24px;padding:18px 20px;margin:12px 0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--or);color:#2a1d00;padding:16px 26px;font-size:20px;border-radius:18px;box-shadow:0 4px 0 #b88a1c}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #b88a1c}
+.btn.v{background:var(--vert);color:#0b1a12;box-shadow:0 4px 0 #1f8a5c}.btn.v:active{box-shadow:0 1px 0 #1f8a5c}
+.btn.b{background:var(--bleu);color:#061a33;box-shadow:0 4px 0 #2a6ab8}.btn.b:active{box-shadow:0 1px 0 #2a6ab8}
+.btn.g{background:var(--bg3);color:var(--blanc);box-shadow:0 4px 0 #11142a}.btn.g:active{box-shadow:0 1px 0 #11142a}
+.btn.s{padding:10px 16px;font-size:16px}
+/* profils */
+.profs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.prof{background:var(--bg3);border:3px solid transparent;border-radius:24px;padding:18px 10px;text-align:center;cursor:pointer;transition:transform .12s}
+.prof:active{transform:scale(.96)}
+.prof .av{font-size:64px;line-height:1}
+.prof .nm{font-size:22px;font-weight:900;margin-top:6px}
+.prof .st{color:var(--or);font-size:16px;margin-top:4px}
+.prof.add{border:3px dashed var(--gris2);color:var(--gris)}
+.avs{display:flex;gap:8px;flex-wrap:wrap}
+.avs button{font-size:40px;background:var(--bg3);border-radius:16px;padding:8px 12px;border:3px solid transparent}
+.avs button.on{border-color:var(--or)}
+input[type=text],input[type=password]{font:inherit;font-size:22px;padding:12px 16px;border-radius:14px;border:2px solid var(--gris2);background:var(--bg);color:var(--blanc);width:100%}
+/* îles */
+.isles{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.isle{border-radius:24px;padding:18px;background:var(--bg2);border:3px solid var(--gris2);position:relative;cursor:pointer}
+.isle:active{transform:scale(.98)}
+.isle .ic{font-size:52px}
+.isle .t{font-size:24px;font-weight:900;margin-top:4px}
+.isle .d{color:var(--gris);font-size:15px;margin-top:4px}
+.isle .bar{height:12px;background:var(--bg);border-radius:8px;margin-top:12px;overflow:hidden}
+.isle .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--vert),var(--or))}
+.isle .tro{position:absolute;top:12px;right:14px;font-size:34px}
+.isle.sug{border-color:var(--or);box-shadow:0 0 0 4px rgba(255,200,61,.2)}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;align-items:center;gap:14px;background:var(--bg3);border-radius:18px;padding:14px 16px;cursor:pointer}
+.step .n{width:40px;height:40px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:900}
+.step .lb{flex:1;font-size:19px;font-weight:800}
+.step .stars{font-size:20px;letter-spacing:2px}
+.step.sug{outline:3px solid var(--or)}
+/* leçon */
+.lesson{min-height:260px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:10px}
+.lesson .txt{font-size:28px;font-weight:800;line-height:1.35;max-width:760px}
+.lesson .big{font-size:60px}
+.dots{display:flex;gap:8px;justify-content:center}.dots i{width:12px;height:12px;border-radius:50%;background:var(--gris2)}.dots i.on{background:var(--or)}
+/* clavier */
+.kbw{overflow-x:auto;padding:6px 0}
+.kb{position:relative;height:150px;margin:0 auto}
+.kb .wk{position:absolute;top:0;background:linear-gradient(180deg,#fdfdff,#dfe3ee);border:2px solid #8e96b5;border-radius:0 0 10px 10px;cursor:pointer;height:150px}
+.kb .bk{position:absolute;top:0;background:linear-gradient(180deg,#2a2f42,#12141d);border:2px solid #000;border-radius:0 0 8px 8px;cursor:pointer;z-index:2;height:92px}
+.kb .nl{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:15px;font-weight:900;color:#4a5278;pointer-events:none}
+.kb .wk.c1,.kb .bk.c1{background:var(--vert)!important}.kb .wk.c3,.kb .bk.c3{background:var(--or)!important}.kb .wk.c5,.kb .bk.c5{background:var(--bleu)!important}.kb .wk.c7,.kb .bk.c7{background:var(--violet)!important}
+.kb .wk.held,.kb .bk.held{box-shadow:inset 0 -14px 0 rgba(0,0,0,.25)}
+.kb .wk.bad,.kb .bk.bad{background:var(--rouge)!important}
+.kb .wk.want,.kb .bk.want{outline:4px dashed var(--or);outline-offset:-7px}
+.kb .wk.ok,.kb .bk.ok{background:var(--vert)!important}
+/* drill */
+.stage{position:relative;background:var(--bg2);border:3px solid var(--gris2);border-radius:28px;padding:22px;text-align:center;transition:box-shadow .2s,border-color .2s}
+.stage.ok{border-color:var(--vert);box-shadow:0 0 0 8px rgba(62,207,142,.35),0 0 60px rgba(62,207,142,.4)}
+.stage.ko{border-color:var(--rouge);box-shadow:0 0 0 8px rgba(255,90,106,.3),0 0 60px rgba(255,90,106,.35)}
+.stage .q{font-size:44px;font-weight:900;min-height:60px}
+.stage .q small{font-size:22px;color:var(--gris);font-weight:700}
+.stage .fb{font-size:22px;font-weight:800;min-height:30px;margin-top:6px}
+.stage .fb.bad{color:#FFB3BA}.stage .fb.good{color:var(--vert)}
+.prog{display:flex;gap:6px;justify-content:center;margin:10px 0}
+.prog i{width:26px;height:26px;border-radius:50%;background:var(--bg3);border:2px solid var(--gris2)}
+.prog i.ok{background:var(--vert);border-color:var(--vert)}.prog i.ko{background:var(--rouge);border-color:var(--rouge)}.prog i.cur{border-color:var(--or);box-shadow:0 0 0 3px rgba(255,200,61,.3)}
+#halo{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);pointer-events:none;overflow:visible}
+.stage>*:not(#halo){position:relative;z-index:1}
+.stf{margin:8px auto;max-width:420px}.stf.wide{max-width:920px}.stf svg{width:100%;height:auto;display:block}
+.result{text-align:center;padding:20px}
+.result .big{font-size:80px}
+.result .st{font-size:48px;letter-spacing:6px;color:var(--or)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--bg3);border:2px solid var(--or);padding:12px 20px;border-radius:16px;font-weight:800;z-index:20;display:none}
+table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--gris2)}th{color:var(--gris);font-weight:700}
+.msg{background:rgba(255,200,61,.12);border:2px solid var(--or);border-radius:18px;padding:14px 18px;font-size:22px;font-weight:800}
+@media(max-width:700px){h1{font-size:28px}.lesson .txt{font-size:23px}.stage .q{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">🌱 Garden Kids</div>
+  <span id="who" class="pill" style="display:none"></span>
+  <div class="sp"></div>
+  <button class="pill midi" id="btnMidi">🎹 Brancher le piano</button>
+  <button class="pill" id="btnSound" title="Lire les consignes à voix haute">🔊 Voix</button>
+  <button class="pill" id="btnHome">🏠</button>
+  <button class="pill" id="btnParent">👨‍👩‍👧 Parents</button>
+</div>
+<main id="main"></main>
+<div class="toast" id="toast"></div>
+<script>
+/* ═══════════════════════ GARDEN KIDS — apprendre le piano sans papa ═══════════════════════
+   Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
+   Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
+   (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
+const VERSION='1.4';
+const NAMES=['do','ré','mi','fa','sol','la','si'];
+const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const WPC=[0,2,4,5,7,9,11];
+const FR={0:'do',1:'do♯',2:'ré',3:'mi♭',4:'mi',5:'fa',6:'fa♯',7:'sol',8:'sol♯',9:'la',10:'si♭',11:'si'};
+const FRK={0:'do',1:'ré♭',2:'ré',3:'mi♭',4:'mi',5:'fa',6:'fa♯',7:'sol',8:'la♭',9:'la',10:'si♭',11:'si'};
+function frn(pc){return FRK[((pc%12)+12)%12];}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function noteFr(m){return frn(m%12)+(Math.floor(m/12)-1);}
+const TRI={maj:[0,4,7],min:[0,3,7]};
+const SEV={'7':[0,4,7,10],m7:[0,3,7,10],maj7:[0,4,7,11]};
+const IVN={1:'seconde mineure',2:'seconde',3:'tierce mineure',4:'tierce majeure',5:'quarte',6:'triton',7:'quinte',8:'sixte mineure',9:'sixte',10:'septième mineure',11:'septième majeure',12:'octave'};
+const QN={maj:'majeur',min:'mineur','7':'7',m7:'m7',maj7:'maj7'};
+function chordName(pc,q){return cap(frn(pc))+(q==='maj'?'':(q==='min'?' mineur':' '+q));}
+
+/* ─────────── profils ─────────── */
+const AVS=['🦁','🐼','🦊','🐸','🦄','🐯','🐙','🦋','🐨','🐥','🦖','🐬'];
+let DB=(function(){try{const o=JSON.parse(localStorage.getItem('gk_v1'));if(o&&o.profs)return o;}catch(e){}return {profs:[],cur:null,pin:'',msg:'',voice:true};})();
+function save(){try{localStorage.setItem('gk_v1',JSON.stringify(DB));}catch(e){}}
+function P(){return DB.profs.filter(function(p){return p.id===DB.cur;})[0]||null;}
+
+/* ─────────── audio ─────────── */
+let AC=null;function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}catch(e){}return AC;}
+function play(notes,dur){dur=dur||1;try{const c=ac();if(!c)return;const t=c.currentTime;notes.forEach(function(m,i){const f=440*Math.pow(2,(m-69)/12);const o=c.createOscillator(),o2=c.createOscillator(),g=c.createGain(),g2=c.createGain();o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.15;o.connect(g);o2.connect(g2);g2.connect(g);g.connect(c.destination);const at=t+i*.01;g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(.22,at+.02);g.gain.exponentialRampToValueAtTime(.001,at+dur);o.start(at);o2.start(at);o.stop(at+dur+.05);o2.stop(at+dur+.05);});}catch(e){}}
+function ding(ok){play(ok?[84,88,91]:[50,49],ok?.5:.4);}
+function say(t){if(!DB.voice||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[🎹🌱⭐🏆👉✓✕·]/g,''));u.lang='fr-FR';u.rate=.95;speechSynthesis.speak(u);}catch(e){}}
+
+/* ─────────── clavier ─────────── */
+const held=new Set();let KB={lo:48,hi:72};
+function kbHTML(id,lo,hi,w){let h='',wi=0;for(let m=lo;m<=hi;m++){if(WPC.indexOf(m%12)>=0){h+='<div class="wk" data-n="'+m+'" style="left:'+(wi*w)+'px;width:'+(w-2)+'px"><span class="nl">'+(m%12===0?'do'+(Math.floor(m/12)-1):'')+'</span></div>';wi++;}}
+  let wj=0;for(let m=lo;m<=hi;m++){if(WPC.indexOf(m%12)>=0){wj++;continue;}h+='<div class="bk" data-n="'+m+'" style="left:'+(wj*w-w*.32)+'px;width:'+(w*.62)+'px"></div>';}
+  const el=document.getElementById(id);if(!el)return;el.style.width=(wi*w+2)+'px';el.innerHTML=h;
+  el.querySelectorAll('.wk,.bk').forEach(function(k){
+    const dn=function(e){e.preventDefault();noteOn(+k.dataset.n,true);},up=function(e){e.preventDefault();noteOff(+k.dataset.n);};
+    k.addEventListener('pointerdown',dn);k.addEventListener('pointerup',up);k.addEventListener('pointerleave',up);k.addEventListener('pointercancel',up);
+  });
+}
+function kbPaint(id,map){const el=document.getElementById(id);if(!el)return;el.querySelectorAll('.wk,.bk').forEach(function(k){k.className=k.className.split(' ').filter(function(c){return c==='wk'||c==='bk';}).join(' ');const m=+k.dataset.n;if(held.has(m))k.classList.add('held');if(map&&map[m])k.classList.add(map[m]);});}
+function noteOn(m,fromScreen){if(held.has(m))return;held.add(m);if(fromScreen)play([m],.8);recNote(m);onNote(m);kbPaint('kb',KBMAP);}
+function noteOff(m){held.delete(m);onRelease(m);kbPaint('kb',KBMAP);}
+let KBMAP={};
+/* MIDI */
+let MIDI=null;
+function midiConnect(quiet){if(!navigator.requestMIDIAccess){if(!quiet)toast('Pas de MIDI ici — joue sur le clavier à l’écran');return;}
+  navigator.requestMIDIAccess().then(function(a){MIDI=a;const hook=function(){a.inputs.forEach(function(i){i.onmidimessage=function(e){const d=e.data;if(!d)return;const st=d[0]&0xF0;if(st===0x90&&d[2]>0)noteOn(d[1]);else if(st===0x80||(st===0x90&&d[2]===0))noteOff(d[1]);};});
+    const n=a.inputs.size;const b=document.getElementById('btnMidi');b.textContent=n?'🎹 Piano branché':'🎹 Brancher le piano';b.classList.toggle('ok',n>0);};hook();a.onstatechange=hook;},function(){if(!quiet)toast('Le piano n’a pas répondu');});}
+
+/* ─────────── portée (moteur de Garden, simplifié) ─────────── */
+function spell(m){const pc=m%12,L='CDEFGAB',NAT=[0,2,4,5,7,9,11];let li=NAT.indexOf(pc),acc='';if(li<0){li=NAT.indexOf(pc-1);acc='♯';}return {step:(Math.floor(m/12)-1)*7+li,acc:acc};}
+const KS_N={0:0,7:1,2:2,9:3,4:4,11:5,6:6,5:-1,10:-2,3:-3,8:-4,1:-5};
+function spellK(m,ks){const pc=m%12,L='CDEFGAB',NAT=[0,2,4,5,7,9,11];let li=NAT.indexOf(pc),acc='';if(li<0){if(ks<0){li=NAT.indexOf(pc+1);acc='♭';}else{li=NAT.indexOf(pc-1);acc='♯';}}return {step:(Math.floor(m/12)-1)*7+li,acc:acc,L:L[li]};}
+function staffSVG(cols,o){o=o||{};const sp=o.sp||11;
+  const ksn=o.ks!=null?(KS_N[((o.ks%12)+12)%12]||0):0,ksSharp=ksn>0,ksL=(ksSharp?'FCGDAEB':'BEADGCF').slice(0,Math.abs(ksn)),ksMap={};for(let i=0;i<ksL.length;i++)ksMap[ksL[i]]=ksSharp?'♯':'♭';
+  const KS_STEP={'♯':{F:8,C:5,G:9,D:6,A:3,E:7,B:4},'♭':{B:4,E:7,A:3,D:6,G:2,C:5,F:1}};const ksW=ksL.length?ksL.length*sp*.95+sp*.6:0;const all=[];cols.forEach(function(c){all.push.apply(all,c.notes);});if(!all.length)return '';
+  const mn=Math.min.apply(null,all.map(function(n){return n.m;})),mx=Math.max.apply(null,all.map(function(n){return n.m;}));
+  const grand=o.grand||(mn<57&&mx>62),staves=grand?['G','F']:[(mn>=57)?'G':'F'];const B0={G:30,F:18};
+  const x0=sp*1.2,clefW=sp*4.4+ksW,colW=sp*5,W=Math.max(sp*12,x0+clefW+cols.length*colW+sp*2),padT=sp*3,gap=sp*3.4,hS=sp*4,H=padT+staves.length*hS+(staves.length-1)*gap+sp*3;
+  let out='';const topY=function(i){return padT+i*(hS+gap);};
+  staves.forEach(function(cl,i){const t=topY(i);for(let k=0;k<5;k++)out+='<line x1="'+x0+'" x2="'+(W-sp*.6)+'" y1="'+(t+k*sp)+'" y2="'+(t+k*sp)+'" stroke="#B8C0DA" stroke-width="'+(sp*.1)+'"/>';
+    out+=cl==='G'?'<text x="'+(x0+sp*.3)+'" y="'+(t+hS+sp*.75)+'" font-family="serif" font-size="'+(sp*5.4)+'" fill="#F4F6FF">𝄞</text>':'<text x="'+(x0+sp*.4)+'" y="'+(t+hS-sp*.1)+'" font-family="serif" font-size="'+(sp*4.2)+'" fill="#F4F6FF">𝄢</text>';
+    for(let k=0;k<ksL.length;k++){const st=KS_STEP[ksSharp?'♯':'♭'][ksL[k]]-(cl==='F'?2:0);out+='<text x="'+(x0+sp*4.6+k*sp*.95)+'" y="'+(t+hS-st*sp/2+sp*.5)+'" text-anchor="middle" font-family="serif" font-size="'+(sp*2)+'" fill="#F4F6FF">'+(ksSharp?'♯':'♭')+'</text>';}
+    if(o.sig)out+='<text x="'+(x0+clefW+sp*.2)+'" y="'+(t+sp*1.85)+'" font-family="serif" font-weight="900" font-size="'+(sp*2.1)+'" fill="#F4F6FF">'+o.sig[0]+'</text><text x="'+(x0+clefW+sp*.2)+'" y="'+(t+sp*3.85)+'" font-family="serif" font-weight="900" font-size="'+(sp*2.1)+'" fill="#F4F6FF">'+o.sig[1]+'</text>';});
+  if(grand)out+='<line x1="'+x0+'" x2="'+x0+'" y1="'+topY(0)+'" y2="'+(topY(1)+hS)+'" stroke="#B8C0DA" stroke-width="'+(sp*.18)+'"/>';
+  cols.forEach(function(c,ci){const cx=x0+clefW+sp*2+ci*colW;staves.forEach(function(cl,si){const t=topY(si),bot=t+hS;
+    let N=c.notes.filter(function(n){return !grand||(cl==='F'?n.m<60:n.m>=60);}).map(function(n){const s=spellK(n.m,ksn);let acc=s.acc;if(o.ks!=null){const ka=ksMap[s.L]||'';acc=(acc===ka)?'':(acc||'♮');}if(n.acc!=null)acc=n.acc;return {n:n,step:s.step-B0[cl],acc:acc};}).sort(function(a,b){return a.step-b.step;});
+    N.forEach(function(q){if(q.step<=-2)for(let k=-2;k>=q.step;k-=2)out+='<line x1="'+(cx-sp*1.1)+'" x2="'+(cx+sp*1.1)+'" y1="'+(bot-k*sp/2)+'" y2="'+(bot-k*sp/2)+'" stroke="#B8C0DA" stroke-width="'+(sp*.1)+'"/>';
+      if(q.step>=10)for(let k=10;k<=q.step;k+=2)out+='<line x1="'+(cx-sp*1.1)+'" x2="'+(cx+sp*1.1)+'" y1="'+(bot-k*sp/2)+'" y2="'+(bot-k*sp/2)+'" stroke="#B8C0DA" stroke-width="'+(sp*.1)+'"/>';});
+    let prev=null,sh=false;N.forEach(function(q){sh=(prev!=null&&q.step-prev===1)?!sh:false;q.dx=sh?sp*1.3:0;prev=q.step;});
+    N.forEach(function(q){const cy=bot-q.step*sp/2,x=cx+q.dx,col=q.n.col||'#F4F6FF';
+      if(q.acc)out+='<text x="'+(x-sp*1.9)+'" y="'+(cy+sp*.5)+'" text-anchor="middle" font-family="serif" font-size="'+(sp*2)+'" fill="'+col+'">'+q.acc+'</text>';
+      const hollow=q.n.dur>=2;
+      out+='<ellipse cx="'+x+'" cy="'+cy+'" rx="'+(sp*.7)+'" ry="'+(sp*.5)+'" transform="rotate(-20 '+x+' '+cy+')" fill="'+(hollow?'none':col)+'"'+(hollow?' stroke="'+col+'" stroke-width="'+(sp*.22)+'"':'')+(q.n.ghost?' fill-opacity=".25" stroke="#FFC83D" stroke-width="'+(sp*.16)+'" stroke-dasharray="3 2"':'')+'/>';
+      if(q.n.dur===.5)out+='<path d="M'+(x+sp*.66)+','+(cy-sp*3.2)+' q'+(sp*.9)+','+(sp*.8)+' '+(sp*.5)+','+(sp*2)+'" fill="none" stroke="'+col+'" stroke-width="'+(sp*.2)+'"/>';
+      if(q.n.lb)out+='<text x="'+x+'" y="'+(cy-sp*1.1)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="'+(sp*1.1)+'" fill="#FFC83D">'+q.n.lb+'</text>';});
+    if(N.length&&!(N[0].n.dur>=4)){const lo=N[0],hi=N[N.length-1];out+='<line x1="'+(cx+sp*.66)+'" x2="'+(cx+sp*.66)+'" y1="'+(bot-lo.step*sp/2-sp*.15)+'" y2="'+(bot-hi.step*sp/2-sp*3.2)+'" stroke="#F4F6FF" stroke-width="'+(sp*.11)+'"/>';}
+  });if(c.lb)out+='<text x="'+cx+'" y="'+(padT-sp*1.4)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="'+(sp*1.2)+'" fill="#9AA3C7">'+c.lb+'</text>';});
+  return '<div class="stf'+(cols.length>4?' wide':'')+'"><svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+out+'</svg></div>';}
+
+/* ═══════════════════════ LE PARCOURS ═══════════════════════
+   type des drills : note (trouve la touche), chord (joue l'accord, n'importe quelle octave), inv (accord avec
+   la bonne note en bas), prog (enchaîne les accords), staff (la note lue sur la portée, octave exacte),
+   scale (la gamme en montant), melody (une mélodie note à note). */
+const ISLES=[
+ {id:'notes',ic:'🎹',t:'Les notes ont un nom',d:'do ré mi fa sol la si — trouver chaque touche',col:'#3ECF8E',steps:[
+  {id:'n1',lb:'Le do, à gauche des deux noires',les:[
+    ['🎹','Sur le piano, les touches noires vont par 2 et par 3.'],
+    ['👉','Le DO est la touche blanche juste à GAUCHE des deux noires.'],
+    ['⭐','Trouve tous les do du clavier ! Il y en a plusieurs.']],drill:{type:'note',pcs:[0],any:true,n:6}},
+  {id:'n2',lb:'do ré mi',les:[
+    ['🎵','Après le do vient le RÉ, puis le MI. On monte vers la droite.'],
+    ['🎨','do est vert, ré et mi suivent : trois marches d’escalier.'],
+    ['⭐','Joue la note demandée, n’importe où sur le clavier.']],drill:{type:'note',pcs:[0,2,4],any:true,n:10}},
+  {id:'n3',lb:'fa sol la si',les:[
+    ['🎵','Le FA est juste à gauche des TROIS noires. Puis sol, la, si.'],
+    ['🔁','Après le si, on retrouve un do : ça recommence, plus aigu !'],
+    ['⭐','Les sept notes : do ré mi fa sol la si.']],drill:{type:'note',pcs:[0,2,4,5,7,9,11],any:true,n:10}},
+  {id:'n4',lb:'La main gauche aussi',les:[
+    ['👈','La main gauche joue les notes GRAVES, à gauche du clavier.'],
+    ['🎹','Le do 3 est le do du milieu. La main gauche joue en dessous.'],
+    ['⭐','Joue la note demandée en dessous du do du milieu.']],drill:{type:'note',pcs:[0,2,4,5,7,9,11],lo:36,hi:59,n:10}},
+  {id:'n5',lb:'Les cinq doigts',les:[
+    ['✋','Les doigts ont des numéros : 1 pouce, 2 index, 3 majeur, 4 annulaire, 5 petit doigt.'],
+    ['🎹','Main droite : pouce sur do, puis un doigt par touche : do ré mi fa sol.'],
+    ['⭐','Joue do ré mi fa sol, puis redescends sol fa mi ré do.']],drill:{type:'melody',seq:[60,62,64,65,67,65,64,62,60],fg:[1,2,3,4,5,4,3,2,1],n:3,lb:'do ré mi fa sol — et retour'}},
+ ]},
+ {id:'tons',ic:'🪜',t:'Tons et demi-tons',d:'la plus petite marche du piano, et la suivante',col:'#FF9F43',steps:[
+  {id:'t1',lb:'Le demi-ton : la touche juste à côté',les:[
+    ['🪜','Un DEMI-TON, c’est la plus petite marche du piano : la touche juste à côté, noire ou blanche.'],
+    ['🎹','De mi à fa : un demi-ton (pas de noire entre les deux). De do à do♯ : un demi-ton aussi.'],
+    ['⭐','Je te donne une note : joue la touche juste au-dessus.']],drill:{type:'step',d:1,dir:1,n:10}},
+  {id:'t2',lb:'Le ton : deux marches',les:[
+    ['🪜','Un TON = deux demi-tons = deux marches. De do à ré, il y a une noire entre : c’est un ton.'],
+    ['🎹','De mi à fa♯ : un ton (on passe par fa). Compte toujours les noires !'],
+    ['⭐','Joue la note un ton au-dessus.']],drill:{type:'step',d:2,dir:1,n:10}},
+  {id:'t3',lb:'Et en descendant',les:[
+    ['⬅️','Les marches se descendent aussi : un demi-ton en dessous, un ton en dessous.'],
+    ['🎹','De fa, un demi-ton en dessous : mi. Un ton en dessous : mi♭.'],
+    ['⭐','Monte ou descends, d’un ton ou d’un demi-ton.']],drill:{type:'step',d:[1,2],dir:[1,-1],n:12}},
+  {id:'t4',lb:'Les noms des touches noires',les:[
+    ['🎹','Une touche noire a deux noms : un demi-ton au-dessus de do, c’est do♯ (dièse). Un demi-ton en dessous de ré, c’est ré♭ (bémol). Même touche !'],
+    ['🔢','♯ = une marche plus haut. ♭ = une marche plus bas.'],
+    ['⭐','Trouve la touche noire demandée.']],drill:{type:'note',pcs:[1,3,6,8,10],any:true,n:10}},
+ ]},
+ {id:'gammes',ic:'🎶',t:'Les gammes',d:'la recette T T ½ T T T ½ · les degrés',col:'#58A6FF',steps:[
+  {id:'s1',lb:'La gamme de do',les:[
+    ['🎶','Une GAMME, c’est l’escalier complet : do ré mi fa sol la si do.'],
+    ['🪜','Regarde les marches : ton, ton, demi-ton, ton, ton, ton, demi-ton. Les demi-tons sont entre mi-fa et si-do.'],
+    ['⭐','Joue la gamme de do en montant, un doigt après l’autre.']],drill:{type:'scale',roots:[0],n:3}},
+  {id:'s2',lb:'La même recette ailleurs',les:[
+    ['🔢','T T ½ T T T ½ : avec cette recette, on construit une gamme majeure en partant de n’importe quelle note.'],
+    ['🎹','Depuis sol : sol la si do ré mi fa♯ sol. Le fa devient fa♯ pour respecter la recette.'],
+    ['⭐','Les gammes de sol, fa et ré.']],drill:{type:'scale',roots:[7,5,2],n:4}},
+  {id:'s3',lb:'Les 12 gammes majeures',les:[
+    ['🌍','Douze notes de départ, douze gammes majeures.'],
+    ['🧠','Compte les marches, ne devine pas : ton, ton, demi, ton, ton, ton, demi.'],
+    ['⭐','Les 12 gammes.']],drill:{type:'scale',roots:'all',n:8}},
+  {id:'s4',lb:'Les degrés : chaque marche a un numéro',les:[
+    ['🔢','Dans la gamme, les notes ont un numéro : le DEGRÉ. En do : do = 1, ré = 2, mi = 3… si = 7.'],
+    ['🎹','En sol : sol = 1, la = 2, si = 3, do = 4, ré = 5. On compte depuis la première note.'],
+    ['⭐','Joue le degré demandé.']],drill:{type:'degree',keys:[0,7,5],n:10}},
+  {id:'s5',lb:'Quel degré est-ce ?',les:[
+    ['🧠','À l’envers : je joue une note, tu dis son numéro dans la gamme.'],
+    ['🎹','En do majeur, sol est le 5e degré. En fa majeur, sol est le 2e.'],
+    ['⭐','Écoute, regarde, choisis le bon numéro.']],drill:{type:'qdeg',keys:[0,7,5,2],n:10}},
+  {id:'s6',lb:'La gamme mineure',les:[
+    ['😢','La gamme MINEURE a une autre recette : T ½ T T ½ T T. La mineur : la si do ré mi fa sol la.'],
+    ['🎹','Toutes blanches depuis la ! Le mineur sonne plus triste, plus doux.'],
+    ['⭐','Les gammes mineures de la, ré et mi.']],drill:{type:'scale',roots:[9,2,4],minor:true,n:4}},
+ ]},
+ {id:'interv',ic:'📏',t:'Les intervalles',d:'la distance entre deux notes',col:'#A78BFA',steps:[
+  {id:'i1',lb:'Compter les marches',les:[
+    ['📏','Un INTERVALLE, c’est la distance entre deux notes. On compte en demi-tons.'],
+    ['🎹','Do → mi : 4 demi-tons, c’est une TIERCE MAJEURE. Do → mi♭ : 3 demi-tons, une TIERCE MINEURE.'],
+    ['⭐','Joue la tierce demandée au-dessus de la note donnée.']],drill:{type:'interval',ivs:[3,4],n:10}},
+  {id:'i2',lb:'Quarte, quinte, octave',les:[
+    ['📏','5 demi-tons : la QUARTE (do → fa). 7 demi-tons : la QUINTE (do → sol). 12 : l’OCTAVE (do → do aigu).'],
+    ['🎹','La quinte, c’est l’intervalle des accords : do-sol, fa-do, sol-ré.'],
+    ['⭐','Joue la quarte, la quinte ou l’octave demandée.']],drill:{type:'interval',ivs:[5,7,12],n:10}},
+  {id:'i3',lb:'Seconde, sixte, septième',les:[
+    ['📏','2 demi-tons : SECONDE (do → ré). 9 : SIXTE (do → la). 11 : SEPTIÈME MAJEURE (do → si). 10 : SEPTIÈME MINEURE (do → si♭).'],
+    ['🧠','Tous les intervalles depuis do : ré 2, mi 3, fa 4, sol 5, la 6, si 7, do 8.'],
+    ['⭐','Tous les intervalles mélangés.']],drill:{type:'interval',ivs:[2,3,4,5,7,9,10,11,12],n:12}},
+  {id:'i4',lb:'Quel intervalle entends-tu ?',les:[
+    ['👂','À l’envers : j’en joue deux, tu dis la distance.'],
+    ['🧠','Astuce : chante les deux notes et compte les marches sur le clavier.'],
+    ['⭐','Écoute, regarde les touches, choisis.']],drill:{type:'qint',ivs:[2,3,4,5,7,9,12],n:10}},
+  {id:'i5',lb:'L’intervalle, c’est la brique des accords',les:[
+    ['🧱','Un accord majeur = tierce majeure (4) + tierce mineure (3). Un accord mineur = tierce mineure (3) + tierce majeure (4).'],
+    ['🎹','Do mi sol : do → mi = 4, mi → sol = 3. C’est la recette « 4 puis 3 » de l’île des bâtisseurs !'],
+    ['⭐','Joue la tierce majeure, puis la mineure au-dessus, depuis la note donnée.']],drill:{type:'interval',ivs:[3,4],n:10}},
+ ]},
+ {id:'build',ic:'🧱',t:'Les bâtisseurs d’accords',d:'3 briques = un accord · majeur et mineur',col:'#FFC83D',steps:[
+  {id:'b1',lb:'do mi sol : l’accord de do',les:[
+    ['🧱','Un ACCORD, c’est 3 notes jouées ENSEMBLE. Comme 3 briques.'],
+    ['🎹','Do, mi, sol : on prend une touche blanche, on en saute une, on en prend une, on en saute une, on en prend une.'],
+    ['⭐','Joue do mi sol en même temps, avec les doigts 1, 3 et 5.']],drill:{type:'chord',roots:[0],q:'maj',n:5}},
+  {id:'b2',lb:'Fa et sol majeurs',les:[
+    ['🧱','La même recette marche en partant d’une autre note.'],
+    ['🎹','Fa la do. Sol si ré. Toujours : une, je saute, une, je saute, une.'],
+    ['⭐','Joue l’accord demandé.']],drill:{type:'chord',roots:[0,5,7],q:'maj',n:8}},
+  {id:'b3',lb:'La vraie recette : 4 puis 3',les:[
+    ['🔢','Pour que l’accord soit MAJEUR, il faut compter les touches, noires comprises.'],
+    ['🎹','Depuis la première note : 4 touches plus haut, puis 3 touches plus haut. Do → mi (4) → sol (3).'],
+    ['⭐','Avec cette recette, on peut construire un accord majeur sur TOUTES les notes, même les noires.']],drill:{type:'chord',roots:[0,2,4,5,7,9,11],q:'maj',n:10}},
+  {id:'b4',lb:'Les 12 accords majeurs',les:[
+    ['🌍','Il y a 12 notes, donc 12 accords majeurs.'],
+    ['🎹','Ré♭ majeur, mi♭ majeur… la note du milieu peut tomber sur une blanche ou une noire : fais confiance à la recette 4 puis 3.'],
+    ['⭐','Les 12 accords majeurs.']],drill:{type:'chord',roots:'all',q:'maj',n:12}},
+  {id:'b5',lb:'Mineur : la brique du milieu descend',les:[
+    ['😢','Un accord MINEUR sonne plus triste. La recette : 3 puis 4.'],
+    ['🎹','Do mi♭ sol : la note du milieu descend d’une touche. Écoute la différence !'],
+    ['⭐','Joue l’accord mineur demandé.']],drill:{type:'chord',roots:[0,2,4,9],q:'min',n:8}},
+  {id:'b6',lb:'Majeur ou mineur ? Les 12',les:[
+    ['🎭','Majeur = 4 puis 3. Mineur = 3 puis 4. C’est tout !'],
+    ['👂','Joue do majeur, puis do mineur. Entends-tu le sourire et la larme ?'],
+    ['⭐','Majeurs et mineurs mélangés, sur les 12 notes.']],drill:{type:'chord',roots:'all',q:'both',n:12}},
+ ]},
+ {id:'amis',ic:'🤝',t:'Les trois amis',d:'I, IV, V — les accords qui vont ensemble',col:'#58A6FF',steps:[
+  {id:'a1',lb:'Do, fa, sol : les amis du do',les:[
+    ['🤝','Dans une chanson en do, trois accords reviennent tout le temps : DO, FA et SOL.'],
+    ['🔢','On les appelle I, IV et V : la 1re, la 4e et la 5e note de la gamme de do.'],
+    ['⭐','Enchaîne : do · fa · sol · do.']],drill:{type:'prog',key:0,st:[[0,'maj'],[5,'maj'],[7,'maj'],[0,'maj']],n:4}},
+  {id:'a2',lb:'Les amis du sol et du fa',les:[
+    ['🌍','Chaque note a ses trois amis. En sol : sol, do, ré. En fa : fa, si♭, do.'],
+    ['🎹','Compte : la 4e note et la 5e note de la gamme, en partant de la première.'],
+    ['⭐','I · IV · V · I dans une autre tonalité.']],drill:{type:'prog',keys:[7,5],st:[[0,'maj'],[5,'maj'],[7,'maj'],[0,'maj']],n:4}},
+  {id:'a3',lb:'La petite chanson',les:[
+    ['🎶','Avec I, IV et V on accompagne des centaines de chansons.'],
+    ['🎹','Main gauche : la note de l’accord (do). Main droite : l’accord. Ou juste l’accord, pour commencer.'],
+    ['⭐','I · I · IV · I · V · V · I · I — joue chaque accord deux fois (une mesure).']],drill:{type:'prog',key:0,st:[[0,'maj'],[0,'maj'],[5,'maj'],[0,'maj'],[7,'maj'],[7,'maj'],[0,'maj'],[0,'maj']],n:3}},
+  {id:'a4',lb:'Le sixième ami : vi',les:[
+    ['😢','Un quatrième accord adore venir avec les trois amis : le mineur de la 6e note. En do : la mineur.'],
+    ['🎶','I · V · vi · IV : c’est l’enchaînement le plus joué du monde.'],
+    ['⭐','do · sol · la mineur · fa.']],drill:{type:'prog',key:0,st:[[0,'maj'],[7,'maj'],[9,'min'],[5,'maj']],n:4}},
+  {id:'a5',lb:'Dans les 12 tonalités',les:[
+    ['🌍','La même chanson peut se jouer plus haut ou plus bas : on change de tonalité, les amis suivent.'],
+    ['🔢','I · IV · V · I : trouve la 4e et la 5e note depuis la première.'],
+    ['⭐','I · IV · V · I partout.']],drill:{type:'prog',keys:'all',st:[[0,'maj'],[5,'maj'],[7,'maj'],[0,'maj']],n:6}},
+ ]},
+ {id:'portee',ic:'🎼',t:'La portée',d:'lire les notes qu’on joue',col:'#A78BFA',steps:[
+  {id:'p1',lb:'Cinq lignes et une clé',les:[
+    ['🎼','La musique s’écrit sur 5 lignes : la PORTÉE. La clé de sol 𝄞 est pour la main droite.'],
+    ['👉','Plus la note est haute sur la portée, plus elle est aiguë sur le piano.'],
+    ['⭐','Le do du milieu est sur une petite ligne SOUS la portée. Joue-le.']],drill:{type:'staff',notes:[60],n:4}},
+  {id:'p2',lb:'do ré mi fa sol en clé de sol',les:[
+    ['🎼','do : petite ligne. ré : juste dessous la portée. mi : 1re ligne. fa : 1er espace. sol : 2e ligne.'],
+    ['🧠','Les lignes : mi sol si ré fa. Les espaces : fa la do mi.'],
+    ['⭐','Joue la note écrite.']],drill:{type:'staff',notes:[60,62,64,65,67],n:10}},
+  {id:'p3',lb:'Jusqu’au do aigu',les:[
+    ['🎼','la : 2e espace. si : 3e ligne. do aigu : 3e espace.'],
+    ['⭐','Les huit notes de do à do.'],
+    ['⭐','Joue la note écrite.']],drill:{type:'staff',notes:[60,62,64,65,67,69,71,72],n:12}},
+  {id:'p4',lb:'La clé de fa 𝄢 pour la main gauche',les:[
+    ['🎼','La clé de fa est pour les notes graves. Ses deux points entourent la ligne du FA.'],
+    ['🧠','Lignes : sol si ré fa la. Espaces : la do mi sol. Le do du milieu est sur une petite ligne AU-DESSUS.'],
+    ['⭐','Joue la note écrite, main gauche.']],drill:{type:'staff',notes:[48,50,52,53,55,57,59,60],n:12}},
+  {id:'p5',lb:'Les deux mains',les:[
+    ['🎼','Les deux portées ensemble, reliées par une accolade : c’est le SYSTÈME du piano.'],
+    ['⭐','Une note en haut, une note en bas : joue les deux.'],
+    ['⭐','Lis vite, joue juste.']],drill:{type:'staff',notes:[48,50,52,53,55,57,59,60,62,64,65,67,69,71,72],n:12}},
+ ]},
+ {id:'renv',ic:'🔄',t:'Les renversements',d:'le même accord, retourné',col:'#FF9F43',steps:[
+  {id:'r1',lb:'On met le do en haut',les:[
+    ['🔄','Do mi sol… et si on prend le do d’en bas et qu’on le met en haut ? Mi sol do. C’est le MÊME accord, retourné.'],
+    ['🏷️','Quand la note du bas est la 1re note de l’accord, on dit « position fondamentale » (PF).'],
+    ['⭐','Joue do majeur avec le MI en bas : c’est le 1er renversement (R1).']],drill:{type:'inv',roots:[0],q:'maj',inv:[1],n:5}},
+  {id:'r2',lb:'Et encore une fois',les:[
+    ['🔄','Mi sol do → on remonte le mi : sol do mi. 2e renversement (R2), avec le SOL en bas.'],
+    ['🎨','PF : la verte en bas. R1 : la jaune en bas. R2 : la bleue en bas.'],
+    ['⭐','PF, R1 ou R2, comme demandé.']],drill:{type:'inv',roots:[0,5,7],q:'maj',inv:[0,1,2],n:10}},
+  {id:'r3',lb:'Pourquoi ? Pour ne pas sauter',les:[
+    ['🤝','Do (do mi sol) puis fa (fa la do) : gros saut. Mais do (do mi sol) puis fa en R2 (do fa la) : les mains bougent à peine !'],
+    ['🎹','Un bon pianiste choisit le renversement qui garde les doigts proches.'],
+    ['⭐','do PF · fa R2 · sol R1 · do PF : le chemin le plus court.']],drill:{type:'prog',key:0,st:[[0,'maj',0],[5,'maj',2],[7,'maj',1],[0,'maj',0]],exact:true,n:4}},
+  {id:'r4',lb:'Les renversements des 12 majeurs',les:[
+    ['🌍','La même idée sur toutes les notes.'],
+    ['⭐','Regarde la pastille : PF, R1 ou R2.'],
+    ['⭐','La bonne note en bas, les deux autres au-dessus.']],drill:{type:'inv',roots:'all',q:'maj',inv:[0,1,2],n:12}},
+  {id:'r5',lb:'Les mineurs aussi',les:[
+    ['😢','Les accords mineurs se retournent pareil.'],
+    ['⭐','La mineur R1 = do mi la. Ré mineur R2 = la ré fa.'],
+    ['⭐','Majeurs et mineurs, dans tous les sens.']],drill:{type:'inv',roots:'all',q:'both',inv:[0,1,2],n:12}},
+ ]},
+ {id:'solf',ic:'🎼',t:'Solfège',d:'figures, mesures, altérations, armure — sur la portée et le clavier',col:'#FF6FB5',steps:[
+  {id:'f1',lb:'Les figures : ronde, blanche, noire, croche',les:[
+    ['𝅝','Une note, c’est aussi une DURÉE. La RONDE 𝅝 (vide, sans tige) dure 4 temps. La BLANCHE 𝅗𝅥 (vide, avec tige) dure 2 temps.'],
+    ['♩','La NOIRE ♩ (pleine) dure 1 temps. La CROCHE ♪ (pleine, avec un crochet) dure un demi-temps : deux croches = une noire.'],
+    ['⭐','Tape le rythme écrit sur n’importe quelle touche, en suivant le métronome. Quatre clics pour partir.']],drill:{type:'rhythm',pats:[[1,1,1,1],[2,2],[4],[2,1,1],[1,1,2]],n:5}},
+  {id:'f2',lb:'Les croches',les:[
+    ['♪','Deux croches dans un temps : on dit « un-et ». ♪♪ ♩ ♩ ♩ = un-et deux trois quatre.'],
+    ['🥁','Compte à voix haute en tapant : la régularité, c’est tout.'],
+    ['⭐','Tape les rythmes avec des croches.']],drill:{type:'rhythm',pats:[[.5,.5,1,1,1],[1,.5,.5,1,1],[1,1,.5,.5,1],[.5,.5,.5,.5,1,1]],n:5}},
+  {id:'f3',lb:'La mesure et le chiffrage',les:[
+    ['📏','Les barres verticales coupent la musique en MESURES. Le chiffrage 4/4 dit : 4 temps par mesure, la noire vaut un temps.'],
+    ['🎶','En 3/4, il y a 3 temps par mesure : c’est la valse. UN deux trois, UN deux trois.'],
+    ['⭐','Tape des mesures à 3 temps, puis à 4.']],drill:{type:'rhythm',pats:[[1,1,1],[2,1],[1,2],[1,1,1,1],[2,1,1]],sig:'auto',n:6}},
+  {id:'f4',lb:'Le silence',les:[
+    ['🤫','Un SILENCE est une durée où l’on ne joue pas. Le soupir 𝄽 vaut un temps, la demi-pause 𝄼 deux temps.'],
+    ['🥁','On compte quand même ! Le silence fait partie de la musique.'],
+    ['⭐','Tape les notes, ne tape pas les silences.']],drill:{type:'rhythm',pats:[[1,-1,1,1],[1,1,-1,1],[2,-1,1],[-1,1,1,1]],n:5}},
+  {id:'f5',lb:'Les altérations sur la portée',les:[
+    ['♯','Un DIÈSE ♯ devant une note : on la joue une marche plus haut. Un BÉMOL ♭ : une marche plus bas. Le BÉCARRE ♮ annule.'],
+    ['🎹','Fa♯ sur la portée : la touche noire juste à droite du fa.'],
+    ['⭐','Joue la note écrite, altération comprise.']],drill:{type:'staff',notes:[61,63,66,68,70,73,75],n:10}},
+  {id:'f6',lb:'L’armure : les dièses au début',les:[
+    ['🔑','L’ARMURE, ce sont les ♯ ou ♭ écrits au début de la portée : ils valent pour TOUTE la musique.'],
+    ['🎹','Un dièse à l’armure = fa♯ partout : c’est sol majeur. Deux dièses (fa♯ do♯) = ré majeur.'],
+    ['⭐','Lis la note avec l’armure : si elle est sur la ligne du fa, joue fa♯ !']],drill:{type:'staffk',keys:[7,2],n:10}},
+  {id:'f7',lb:'L’armure : les bémols',les:[
+    ['🔑','Un bémol à l’armure = si♭ partout : fa majeur. Deux bémols (si♭ mi♭) = si♭ majeur.'],
+    ['🧠','Astuce : avec des bémols, l’avant-dernier bémol donne le nom de la tonalité.'],
+    ['⭐','Lis la note avec l’armure en bémols.']],drill:{type:'staffk',keys:[5,10],n:10}},
+  {id:'f8',lb:'Deux notes sur la portée : l’intervalle',les:[
+    ['📏','Deux notes écrites l’une au-dessus de l’autre : compte les lignes et les espaces. Ligne-ligne voisines = tierce. Ligne-espace voisins = seconde.'],
+    ['🎹','Joue-les ensemble, comme sur le clavier.'],
+    ['⭐','Joue les deux notes écrites.']],drill:{type:'staffc',kind:'iv',n:10}},
+  {id:'f9',lb:'Trois notes empilées : l’accord',les:[
+    ['🧱','Trois notes empilées sur des lignes voisines (ou des espaces voisins) = un accord en position fondamentale.'],
+    ['🎹','Do mi sol : ligne supplémentaire, 1re ligne, 2e ligne. Tout est serré : c’est une « pile ».'],
+    ['⭐','Joue l’accord écrit.']],drill:{type:'staffc',kind:'tri',n:10}},
+  {id:'f10',lb:'Lire une petite mélodie',les:[
+    ['🎼','On met tout ensemble : les notes sur la portée, les durées, les mesures.'],
+    ['🎹','Joue chaque note au bon moment, en suivant le métronome.'],
+    ['⭐','Joue la mélodie écrite, en rythme.']],drill:{type:'song',mel:[[60,1],[62,1],[64,1],[65,1],[67,2],[67,2],[69,1],[69,1],[69,1],[69,1],[67,4]],ks:0,lb:'Une petite mélodie en do',n:2}},
+ ]},
+ {id:'chansons',ic:'🎵',t:'Les chansons',d:'jouer de vrais morceaux, main droite puis avec les accords',col:'#3ECF8E',steps:[
+  {id:'c1',lb:'Au clair de la lune',les:[
+    ['🌙','Une vraie chanson ! D’abord la mélodie main droite : do do do ré mi ré do mi ré ré do.'],
+    ['🎹','Doigts : 1 1 1 2 3 2 1 3 2 2 1. Le pouce sur do.'],
+    ['⭐','Joue-la note à note, puis en rythme avec le métronome.']],drill:{type:'song',mel:[[60,1],[60,1],[60,1],[62,1],[64,2],[62,2],[60,1],[64,1],[62,1],[62,1],[60,4]],ks:0,fg:[1,1,1,2,3,2,1,3,2,2,1],lb:'Au clair de la lune',n:2}},
+  {id:'c2',lb:'Au clair de la lune, avec les accords',les:[
+    ['🤝','Sous la mélodie, les amis du do : do (I) et sol 7 (V7).'],
+    ['🎹','Main gauche : l’accord, un par mesure. do · sol7 · do · sol7 · do.'],
+    ['⭐','Les accords seuls, puis essaie avec la mélodie !']],drill:{type:'prog',key:0,st:[[0,'maj'],[7,'7'],[0,'maj'],[7,'7'],[0,'maj']],n:3}},
+  {id:'c3',lb:'Frère Jacques',les:[
+    ['🔔','Frère Jacques : do ré mi do, do ré mi do, mi fa sol, mi fa sol.'],
+    ['🎹','Puis : sol la sol fa mi do (deux fois), do sol do (deux fois). Doigts 1 2 3 1.'],
+    ['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:[[60,1],[62,1],[64,1],[60,1],[60,1],[62,1],[64,1],[60,1],[64,1],[65,1],[67,2],[64,1],[65,1],[67,2],[67,.5],[69,.5],[67,.5],[65,.5],[64,1],[60,1],[67,.5],[69,.5],[67,.5],[65,.5],[64,1],[60,1],[60,1],[55,1],[60,2],[60,1],[55,1],[60,2]],ks:0,lb:'Frère Jacques',n:2}},
+  {id:'c4',lb:'Ah ! vous dirai-je, maman',les:[
+    ['⭐','La chanson des étoiles : do do sol sol la la sol, fa fa mi mi ré ré do.'],
+    ['🎹','Le saut do → sol : pouce sur do, petit doigt sur sol.'],
+    ['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:[[60,1],[60,1],[67,1],[67,1],[69,1],[69,1],[67,2],[65,1],[65,1],[64,1],[64,1],[62,1],[62,1],[60,2]],ks:0,fg:[1,1,5,5,5,5,5,4,4,3,3,2,2,1],lb:'Ah ! vous dirai-je, maman',n:2}},
+  {id:'c5',lb:'Ah ! vous dirai-je, avec I · IV · V',les:[
+    ['🤝','Les trois amis accompagnent : do · do · fa · do · fa · do · sol · do.'],
+    ['🎹','Un accord par mesure, main gauche.'],
+    ['⭐','Les accords dans l’ordre.']],drill:{type:'prog',key:0,st:[[0,'maj'],[0,'maj'],[5,'maj'],[0,'maj'],[5,'maj'],[0,'maj'],[7,'maj'],[0,'maj']],n:3}},
+  {id:'c6',lb:'Amazing Grace (cantique)',les:[
+    ['⛪','Un cantique que papa joue à l’église. En sol majeur : un fa♯ à l’armure.'],
+    ['🎹','ré · sol si sol · si · la · sol · mi · ré · ré · sol si sol · si · la · ré aigu.'],
+    ['⭐','Note à note, en lisant l’armure.']],drill:{type:'song',mel:[[62,1],[67,2],[71,.5],[67,.5],[71,2],[69,1],[67,2],[64,1],[62,2],[62,1],[67,2],[71,.5],[67,.5],[71,2],[69,1],[74,3]],ks:7,sig:3,lb:'Amazing Grace',n:2}},
+  {id:'c7',lb:'Amazing Grace, les accords',les:[
+    ['⛪','En sol : sol (I), do (IV), ré 7 (V7).'],
+    ['🎹','sol · do · sol · sol · ré7 · sol · do · sol · ré7 · sol.'],
+    ['⭐','La grille complète.']],drill:{type:'prog',key:7,st:[[0,'maj'],[5,'maj'],[0,'maj'],[0,'maj'],[7,'7'],[0,'maj'],[5,'maj'],[0,'maj'],[7,'7'],[0,'maj']],n:2}},
+ ]},
+ {id:'comptines',ic:'🧸',t:'Les comptines',d:'les chansons qu’on connaît par cœur — et celles que papa enregistre',col:'#FF9F43',steps:[
+  {id:'k1',lb:'Joyeux anniversaire',les:[
+    ['🎂','La chanson qu’on chante à tous les anniversaires ! Elle commence par deux sol, puis elle monte.'],
+    ['🎹','sol sol la sol do si · sol sol la sol ré do · sol sol sol(aigu) mi do si la · fa fa mi do ré do.'],
+    ['⭐','Note à note, puis en rythme à trois temps.']],drill:{type:'song',mel:[[55,.5],[55,.5],[57,1],[55,1],[60,1],[59,2],[55,.5],[55,.5],[57,1],[55,1],[62,1],[60,2],[55,.5],[55,.5],[67,1],[64,1],[60,1],[59,1],[57,1],[65,.5],[65,.5],[64,1],[60,1],[62,1],[60,2]],ks:0,sig:3,lb:'Joyeux anniversaire',n:2}},
+  {id:'k2',lb:'Vive le vent',les:[
+    ['🔔','Vive le vent, vive le vent, vive le vent d’hiver ! Trois mi, trois mi, puis ça saute.'],
+    ['🎹','mi mi mi · mi mi mi · mi sol do ré mi · fa fa fa fa fa mi mi mi · mi ré ré mi ré sol.'],
+    ['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:[[64,1],[64,1],[64,2],[64,1],[64,1],[64,2],[64,1],[67,1],[60,1],[62,1],[64,4],[65,1],[65,1],[65,1],[65,1],[65,1],[64,1],[64,1],[64,.5],[64,.5],[64,1],[62,1],[62,1],[64,1],[62,2],[67,2]],ks:0,sig:4,lb:'Vive le vent',n:2}},
+  {id:'k3',lb:'L’Hymne à la joie',les:[
+    ['🎻','Beethoven l’a écrite il y a 200 ans, et tout le monde la connaît. Elle marche presque toujours par notes voisines.'],
+    ['🎹','mi mi fa sol sol fa mi ré do do ré mi mi ré ré · mi mi fa sol sol fa mi ré do do ré mi ré do do.'],
+    ['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:[[64,1],[64,1],[65,1],[67,1],[67,1],[65,1],[64,1],[62,1],[60,1],[60,1],[62,1],[64,1],[64,1.5],[62,.5],[62,2],[64,1],[64,1],[65,1],[67,1],[67,1],[65,1],[64,1],[62,1],[60,1],[60,1],[62,1],[64,1],[62,1.5],[60,.5],[60,2]],ks:0,sig:4,fg:[3,3,4,5,5,4,3,2,1,1,2,3,3,2,2,3,3,4,5,5,4,3,2,1,1,2,3,2,1,1],lb:'L’Hymne à la joie',n:2}},
+  {id:'k4',lb:'Douce nuit',les:[
+    ['🌙','Un chant de Noël tout doux, qui se balance à trois temps.'],
+    ['🎹','sol la sol mi · sol la sol mi · ré ré si · do do sol · la la do si la · sol la sol mi…'],
+    ['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:[[67,1.5],[69,.5],[67,1],[64,3],[67,1.5],[69,.5],[67,1],[64,3],[74,2],[74,1],[71,3],[72,2],[72,1],[67,3],[69,2],[69,1],[72,1.5],[71,.5],[69,1],[67,1.5],[69,.5],[67,1],[64,3],[69,2],[69,1],[72,1.5],[71,.5],[69,1],[67,1.5],[69,.5],[67,1],[64,3],[74,2],[74,1],[77,1.5],[74,.5],[71,1],[72,3],[76,3],[72,1],[67,1],[64,1],[67,1.5],[65,.5],[62,1],[60,3]],ks:0,sig:3,lb:'Douce nuit',n:2}},
+  {id:'k5',lb:'Oh when the Saints (gospel)',les:[
+    ['⛪','Un gospel que tout le monde chante : do mi fa sol ! Trois fois, puis la fin.'],
+    ['🎹','do mi fa sol · do mi fa sol · do mi fa sol mi do mi ré · mi mi ré do do mi sol sol sol fa · mi fa sol mi do ré do.'],
+    ['⭐','Note à note, puis en rythme — avec du swing dans la tête !']],drill:{type:'song',mel:[[60,1],[64,1],[65,1],[67,4],[60,1],[64,1],[65,1],[67,4],[60,1],[64,1],[65,1],[67,2],[64,2],[60,2],[64,2],[62,4],[64,1],[64,1],[62,1],[60,2],[60,1],[64,2],[67,2],[67,1],[67,1],[65,4],[64,1],[65,1],[67,2],[64,2],[60,2],[62,2],[60,4]],ks:0,sig:4,lb:'Oh when the Saints',n:2}},
+  {id:'k6',lb:'Oh ! Susanna',les:[
+    ['🪕','Une chanson américaine qui court : do ré mi sol sol la sol mi…'],
+    ['🎹','do ré mi sol sol la sol mi do ré mi mi ré do ré · do ré mi sol sol la sol mi do ré mi mi ré ré do.'],
+    ['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:[[60,.5],[62,.5],[64,1],[67,1],[67,1.5],[69,.5],[67,1],[64,1],[60,1.5],[62,.5],[64,1],[64,1],[62,1],[60,1],[62,3],[60,.5],[62,.5],[64,1],[67,1],[67,1.5],[69,.5],[67,1],[64,1],[60,1.5],[62,.5],[64,1],[64,1],[62,1],[62,1],[60,2]],ks:0,sig:4,lb:'Oh ! Susanna',n:2}},
+ ]},
+ {id:'impro',ic:'🎨',t:'J’invente ma musique',d:'la pentatonique : 5 notes, zéro fausse note',col:'#FFC83D',steps:[
+  {id:'m1',lb:'Les 5 notes magiques',les:[
+    ['✨','La PENTATONIQUE de do : do ré mi sol la. Cinq notes qui sonnent toujours bien ensemble.'],
+    ['🎹','Enlève le fa et le si de la gamme : ce qui reste, ce sont les 5 notes magiques.'],
+    ['⭐','Joue-les en montant puis en descendant.']],drill:{type:'scale',roots:[0],penta:true,n:3}},
+  {id:'m2',lb:'Les touches noires = pentatonique',les:[
+    ['🎹','Surprise : les cinq touches NOIRES forment une pentatonique (sol♭ la♭ si♭ ré♭ mi♭). Joue n’importe laquelle, c’est joli.'],
+    ['✨','C’est le secret des pianistes qui improvisent sans fausse note.'],
+    ['⭐','Joue les 5 noires en montant.']],drill:{type:'scale',roots:[6],penta:true,n:3}},
+  {id:'m3',lb:'Improvise sur do',les:[
+    ['🎨','Garden joue un accompagnement en do. Toi, tu inventes une mélodie avec les 5 notes magiques, 30 secondes.'],
+    ['👂','Pas de bonne ou mauvaise réponse : plus tu restes dans les 5 notes, plus tu gagnes d’étoiles.'],
+    ['⭐','À toi ! Écoute et invente.']],drill:{type:'free',key:0,secs:30}},
+  {id:'m4',lb:'Improvise sur les noires',les:[
+    ['🎨','Accompagnement en sol♭ : toutes les touches noires sont bonnes.'],
+    ['✨','Essaie des répétitions, des sauts, des silences.'],
+    ['⭐','30 secondes d’invention.']],drill:{type:'free',key:6,secs:30}},
+  {id:'m5',lb:'Le blues : une note de plus',les:[
+    ['🎸','La gamme BLUES : do mi♭ fa fa♯ sol si♭. La note « bleue », c’est le fa♯ : elle frotte, et c’est voulu.'],
+    ['🎹','Joue-la lentement : do mi♭ fa fa♯ sol si♭ do.'],
+    ['⭐','Puis improvise dessus.']],drill:{type:'free',key:0,blues:true,secs:30}},
+ ]},
+ {id:'jeux',ic:'🎮',t:'Les jeux',d:'contre la montre, mémo, oreille, duel, série du jour',col:'#A78BFA',steps:[
+  {id:'j1',lb:'⏱ Contre la montre : les notes',les:[
+    ['⏱','30 secondes. Je dis une note, tu la joues, j’en dis une autre. Combien en trouveras-tu ?'],
+    ['🏁','Ton record est gardé. Bats-le !'],
+    ['⭐','10 notes = ⭐, 18 = ⭐⭐, 25 = ⭐⭐⭐']],drill:{type:'chrono',what:'note',secs:30}},
+  {id:'j2',lb:'⏱ Contre la montre : les accords',les:[
+    ['⏱','30 secondes d’accords majeurs et mineurs.'],
+    ['🏁','Pense à la recette : 4 puis 3, ou 3 puis 4.'],
+    ['⭐','6 accords = ⭐, 10 = ⭐⭐, 14 = ⭐⭐⭐']],drill:{type:'chrono',what:'chord',secs:30}},
+  {id:'j3',lb:'🧠 Mémo : rejoue ce que tu entends',les:[
+    ['🧠','Je joue 3 notes. Tu les rejoues. Puis 4, puis 5… jusqu’à l’erreur !'],
+    ['👂','Chante-les dans ta tête avant de jouer.'],
+    ['⭐','5 notes = ⭐, 7 = ⭐⭐, 9 = ⭐⭐⭐']],drill:{type:'simon'}},
+  {id:'j4',lb:'👂 L’oreille : majeur ou mineur ?',les:[
+    ['👂','Sans regarder le clavier : je joue un accord. Il sourit (majeur) ou il pleure (mineur) ?'],
+    ['🎭','Majeur = clair, joyeux. Mineur = doux, triste.'],
+    ['⭐','Écoute et choisis.']],drill:{type:'ear',kind:'mm',n:10}},
+  {id:'j5',lb:'👂 L’oreille : ça monte ou ça descend ?',les:[
+    ['👂','Deux notes. La deuxième est plus haute ou plus basse que la première ?'],
+    ['🎢','Haut = aigu, vers la droite. Bas = grave, vers la gauche.'],
+    ['⭐','Écoute et choisis.']],drill:{type:'ear',kind:'ud',n:10}},
+  {id:'j6',lb:'👂 L’oreille : quel intervalle ?',les:[
+    ['👂','Deux notes, sans le clavier. Seconde, tierce, quarte, quinte ou octave ?'],
+    ['🧠','L’octave sonne comme la même note. La quinte sonne « vide ». La tierce sonne « douce ».'],
+    ['⭐','Écoute et choisis.']],drill:{type:'ear',kind:'iv',n:10}},
+  {id:'j7',lb:'⚔️ Duel : à deux sur le clavier',les:[
+    ['⚔️','Deux joueurs. Chacun 30 secondes pour trouver le plus de notes. Le premier joue, puis le deuxième.'],
+    ['🤝','On choisit l’adversaire au début.'],
+    ['⭐','Le gagnant prend une étoile… et le perdant aussi s’il dépasse 10 !']],drill:{type:'duel',secs:30}},
+  {id:'j8',lb:'📅 La série du jour',les:[
+    ['📅','Cinq minutes qui mélangent tout ce que tu as déjà appris, pour ne rien oublier.'],
+    ['🔁','Chaque jour, un mélange différent.'],
+    ['⭐','Fais-la tous les jours : il y a un badge pour ça.']],drill:{type:'mix',n:15}},
+ ]},
+ {id:'gospel',ic:'⛪',t:'Le gospel de papa',d:'les accords de 7e et la cadence d’église',col:'#FF6FB5',steps:[
+  {id:'g1',lb:'Une 4e brique : l’accord de 7',les:[
+    ['🧱','Sur sol majeur (sol si ré), on ajoute une 4e brique : le FA. Sol si ré fa = sol 7.'],
+    ['🔢','La recette : 4, 3, puis 3. La 4e note est 10 touches au-dessus de la première.'],
+    ['⭐','Joue l’accord de 7 demandé.']],drill:{type:'chord',roots:[7,0,5],q:'7',n:8}},
+  {id:'g2',lb:'Sol 7 veut aller vers do',les:[
+    ['🧲','L’accord de 7 est un aimant : sol 7 tire vers do. C’est la fin de presque toutes les chansons.'],
+    ['⭐','sol 7 → do. Écoute comme ça se pose.'],
+    ['⭐','V7 · I, dans plusieurs tonalités.']],drill:{type:'prog',keys:[0,5,7,10],st:[[7,'7'],[0,'maj']],n:6}},
+  {id:'g3',lb:'Le mineur 7',les:[
+    ['😢','Sur un mineur, la 4e brique donne un accord doux : ré mineur 7 = ré fa la do.'],
+    ['🔢','Recette : 3, 4, 3.'],
+    ['⭐','Joue le mineur 7 demandé.']],drill:{type:'chord',roots:[2,4,9],q:'m7',n:8}},
+  {id:'g4',lb:'ii · V · I : le trio du jazz et du gospel',les:[
+    ['🎷','ré mineur 7 → sol 7 → do majeur 7. Trois accords qui racontent une histoire : départ, tension, maison.'],
+    ['🧱','do majeur 7 = do mi sol si : la 4e brique est à 11 touches.'],
+    ['⭐','ii · V · I en do.']],drill:{type:'prog',key:0,st:[[2,'m7'],[7,'7'],[0,'maj7']],n:5}},
+  {id:'g5',lb:'L’amen : IV → I',les:[
+    ['⛪','À la fin d’un chant d’église, on entend souvent FA puis DO : c’est la cadence « amen ».'],
+    ['🎹','Main gauche : la note de basse (fa puis do). Main droite : l’accord.'],
+    ['⭐','IV · I, puis I · IV · I · V7 · I : toute la cadence.']],drill:{type:'prog',key:0,st:[[0,'maj'],[5,'maj'],[0,'maj'],[7,'7'],[0,'maj']],n:4}},
+  {id:'g6',lb:'La cadence gospel dans 4 tonalités',les:[
+    ['🌍','Les chants d’église changent de tonalité : en fa, en si♭, en mi♭…'],
+    ['⭐','I · IV · I · V7 · I partout.'],
+    ['🏆','Après ça, tu peux jouer avec papa.']],drill:{type:'prog',keys:[0,5,10,3],st:[[0,'maj'],[5,'maj'],[0,'maj'],[7,'7'],[0,'maj']],n:4}},
+ ]}
+];
+/* 🎙 chansons enregistrées (coin parent) : {id, lb, mel:[[m,dur]], sig} → étapes de l'île des comptines */
+function userSongsLoad(){const I=ISLES.filter(function(x){return x.id==='comptines';})[0];I.steps=I.steps.filter(function(s){return !s.user;});
+  (DB.songs||[]).forEach(function(sg){I.steps.push({id:sg.id,user:true,lb:'🎙 '+sg.lb,les:[['🎙','« '+sg.lb+' » — enregistrée par les parents.'],['🎹',sg.mel.slice(0,10).map(function(x){return frn(x[0]%12);}).join(' ')+(sg.mel.length>10?'…':'')],['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:sg.mel,ks:sg.ks||0,sig:sg.sig||4,lb:sg.lb,n:2}});});}
+function stepById(id){for(const I of ISLES)for(const s of I.steps)if(s.id===id)return {I:I,s:s};return null;}
+
+/* ─────────── navigation ─────────── */
+const M=document.getElementById('main');
+let VIEW='profs';
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(function(){e.style.display='none';},2200);}
+function go(v,a){VIEW=v;stopDrill();({profs:vProfs,home:vHome,isle:vIsle,lesson:vLesson,drill:vDrill,parent:vParent,newprof:vNewProf})[v](a);window.scrollTo(0,0);}
+function starsOf(p,id){const n=(p.stars||{})[id]||0;return '⭐'.repeat(n)+'☆'.repeat(3-n);}
+function isleProg(p,I){let t=0;I.steps.forEach(function(s){t+=Math.min(3,(p.stars||{})[s.id]||0);});return t/(I.steps.length*3);}
+function suggested(p){for(const I of ISLES)for(const s of I.steps)if(!((p.stars||{})[s.id]>=1))return {I:I,s:s};return null;}
+
+function vProfs(){
+  document.getElementById('who').style.display='none';
+  M.innerHTML='<h1>Qui joue aujourd’hui ?</h1><div class="profs">'+DB.profs.map(function(p){return '<div class="prof" data-p="'+p.id+'"><div class="av">'+p.av+'</div><div class="nm">'+p.name+'</div><div class="st">⭐ '+totalStars(p)+'</div></div>';}).join('')
+    +'<div class="prof add" data-new="1"><div class="av">➕</div><div class="nm">Nouveau joueur</div></div></div>'
+    +(DB.msg?'<div class="card msg">💌 Message des parents : '+esc(DB.msg)+'</div>':'');
+  M.querySelectorAll('[data-p]').forEach(function(e){e.onclick=function(){DB.cur=e.dataset.p;save();go('home');};});
+  M.querySelector('[data-new]').onclick=function(){go('newprof');};
+}
+function totalStars(p){let t=0;Object.keys(p.stars||{}).forEach(function(k){t+=p.stars[k];});return t;}
+function esc(s){return String(s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
+function vNewProf(){
+  let av=AVS[DB.profs.length%AVS.length];
+  M.innerHTML='<h1>Un nouveau joueur !</h1><div class="card"><div class="hint">Ton prénom</div><input type="text" id="nm" maxlength="16" placeholder="Prénom"><div class="hint" style="margin-top:14px">Choisis ton animal</div><div class="avs" id="avs">'+AVS.map(function(a){return '<button data-av="'+a+'"'+(a===av?' class="on"':'')+'>'+a+'</button>';}).join('')+'</div>'
+    +'<div class="row" style="margin-top:16px"><button class="btn v" id="ok">C’est parti !</button><button class="btn g" id="back">Retour</button></div></div>';
+  M.querySelectorAll('[data-av]').forEach(function(b){b.onclick=function(){av=b.dataset.av;M.querySelectorAll('[data-av]').forEach(function(x){x.classList.toggle('on',x===b);});};});
+  document.getElementById('ok').onclick=function(){const n=document.getElementById('nm').value.trim();if(!n){toast('Écris ton prénom');return;}const p={id:'p'+Date.now(),name:n,av:av,stars:{},time:0,log:[]};DB.profs.push(p);DB.cur=p.id;save();go('home');};
+  document.getElementById('back').onclick=function(){go('profs');};
+}
+function vHome(){
+  const p=P();if(!p){go('profs');return;}
+  const w=document.getElementById('who');w.style.display='';w.innerHTML=p.av+' '+p.name+' · ⭐ '+totalStars(p);
+  const sug=suggested(p);
+  M.innerHTML='<h1>Bonjour '+p.name+' '+p.av+' <span class="hint" style="font-size:18px">🏅 '+(p.badges||[]).length+'/'+BADGES.length+' badges</span></h1>'+(sug?'<div class="hint">Prochaine étape conseillée : <b style="color:var(--or)">'+sug.I.t+' › '+sug.s.lb+'</b> — mais tu peux aller où tu veux.</div>':'<div class="hint">🏆 Tu as fini tout le parcours ! Rejoue ce que tu veux pour gagner 3 étoiles partout.</div>')
+    +(DB.msg?'<div class="card msg">💌 '+esc(DB.msg)+'</div>':'')
+    +'<div class="isles">'+ISLES.map(function(I){const pr=isleProg(p,I),done=I.steps.every(function(s){return (p.stars||{})[s.id]>=1;});
+      return '<div class="isle'+(sug&&sug.I.id===I.id?' sug':'')+'" data-i="'+I.id+'" style="border-color:'+(sug&&sug.I.id===I.id?'var(--or)':I.col+'55')+'">'+(done?'<div class="tro">🏆</div>':'')+'<div class="ic">'+I.ic+'</div><div class="t">'+I.t+'</div><div class="d">'+I.d+'</div><div class="bar"><i style="width:'+Math.round(pr*100)+'%"></i></div></div>';}).join('')+'</div>';
+  M.querySelectorAll('[data-i]').forEach(function(e){e.onclick=function(){go('isle',e.dataset.i);};});
+}
+function vIsle(id){
+  const p=P(),I=ISLES.filter(function(x){return x.id===id;})[0];const sug=suggested(p);
+  M.innerHTML='<h1>'+I.ic+' '+I.t+'</h1><div class="hint">'+I.d+'</div><div class="steps" style="margin-top:12px">'+I.steps.map(function(s,i){return '<div class="step'+(sug&&sug.s.id===s.id?' sug':'')+'" data-s="'+s.id+'"><div class="n">'+(i+1)+'</div><div class="lb">'+s.lb+'</div><div class="stars">'+starsOf(p,s.id)+'</div></div>';}).join('')+'</div>'
+    +'<div class="row" style="margin-top:14px"><button class="btn g" id="back">← Les îles</button></div>';
+  M.querySelectorAll('[data-s]').forEach(function(e){e.onclick=function(){go('lesson',e.dataset.s);};});
+  document.getElementById('back').onclick=function(){go('home');};
+}
+function vLesson(sid){
+  const R=stepById(sid),s=R.s;let i=0;
+  const draw=function(){const L=s.les[i];
+    M.innerHTML='<h2>'+R.I.ic+' '+s.lb+'</h2><div class="card"><div class="lesson"><div class="big">'+L[0]+'</div><div class="txt">'+L[1]+'</div>'+lessonKb(s,i)+'<div class="dots">'+s.les.map(function(x,k){return '<i'+(k===i?' class="on"':'')+'></i>';}).join('')+'</div>'
+      +'<div class="row"><button class="btn g" id="prev">←</button><button class="btn s g" id="hear">🔊 Écouter</button>'+(i<s.les.length-1?'<button class="btn b" id="next">Suite →</button>':'<button class="btn v" id="go">⭐ À toi de jouer !</button>')+'</div></div></div>';
+    say(L[1]);
+    document.getElementById('prev').onclick=function(){if(i>0){i--;draw();}else go('isle',R.I.id);};
+    document.getElementById('hear').onclick=function(){say(L[1]);lessonDemo(s);};
+    const nx=document.getElementById('next');if(nx)nx.onclick=function(){i++;draw();};
+    const g=document.getElementById('go');if(g)g.onclick=function(){go('drill',sid);};
+    lessonDemo(s);
+  };draw();
+}
+/* l'exemple de la leçon : un petit clavier qui montre le geste */
+function lessonExample(s){const d=s.drill;
+  if(d.type==='note')return {notes:[60+(d.pcs[Math.min(1,d.pcs.length-1)]||0)],map:{}};
+  if(d.type==='chord'||d.type==='inv'){const q=d.q==='both'?'maj':d.q,iv=TRI[q]||SEV[q];const r=d.roots==='all'?0:d.roots[0];let ns=iv.map(function(x){return 60+r+x;});if(d.type==='inv'&&d.inv[0]){const k=d.inv[0];ns=ns.slice(k).concat(ns.slice(0,k).map(function(m){return m+12;}));}return {notes:ns,map:colorMap(ns,60+r)};}
+  if(d.type==='prog'){const k=d.key!=null?d.key:(d.keys==='all'?0:d.keys[0]);const st=d.st[0],iv=TRI[st[1]]||SEV[st[1]];const ns=iv.map(function(x){return 60+k+st[0]+x;});return {notes:ns,map:colorMap(ns,60+k+st[0])};}
+  if(d.type==='staff')return {notes:[d.notes[0]],map:{}};
+  if(d.type==='rhythm')return {notes:[60],map:{60:'c1'}};
+  if(d.type==='ear')return {notes:[60,64,67],map:{60:'c1',64:'c3',67:'c5'}};
+  if(d.type==='simon'||d.type==='chrono'||d.type==='free'||d.type==='mix'||d.type==='staffk')return {notes:[60,62,64,67,69],map:{60:'c1'},seq:true};
+  if(d.type==='song'){return {notes:d.mel.slice(0,8).map(function(x){return x[0];}),map:{},seq:true};}
+  if(d.type==='step'){const dd=Array.isArray(d.d)?d.d[0]:d.d;return {notes:[64,64+dd],map:{64:'c1',[64+dd]:'c5'}};}
+  if(d.type==='scale'){const IV=d.minor?[0,2,3,5,7,8,10,12]:[0,2,4,5,7,9,11,12];const r=d.roots==='all'?0:d.roots[0];const b=60+((r-60)%12+12)%12-(r>=7?12:0);return {notes:IV.map(function(x){return b+x;}),map:{},seq:true};}
+  if(d.type==='degree'||d.type==='qdeg'){return {notes:[60,62,64,65,67,69,71],map:{60:'c1',64:'c3',67:'c5'},seq:true};}
+  if(d.type==='interval'||d.type==='qint'){const iv=d.ivs[Math.min(1,d.ivs.length-1)];return {notes:[60,60+iv],map:{60:'c1',[60+iv]:'c5'}};}
+  if(d.type==='melody')return {notes:d.seq,map:{}};
+  if(d.type==='piece'){const c=rsLoad(d.id);const ns=[];c.rh.ev.forEach(function(e){if(!e.rest&&ns.length<8)ns.push(e.ns[0].m);});return {notes:ns,map:{},seq:true};}
+  return {notes:[60],map:{}};}
+function colorMap(ns,root){const m={};ns.forEach(function(x){const iv=((x-root)%12+12)%12;m[x]=iv===0?'c1':(iv===3||iv===4?'c3':(iv===7?'c5':'c7'));});return m;}
+function lessonKb(s,i){const ex=lessonExample(s);const lo=Math.max(36,12*Math.floor((Math.min.apply(null,ex.notes)-2)/12)),hi=Math.min(84,lo+24);
+  setTimeout(function(){kbHTML('lkb',lo,hi,34);const map={};ex.notes.forEach(function(m){map[m]=ex.map[m]||'c1';});kbPaint('lkb',map);},0);
+  return '<div class="kbw"><div class="kb" id="lkb" style="height:120px"></div></div>';}
+function lessonDemo(s){const ex=lessonExample(s);if(s.drill.type==='melody'||ex.seq){ex.notes.forEach(function(m,i){setTimeout(function(){play([m],.5);},i*420);});}else play(ex.notes,1.2);}
+
+/* ═══════════════════════ LE DRILL ═══════════════════════ */
+let DR={on:false};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function buildQs(d){const qs=[];const roots=function(){return d.roots==='all'?[0,1,2,3,4,5,6,7,8,9,10,11]:d.roots;};
+  if(d.type==='note'){for(let i=0;i<d.n;i++){const pc=pick(d.pcs);qs.push({pc:pc,lo:d.lo,hi:d.hi,any:d.any,lb:'Joue : <b>'+frn(pc).toUpperCase()+'</b>'+(d.lo?' <small>main gauche</small>':'')});}}
+  else if(d.type==='chord'){for(let i=0;i<d.n;i++){const r=pick(roots()),q=d.q==='both'?pick(['maj','min']):d.q;qs.push({r:r,q:q,pcs:(TRI[q]||SEV[q]).map(function(x){return (r+x)%12;}),lb:'Joue : <b>'+chordName(r,q)+'</b>'});}}
+  else if(d.type==='inv'){for(let i=0;i<d.n;i++){const r=pick(roots()),q=d.q==='both'?pick(['maj','min']):d.q,k=pick(d.inv);const iv=TRI[q];qs.push({r:r,q:q,pcs:iv.map(function(x){return (r+x)%12;}),bass:(r+iv[k])%12,inv:k,lb:'Joue : <b>'+chordName(r,q)+'</b> <small>'+['PF — '+frn(r)+' en bas','R1 — '+frn((r+iv[1])%12)+' en bas','R2 — '+frn((r+iv[2])%12)+' en bas'][k]+'</small>'});}}
+  else if(d.type==='prog'){const keys=d.key!=null?[d.key]:(d.keys==='all'?[0,1,2,3,4,5,6,7,8,9,10,11]:d.keys);for(let i=0;i<d.n;i++){const k=keys[i%keys.length];d.st.forEach(function(st,j){const r=(k+st[0])%12,q=st[1],iv=TRI[q]||SEV[q];const o={r:r,q:q,pcs:iv.map(function(x){return (r+x)%12;}),lb:'<small>en '+frn(k)+' · accord '+(j+1)+'/'+d.st.length+'</small><br><b>'+chordName(r,q)+'</b>'};if(st[2]!=null){o.bass=(r+iv[st[2]])%12;o.lb+=' <small>'+['PF','R1','R2'][st[2]]+'</small>';}qs.push(o);});}}
+  else if(d.type==='step'){for(let i=0;i<d.n;i++){const st=55+Math.floor(Math.random()*14),dd=Array.isArray(d.d)?pick(d.d):d.d,dir=Array.isArray(d.dir)?pick(d.dir):d.dir;const t=st+dd*dir;
+      qs.push({m:t,from:st,lb:'Depuis <b>'+frn(st%12)+'</b> : '+(dd===1?'un demi-ton':'un ton')+' '+(dir>0?'au-dessus ↑':'en dessous ↓')});}}
+  else if(d.type==='scale'){const IV=d.penta?[0,2,4,7,9,12,9,7,4,2,0]:(d.minor?[0,2,3,5,7,8,10,12]:[0,2,4,5,7,9,11,12]);for(let i=0;i<d.n;i++){const r=roots()[i%roots().length];const b=60+((r-60)%12+12)%12-(r>=7?12:0);qs.push({seq:IV.map(function(x){return b+x;}),fg:d.penta?null:[1,2,3,1,2,3,4,5],melody:true,lb:(d.penta?'Les 5 notes magiques de <b>':'La gamme de <b>')+frn(r)+(d.penta?'':(d.minor?' mineur':' majeur'))+'</b>'});}}
+  else if(d.type==='degree'){const IV=[0,2,4,5,7,9,11];for(let i=0;i<d.n;i++){const k=pick(d.keys),dg=1+Math.floor(Math.random()*7);qs.push({pc:(k+IV[dg-1])%12,any:true,lb:'Le <b>'+dg+(dg===1?'er':'e')+' degré</b> de '+frn(k)+' majeur'});}}
+  else if(d.type==='qdeg'){const IV=[0,2,4,5,7,9,11];for(let i=0;i<d.n;i++){const k=pick(d.keys),dg=1+Math.floor(Math.random()*7);const m=60+((k+IV[dg-1]-60)%12+12)%12;qs.push({show:[m],ans:String(dg),choices:['1','2','3','4','5','6','7'],lb:'En <b>'+frn(k)+' majeur</b>, quel degré est <b>'+frn(m%12)+'</b> ?'});}}
+  else if(d.type==='interval'){for(let i=0;i<d.n;i++){const st=55+Math.floor(Math.random()*12),iv=pick(d.ivs);qs.push({m:st+iv,from:st,lb:'Au-dessus de <b>'+frn(st%12)+'</b> : une <b>'+IVN[iv]+'</b> <small>('+iv+' demi-tons)</small>'});}}
+  else if(d.type==='qint'){for(let i=0;i<d.n;i++){const st=55+Math.floor(Math.random()*12),iv=pick(d.ivs);const ch=d.ivs.slice().sort(function(a,b){return a-b;}).map(function(x){return IVN[x];});qs.push({show:[st,st+iv],ans:IVN[iv],choices:ch,lb:'Quel est cet intervalle ?'});}}
+  else if(d.type==='staff'){for(let i=0;i<d.n;i++){const m=pick(d.notes);qs.push({m:m,lb:'Joue la note écrite',staff:true});}}
+  else if(d.type==='staffk'){const IV=[0,2,4,5,7,9,11];for(let i=0;i<d.n;i++){const k=pick(d.keys);const dg=Math.floor(Math.random()*8);const m=60+((k-60)%12+12)%12-(k>=7?12:0)+(dg<7?IV[dg]:12);qs.push({m:m,ks:k,lb:'Joue la note écrite <small>(armure de '+frn(k)+' majeur)</small>',staff:true});}}
+  else if(d.type==='staffc'){for(let i=0;i<d.n;i++){const r=60+Math.floor(Math.random()*8);const IV=[0,2,4,5,7,9,11];const b=60+IV[r-60>6?0:r-60];let ns;if(d.kind==='iv'){const iv=pick([2,3,4,5,7,9,12]);ns=[b,b+iv];}else{const q=pick(['maj','min']);ns=TRI[q].map(function(x){return b+x;});}qs.push({chordNotes:ns,pcs:ns.map(function(m){return m%12;}),exact:true,lb:d.kind==='iv'?'Joue les deux notes écrites':'Joue l’accord écrit',staff:true});}}
+  else if(d.type==='rhythm'){for(let i=0;i<d.n;i++){const pat=d.pats[i%d.pats.length];const beats=pat.reduce(function(a,b){return a+Math.abs(b);},0);qs.push({rhythm:pat,sig:beats===3?'3/4':'4/4',lb:'Tape ce rythme <small>'+(beats===3?'3/4':'4/4')+' · 4 clics puis à toi</small>'});}}
+  else if(d.type==='song'){for(let i=0;i<d.n;i++)qs.push({seq:d.mel.map(function(x){return x[0];}),durs:d.mel.map(function(x){return x[1];}),fg:d.fg,ks:d.ks,sig:d.sig||4,melody:true,lb:d.lb+(i?' <small>— en rythme !</small>':' <small>— note à note</small>'),timed:i>0});}
+  else if(d.type==='ear'){for(let i=0;i<d.n;i++){if(d.kind==='mm'){const r=55+Math.floor(Math.random()*12),q=pick(['maj','min']);qs.push({show:TRI[q].map(function(x){return r+x;}),hide:true,ans:q==='maj'?'majeur 😀':'mineur 😢',choices:['majeur 😀','mineur 😢'],lb:'Majeur ou mineur ?'});}
+      else if(d.kind==='ud'){const a=55+Math.floor(Math.random()*14);let b=a+pick([-7,-5,-4,-3,-2,2,3,4,5,7]);qs.push({show:[a,b],seqPlay:true,hide:true,ans:b>a?'ça monte ↗':'ça descend ↘',choices:['ça monte ↗','ça descend ↘'],lb:'Ça monte ou ça descend ?'});}
+      else{const a=55+Math.floor(Math.random()*12),iv=pick([2,4,5,7,12]);qs.push({show:[a,a+iv],seqPlay:true,hide:true,ans:IVN[iv],choices:[2,4,5,7,12].map(function(x){return IVN[x];}),lb:'Quel intervalle ?'});}}}
+  else if(d.type==='chrono'||d.type==='duel'){for(let i=0;i<60;i++){if(d.what==='chord'){const r=Math.floor(Math.random()*12),q=pick(['maj','min']);qs.push({r:r,q:q,pcs:TRI[q].map(function(x){return (r+x)%12;}),lb:'Joue : <b>'+chordName(r,q)+'</b>'});}else{const pc=pick([0,2,4,5,7,9,11]);qs.push({pc:pc,any:true,lb:'Joue : <b>'+frn(pc).toUpperCase()+'</b>'});}}}
+  else if(d.type==='simon'){qs.push({simon:true,lb:'Écoute… puis rejoue'});}
+  else if(d.type==='free'){qs.push({free:true,key:d.key,blues:d.blues,secs:d.secs,lb:'Improvise ! <small>'+(d.blues?'gamme blues':'5 notes magiques')+' de '+frn(d.key)+'</small>'});}
+  else if(d.type==='mix'){const p=P();const done=[];ISLES.forEach(function(I){I.steps.forEach(function(s){if((p.stars||{})[s.id]>=1&&['note','chord','inv','staff','staffk','step','interval','degree','qdeg','qint'].indexOf(s.drill.type)>=0)done.push(s);});});
+      if(!done.length)qs.push({pc:0,any:true,lb:'Joue : <b>DO</b> <small>(fais d’abord quelques étapes !)</small>'});
+      else{const seed=new Date().toISOString().slice(0,10);let h=0;for(let i=0;i<seed.length;i++)h=(h*31+seed.charCodeAt(i))%9973;for(let i=0;i<d.n;i++){const st=done[(h+i*7)%done.length];const sub=buildQs(st.drill);qs.push(sub[(h+i)%sub.length]);}}}
+  else if(d.type==='melody'){for(let i=0;i<d.n;i++)qs.push({seq:d.seq,fg:d.fg,lb:d.lb,melody:true});}
+  return qs;}
+function vDrill(sid){const R=stepById(sid);if(R.s.drill.type==='piece'){DR={pmode:DR.pmode};vPiece(sid);return;}if(R.s.drill.type==='duel'){DR={sid:sid};duelPick();return;}DR={};vDrillReal(sid);}
+function vDrillReal(sid){
+  const R=stepById(sid),s=R.s,d=s.drill;
+  const keep={duel:DR.duel,duelA:DR.duelA,duelB:DR.duelB,duelScoreA:DR.duelScoreA};
+  DR={on:true,sid:sid,qs:buildQs(d),i:0,res:[],err:0,t0:Date.now(),ptr:0,fresh:new Set(),wrong:false};Object.assign(DR,keep);
+  if(d.type==='chrono'||d.type==='duel')DR.qs.length=Math.min(DR.qs.length,60);
+  KB=d.lo?{lo:36,hi:60}:{lo:48,hi:72};if(d.type==='staff'||d.any||d.type==='free'||d.type==='staffk')KB={lo:36,hi:84};
+  M.innerHTML='<h2>'+R.I.ic+' '+s.lb+'</h2><div class="stage" id="stage"><div class="q" id="q"></div><div id="stf"></div><div class="fb" id="fb"></div><div class="row" id="choices" style="justify-content:center;margin:8px 0;display:none"></div><div class="prog" id="prog"></div><div class="kbw"><div class="kb" id="kb"></div></div>'
+    +'<div class="row" style="justify-content:center;margin-top:10px"><button class="btn s g" id="hear">🔊 Écouter la réponse</button><button class="btn s g" id="help">💡 Montre-moi</button><button class="btn s g" id="quit">Arrêter</button></div></div>';
+  kbHTML('kb',KB.lo,KB.hi,Math.max(26,Math.min(44,Math.floor((M.clientWidth-60)/((KB.hi-KB.lo)*7/12+1)))));
+  document.getElementById('hear').onclick=function(){const q=DR.qs[DR.i];if(!q)return;if(q.seqPlay){play([q.show[0]],.7);setTimeout(function(){play([q.show[1]],.7);},700);return;}if(q.simon){simonPlay();return;}if(q.rhythm){rhythmDemo(q);return;}if(q.melody){q.seq.forEach(function(m,i){setTimeout(function(){play([m],.45);},i*380);});}else play(targetNotes(q),1);};
+  document.getElementById('help').onclick=function(){DR.help=true;showQ();};
+  document.getElementById('quit').onclick=function(){go('isle',R.I.id);};
+  showQ();
+}
+function targetNotes(q){if(q.chordNotes)return q.chordNotes;if(q.rhythm)return [60];if(q.simon)return DR.simonSeq||[60];if(q.free)return [];if(q.show)return q.show;if(q.m)return [q.m];if(q.melody)return q.seq;if(q.pc!=null)return [60+q.pc];const r=60+q.r;let ns=q.pcs.map(function(pc){return r+((pc-r)%12+12)%12;});
+  if(q.bass!=null){const b=60+q.bass;ns=[b].concat(q.pcs.filter(function(pc){return pc!==q.bass;}).map(function(pc){return b+((pc-b)%12+12)%12;}).sort(function(a,b2){return a-b2;}));}
+  return ns;}
+function showQ(){
+  if(!DR.on||!document.getElementById('q'))return;
+  const q=DR.qs[DR.i];if(!q){finish();return;}
+  document.getElementById('q').innerHTML=q.lb+(q.melody?' <small>'+(DR.ptr+1)+'/'+q.seq.length+'</small>':'');
+  document.getElementById('prog').innerHTML=DR.qs.map(function(x,k){return '<i class="'+(DR.res[k]===true?'ok':(DR.res[k]===false?'ko':(k===DR.i?'cur':'')))+'"></i>';}).join('');
+  const st=document.getElementById('stf');
+  const tn=targetNotes(q);
+  if(q.rhythm){st.innerHTML=rhythmHTML(q);}
+  else if(q.staff||q.melody){let i0=0,i1=q.melody?q.seq.length:0;if(q.melody&&q.seq.length>16){i0=Math.max(0,Math.floor(DR.ptr/8)*8-8);i1=Math.min(q.seq.length,i0+16);}
+    const cols=q.melody?q.seq.slice(i0,i1).map(function(m,j){const i=i0+j;return {notes:[{m:m,dur:q.durs?q.durs[i]:null,col:i<DR.ptr?'#3ECF8E':(i===DR.ptr?'#FFC83D':'#F4F6FF'),lb:q.fg?q.fg[i]:null}]};}):[{notes:(q.chordNotes||[q.m]).map(function(m){return {m:m};})}];
+    const sig=q.durs?[q.sig||4,4]:null;
+    st.innerHTML=staffSVG(cols,{sp:q.melody?9:12,ks:q.ks,sig:sig});}
+  else st.innerHTML=(DR.help||DR.wrong)?staffSVG([{notes:tn.map(function(m){return {m:m,col:'#FFC83D',ghost:true};})}],{sp:7}):'';
+  KBMAP={};
+  if(q.from!=null)KBMAP[q.from]='c1';
+  if(q.show&&!q.hide){q.show.forEach(function(m,i){KBMAP[m]=i?'c5':'c1';});}
+  if(q.free){const sc=q.blues?[0,3,5,6,7,10]:[0,2,4,7,9];for(let x=KB.lo;x<=KB.hi;x++)if(sc.indexOf(((x-q.key)%12+12)%12)>=0)KBMAP[x]=((x-q.key)%12+12)%12===0?'c1':'c3';}
+  if(q.simon&&!DR.simonSeq){simonStart(q);}
+  if(q.free&&!DR.freeOn){freeStart(q);}
+  if(q.rhythm&&!DR.rhOn){rhythmStart(q);}
+  if(q.timed&&DR.ptr===0&&!DR.songOn){songStart(q);}
+  if((DR.qs[0]&&(DR.qs[0].pc!=null||DR.qs[0].r!=null))&&(stepById(DR.sid).s.drill.type==='chrono'||stepById(DR.sid).s.drill.type==='duel')&&!DR.chronoOn)chronoStart();
+  const ch=document.getElementById('choices');
+  if(q.choices){ch.style.display='';ch.innerHTML=q.choices.map(function(c){return '<button class="btn b" data-ch="'+c+'">'+c+'</button>';}).join('');
+    ch.querySelectorAll('[data-ch]').forEach(function(b){b.onclick=function(){if(DR.lock)return;if(b.dataset.ch===q.ans)good();else{if(!DR.wrong){DR.err++;DR.res[DR.i]=false;}DR.wrong=true;flash(false);ding(false);b.style.opacity=.35;document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent='✕ Non — réécoute et compte les marches';say('Non, réécoute');}};});
+    if(!DR.played||DR.played!==DR.i){DR.played=DR.i;setTimeout(function(){if(q.seqPlay){play([q.show[0]],.7);setTimeout(function(){play([q.show[1]],.7);},700);}else play(q.show,1);},300);}}
+  else{ch.style.display='none';ch.innerHTML='';}
+  if(DR.help||DR.wrong){(q.melody?[q.seq[DR.ptr]]:tn).forEach(function(m){if(q.any){for(let x=KB.lo;x<=KB.hi;x++)if(x%12===m%12)KBMAP[x]='want';}else KBMAP[m]='want';});}
+  kbPaint('kb',KBMAP);
+  if(!DR.wrong)document.getElementById('fb').textContent='';
+  if(!DR.said||DR.said!==DR.i){DR.said=DR.i;say(document.getElementById('q').textContent);}
+}
+function onNote(m){if(DR.piece){pieceNote(m);return;}if(!DR.on||DR.lock)return;const q=DR.qs[DR.i];if(!q)return;
+  if(q.choices)return; /* question à choix : le clavier sert à réécouter, pas à répondre */
+  if(q.rhythm){rhythmTap();return;}
+  if(q.free){freeNote(m);return;}
+  if(q.simon){simonNote(m);return;}
+  if(q.timed){songNote(m);return;}
+  if(q.exact){DR.fresh.add(m);const fr=Array.from(DR.fresh);const bad=fr.filter(function(x){return q.chordNotes.indexOf(x)<0;});if(bad.length){fail(bad[0],q.chordNotes);DR.fresh.delete(bad[0]);return;}if(q.chordNotes.every(function(x){return fr.indexOf(x)>=0;}))good();return;}
+  DR.fresh.add(m);
+  if(q.melody){const want=q.seq[DR.ptr];if(m===want){DR.ptr++;DR.wrong=false;if(DR.ptr>=q.seq.length){good();}else showQ();}else fail(m,[want]);return;}
+  if(q.pc!=null){const ok=q.any?m%12===q.pc:(m%12===q.pc&&(q.lo==null||(m>=q.lo&&m<=q.hi)));if(ok)good();else fail(m,[q.any?60+q.pc:(q.lo?48+q.pc:60+q.pc)]);return;}
+  if(q.m){if(m===q.m)good();else fail(m,[q.m]);return;}
+  /* accords : toutes les notes frappées depuis la question */
+  const fr=Array.from(DR.fresh);
+  const bad=fr.filter(function(x){return q.pcs.indexOf(x%12)<0;});
+  if(bad.length){fail(bad[0],targetNotes(q));DR.fresh.delete(bad[0]);return;}
+  const have=q.pcs.every(function(pc){return fr.some(function(x){return x%12===pc;});});
+  if(!have)return;
+  if(q.bass!=null){const lowest=Math.min.apply(null,fr);if(lowest%12!==q.bass){failBass(lowest,q);return;}}
+  good();
+}
+function onRelease(m){}
+function flash(ok){const st=document.getElementById('stage');if(!st)return;st.classList.remove('ok','ko');void st.offsetWidth;st.classList.add(ok?'ok':'ko');setTimeout(function(){st.classList.remove('ok','ko');},600);}
+function good(){const q=DR.qs[DR.i];if(DR.res[DR.i]==null)DR.res[DR.i]=!DR.wrong;if(DR.chronoOn){DR.score++;document.getElementById('q').innerHTML='<b>'+DR.score+'</b> <small>trouvées · '+DR.left+' s</small>';}DR.lock=true;flash(true);ding(true);
+  document.getElementById('fb').className='fb good';document.getElementById('fb').textContent=pick(['Bravo !','Super !','Oui !','Parfait !','Génial !']);
+  KBMAP={};targetNotes(q).forEach(function(m){KBMAP[m]='ok';});if(q.any)held.forEach(function(m){KBMAP[m]='ok';});kbPaint('kb',KBMAP);
+  halo();DR.tmo2=setTimeout(function(){if(!DR.on)return;DR.i++;DR.ptr=0;DR.fresh=new Set();DR.wrong=false;DR.help=false;DR.lock=false;if(DR.chronoOn&&DR.i>=DR.qs.length)DR.i=0;showQ();},DR.chronoOn?350:900);}
+function fail(m,want){if(!DR.wrong){DR.err++;DR.res[DR.i]=false;}DR.wrong=true;flash(false);ding(false);
+  const w=want[0];const d=w!=null?((w%12)-(m%12)+12)%12:null;
+  let t='✕ '+cap(noteFr(m));
+  if(w!=null&&DR.qs[DR.i]&&(DR.qs[DR.i].from!=null)){const diff=w-m;t+=' — '+(Math.abs(diff)===1?'une marche':Math.abs(diff)+' marches')+(diff>0?' plus haut →':' ← plus bas')+' : '+frn(w%12);}
+  else if(w!=null&&w%12!==m%12){const up=d<=6;t+=' — la bonne note est '+frn(w%12)+', '+(up?'un peu plus haut →':'← un peu plus bas');}
+  else if(w!=null)t+=' — c’est la bonne note, mais pas au bon endroit du clavier';
+  document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent=t;say(t.replace('✕','Oups,'));
+  KBMAP={};KBMAP[m]='bad';showQ();KBMAP[m]='bad';kbPaint('kb',KBMAP);}
+function failBass(lowest,q){if(!DR.wrong){DR.err++;DR.res[DR.i]=false;}DR.wrong=true;flash(false);ding(false);
+  const t='✕ Les bonnes notes, mais '+frn(lowest%12)+' est en bas. Il faut '+frn(q.bass)+' en bas.';document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent=t;say(t.replace('✕',''));DR.fresh=new Set();showQ();}
+function halo(){const st=document.getElementById('stage');if(!st)return;let sv=document.getElementById('halo');if(!sv){sv=document.createElementNS('http://www.w3.org/2000/svg','svg');sv.id='halo';st.insertBefore(sv,st.firstChild);}
+  const w=st.clientWidth+8,h=st.clientHeight+8,r=26;sv.setAttribute('viewBox','0 0 '+w+' '+h);const per=2*(w-2*r)+2*(h-2*r)+2*Math.PI*r,frac=(DR.i+1)/DR.qs.length;
+  const d='M'+(w/2)+',2 H'+(w-r)+' A'+r+','+r+' 0 0 1 '+(w-2)+','+r+' V'+(h-r)+' A'+r+','+r+' 0 0 1 '+(w-r)+','+(h-2)+' H'+r+' A'+r+','+r+' 0 0 1 2,'+(h-r)+' V'+r+' A'+r+','+r+' 0 0 1 '+r+',2 Z';
+  sv.innerHTML='<path d="'+d+'" fill="none" stroke="#3ECF8E" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(per*frac)+' '+per+'" style="filter:drop-shadow(0 0 6px #3ECF8E)"/>';}
+function stopDrill(){if(DR.piece)pieceStop();DR.on=false;held.clear();clearInterval(DR.tick);clearInterval(DR.met);clearTimeout(DR.tmo);clearTimeout(DR.tmo2);if(DR.freeLoop)clearInterval(DR.freeLoop);}
+function finish(){DR.on=false;const p=P();let n=DR.qs.length,ok=DR.res.filter(function(x){return x===true;}).length;let stars;
+  const R0=stepById(DR.sid),ty=R0.s.drill.type;
+  if(ty==='chrono'||ty==='duel'){ok=DR.score||0;n=ok;const T=R0.s.drill.what==='chord'?[6,10,14]:[10,18,25];stars=ok>=T[2]?3:(ok>=T[1]?2:(ok>=T[0]?1:0));p.best=p.best||{};if(ok>(p.best[DR.sid]||0)){p.best[DR.sid]=ok;DR.record=true;}}
+  else if(ty==='simon'){ok=DR.simonBest||0;n=ok;stars=ok>=9?3:(ok>=7?2:(ok>=5?1:0));p.best=p.best||{};if(ok>(p.best[DR.sid]||0)){p.best[DR.sid]=ok;DR.record=true;}}
+  else if(ty==='free'){const tot=DR.freeIn+DR.freeOut;ok=DR.freeIn;n=tot;const r=tot?DR.freeIn/tot:0;stars=tot>=12&&r>=.95?3:(tot>=8&&r>=.8?2:(tot>=4?1:0));}
+  else stars=ok>=n?3:(ok>=Math.ceil(n*.8)?2:(ok>=Math.ceil(n*.5)?1:0));
+  if(ty==='piece'){ok=n-Object.keys(DR.errAt||{}).length;stars=ok>=Math.ceil(n*.95)?3:(ok>=Math.ceil(n*.8)?2:(ok>=Math.ceil(n*.5)?1:0));if(DR.oneHand)stars=Math.min(2,stars);}
+  if(ty==='mix'){p.days=p.days||[];const dd=new Date().toISOString().slice(0,10);if(p.days.indexOf(dd)<0)p.days.push(dd);}
+  p.stars=p.stars||{};p.stars[DR.sid]=Math.max(p.stars[DR.sid]||0,stars);p.time=(p.time||0)+Math.round((Date.now()-DR.t0)/1000);
+  p.log=(p.log||[]).concat([{d:new Date().toISOString().slice(0,10),s:DR.sid,ok:ok,n:n,st:stars}]).slice(-60);save();
+  const R=stepById(DR.sid);const I=R.I;const done=I.steps.every(function(s){return (p.stars||{})[s.id]>=1;});
+  const nxt=(function(){const k=I.steps.indexOf(R.s);return I.steps[k+1];})();
+  M.innerHTML='<div class="card result"><div class="big">'+(stars===3?'🏆':(stars>=1?'🎉':'💪'))+'</div><h1>'+(stars===3?'Parfait, '+p.name+' !':(stars>=1?'Bien joué, '+p.name+' !':'On y est presque, '+p.name+' !'))+'</h1><div class="st">'+'⭐'.repeat(stars)+'☆'.repeat(3-stars)+'</div><div class="hint">'+(ty==='chrono'||ty==='duel'?ok+' trouvées en '+R0.s.drill.secs+' s'+(DR.record?' · 🏅 nouveau record !':''):(ty==='simon'?'Tu as retenu '+ok+' notes'+(DR.record?' · 🏅 record !':''):(ty==='free'?ok+' notes dans la gamme sur '+n:(ty==='piece'?ok+' notes justes sur '+n+(DR.oneHand&&stars===2?' · la 3e étoile se gagne avec les deux mains':''):ok+' bonnes réponses sur '+n))))+(done&&stars>=1?' · 🏆 Île terminée !':'')+'</div>'+badgesHTML(p)
+    +'<div class="row" style="justify-content:center;margin-top:18px">'+(stars<3?'<button class="btn" id="again">🔁 Encore une fois</button>':'')+(nxt?'<button class="btn v" id="next">Étape suivante →</button>':'<button class="btn v" id="next">🏝 Les îles</button>')+'</div></div>';
+  say(stars===3?'Parfait !':(stars>=1?'Bien joué !':'On y est presque, recommence !'));if(stars>=1)play([72,76,79,84],1.2);
+  const a=document.getElementById('again');if(a)a.onclick=function(){go('drill',DR.sid);};
+  document.getElementById('next').onclick=function(){if(nxt)go('lesson',nxt.id);else go('home');};
+}
+
+/* ─────────── ⏱ contre la montre ─────────── */
+function chronoStart(){DR.chronoOn=true;DR.score=0;DR.left=stepById(DR.sid).s.drill.secs;DR.tick=setInterval(function(){DR.left--;if(DR.left<=0){clearInterval(DR.tick);DR.chronoOn=false;if(DR.duel){duelNext();return;}finish();return;}const q=document.getElementById('q');if(q&&DR.left<=5)q.innerHTML='<b>'+DR.score+'</b> <small>trouvées · '+DR.left+' s</small>';},1000);}
+/* ─────────── 🧠 mémo (Simon) ─────────── */
+function simonStart(q){DR.simonSeq=[];DR.simonBest=0;DR.simonPtr=0;for(let i=0;i<3;i++)DR.simonSeq.push(pick([60,62,64,65,67,69,71,72]));simonPlay();}
+function simonPlay(){DR.lock=true;document.getElementById('fb').className='fb';document.getElementById('fb').textContent='👂 Écoute…';DR.simonPtr=0;
+  DR.simonSeq.forEach(function(m,i){setTimeout(function(){play([m],.5);KBMAP={};KBMAP[m]='c3';kbPaint('kb',KBMAP);},i*600);});
+  DR.tmo=setTimeout(function(){DR.lock=false;KBMAP={};kbPaint('kb',KBMAP);document.getElementById('fb').textContent='🎹 À toi : '+DR.simonSeq.length+' notes';},DR.simonSeq.length*600+300);}
+function simonNote(m){if(DR.lock)return;const want=DR.simonSeq[DR.simonPtr];
+  if(m%12===want%12){DR.simonPtr++;if(DR.simonPtr>=DR.simonSeq.length){DR.simonBest=DR.simonSeq.length;flash(true);ding(true);DR.simonSeq.push(pick([60,62,64,65,67,69,71,72]));document.getElementById('q').innerHTML='Mémo : <b>'+DR.simonBest+'</b> notes retenues !';DR.tmo=setTimeout(simonPlay,900);}}
+  else{flash(false);ding(false);document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent='✕ C’était '+frn(want%12)+'. Tu as retenu '+DR.simonBest+' notes.';DR.lock=true;DR.tmo=setTimeout(function(){DR.i++;finish();},1500);}}
+/* ─────────── 🎨 improvisation libre ─────────── */
+function freeStart(q){DR.freeOn=true;DR.freeIn=0;DR.freeOut=0;DR.left=q.secs;const k=q.key;const sc=q.blues?[0,3,5,6,7,10]:[0,2,4,7,9];DR.freeSc=sc;
+  const chords=q.blues?[[0,'7'],[5,'7'],[0,'7'],[7,'7']]:[[0,'maj'],[9,'min'],[5,'maj'],[7,'maj']];let b=0;
+  const loop=function(){const c=chords[b%4];const r=48+((k+c[0]-48)%12+12)%12;const iv=TRI[c[1]]||SEV[c[1]];play([r-12].concat(iv.map(function(x){return r+x;})),1.6);b++;};loop();DR.freeLoop=setInterval(loop,1800);
+  document.getElementById('fb').className='fb';document.getElementById('fb').textContent='🎨 Les touches colorées sont les bonnes. '+q.secs+' s';
+  DR.tick=setInterval(function(){DR.left--;document.getElementById('fb').textContent='🎨 '+DR.freeIn+' notes magiques · '+DR.left+' s';if(DR.left<=0){clearInterval(DR.tick);clearInterval(DR.freeLoop);DR.i++;finish();}},1000);}
+function freeNote(m){const iv=((m-DR.qs[DR.i].key)%12+12)%12;if(DR.freeSc.indexOf(iv)>=0){DR.freeIn++;}else{DR.freeOut++;}}
+/* ─────────── 🥁 rythme : 4 clics puis le motif ; on tape sur n'importe quelle touche ─────────── */
+const BPM=80;
+function rhythmHTML(q){const beat=60000/BPM;const sym=function(d){return d===4?'𝅝':(d===2?'𝅗𝅥':(d===1?'♩':(d===.5?'♪':(d===-1?'𝄽':(d===-2?'𝄼':'♩')))));};
+  return '<div style="font-size:54px;letter-spacing:14px;margin:8px 0;font-family:serif">'+q.rhythm.map(function(d,i){return '<span data-ri="'+i+'" style="'+(DR.rhHit&&DR.rhHit[i]===true?'color:#3ECF8E':(DR.rhHit&&DR.rhHit[i]===false?'color:#FF5A6A':''))+'">'+sym(d)+'</span>';}).join('')+'</div><div class="hint">'+q.sig+' · '+BPM+' à la noire</div>';}
+function rhythmStart(q){DR.rhOn=true;DR.rhHit={};const beat=60000/BPM;let t=0;DR.rhTimes=[];q.rhythm.forEach(function(d,i){DR.rhTimes.push({t:4*beat+t,rest:d<0,i:i});t+=Math.abs(d)*beat;});DR.rhEnd=4*beat+t;
+  DR.rhT0=performance.now();let c=0;const click=function(){play([c<4?88:76],.08);c++;};click();DR.met=setInterval(function(){if(performance.now()-DR.rhT0>DR.rhEnd+beat*.6){clearInterval(DR.met);rhythmJudge();return;}click();},beat);
+  document.getElementById('fb').className='fb';document.getElementById('fb').textContent='🥁 1… 2… 3… 4… puis tape !';}
+function rhythmTap(){if(!DR.rhOn)return;const t=performance.now()-DR.rhT0;let best=null;DR.rhTimes.forEach(function(e){if(e.rest||DR.rhHit[e.i]!=null)return;const d=Math.abs(e.t-t);if(d<190&&(!best||d<best.d))best={e:e,d:d};});
+  if(best){DR.rhHit[best.e.i]=true;}else{const nearRest=DR.rhTimes.some(function(e){return e.rest&&Math.abs(e.t-t)<250;});if(nearRest||t>4*60000/BPM-250){DR.rhBad=(DR.rhBad||0)+1;}}
+  document.getElementById('stf').innerHTML=rhythmHTML(DR.qs[DR.i]);}
+function rhythmJudge(){DR.rhOn=false;const q=DR.qs[DR.i];let miss=0;DR.rhTimes.forEach(function(e){if(!e.rest&&DR.rhHit[e.i]!==true){DR.rhHit[e.i]=false;miss++;}});document.getElementById('stf').innerHTML=rhythmHTML(q);
+  if(miss===0&&!(DR.rhBad>0)){good();}else{if(!DR.wrong){DR.err++;DR.res[DR.i]=false;}DR.wrong=true;flash(false);ding(false);document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent='✕ '+(miss?miss+' note'+(miss>1?'s':'')+' manquée'+(miss>1?'s':''):'une frappe en trop')+' — on réécoute et on recommence';say('Presque. On recommence.');DR.rhBad=0;DR.tmo=setTimeout(function(){rhythmDemo(q);DR.tmo=setTimeout(function(){rhythmStart(q);},DR.rhEnd+800);},800);}}
+function rhythmDemo(q){const beat=60000/BPM;let t=0;q.rhythm.forEach(function(d){if(d>0){const tt=t;setTimeout(function(){play([72],Math.abs(d)*beat/1000*.8);},tt);}t+=Math.abs(d)*beat;});}
+/* ─────────── 🎵 chanson en rythme : les notes doivent tomber sur leur temps ─────────── */
+function songStart(q){DR.songOn=true;const beat=60000/BPM;let t=0;DR.songT=q.seq.map(function(m,i){const tt=4*beat+t;t+=q.durs[i]*beat;return tt;});DR.songT0=performance.now();let c=0;DR.met=setInterval(function(){play([c<4?88:76],.08);c++;if(performance.now()-DR.songT0>DR.songT[DR.songT.length-1]+beat*1.5){clearInterval(DR.met);if(DR.ptr<q.seq.length)songFail('Trop tard — la chanson est finie');}},beat);document.getElementById('fb').className='fb';document.getElementById('fb').textContent='🥁 4 clics, puis joue en rythme';}
+function songNote(m){const q=DR.qs[DR.i];const want=q.seq[DR.ptr];if(m!==want){fail(m,[want]);return;}const t=performance.now()-DR.songT0,off=t-DR.songT[DR.ptr];if(Math.abs(off)>260){songFail(off<0?'Trop tôt sur '+frn(m%12):'Trop tard sur '+frn(m%12));return;}DR.ptr++;if(DR.ptr>=q.seq.length){clearInterval(DR.met);DR.songOn=false;good();}else showQ();}
+function songFail(msg){clearInterval(DR.met);DR.songOn=false;if(!DR.wrong){DR.err++;DR.res[DR.i]=false;}DR.wrong=true;flash(false);ding(false);document.getElementById('fb').className='fb bad';document.getElementById('fb').textContent='✕ '+msg+' — on recommence';DR.ptr=0;DR.tmo=setTimeout(function(){showQ();},1500);}
+const ROSE={"jecommence":{"lb":"Je commence","deg":2,"page":13,"sig":4,"tempo":"Modérément","rh":"C5:1 E5:3 G5:5 C5 | E5:3 D5 G5:5 F5 | E5:3 C5:1 G5:5 E5:3 | D5:2 E5 F5 D5 | C5 E5 G5 C5 | E5 D5 G5:5 F5 | E5:3 G5:5 E5 D5 | C5 E5 C5h | D5:2 E5 D5 F5 | E5:3 D5 E5 C5 | D5 E5 D5 F5 | E5:3 C5:1 D5h:2 | C5:1 E5 G5 C5 | E5:3 D5 G5:5 F5 | E5 G5 E5 D5 | C5:1 G5:5 E5:3 D5 | C5 G5 E5 D5 | C5w","lh":"C3w:5 | G3w:1 | C3w:5 | G3w:1 | C3w | G3w | C3h G3h | C3:5 G3:1 C3h:5 | G3w:1 | C3w:5 | G3w | C3h G3h | C3w | G3w | C3h G3h | C3h G3h | C3h G3h | C3w"},"premierspas":{"lb":"Les premiers pas","deg":2,"page":13,"sig":4,"tempo":"Très mesuré","rh":"E5:3 C5:1 F5:4 D5:2 | E5:3 C5:1 D5h:2 | E5:3 C5:1 F5:4 D5:2 | E5:3 D5 C5h | D5:2 F5:4 E5:3 G5:5 | F5:4 D5:2 E5h | D5:2 F5:4 E5 G5 | F5 E5 D5 G5 | E5:3 C5:1 F5:4 D5 | E5:3 C5 D5h | E5:3 C5 F5 D5 | E5 D5 C5h","lh":"C3h:5 G3h:1 | C3h:5 G3h:1 | C3h G3h | C3:5 G3:1 C3h:5 | G3h:1 C3h:5 | G3h C3h | G3h C3h | G3w | C3h:5 G3h | C3h G3h | C3h G3h | C3 G3 C3h"},"petitsamis":{"lb":"Les petits amis","deg":1,"page":9,"sig":4,"unison":true,"rh":"C5:1 D5:2 E5:3 F5:4 | G5:5 E5:3 C5h:1 | G5:5 F5:4 D5h:2 | G5:5 E5:3 C5h:1 | C5:1 D5 E5 F5 | G5:5 E5 C5h | G5:5 F5 E5 D5 | C5 E5 C5h","lhf":"5 4 3 2 1 3 5 1 2 4 1 3 5 5 . . . 1 . . 1 . . . . . ."},"valserose":{"lb":"La valse rose","deg":1,"page":9,"sig":3,"tempo":"Bien accentuer le 1er temps de chaque mesure","unison":true,"rh":"C5:1 E5:3 E5 | C5:1 E5:3 E5 | D5:2 E5 D5 | C5:1 E5 G5 | C5:1 E5:3 E5 | C5:1 E5:3 E5 | D5:2 E5:3 D5 | C5hd"},"rondeenfantine":{"lb":"Ronde enfantine","deg":1,"page":10,"sig":4,"pos":"sol","unison":true,"rh":"G4:1 B4:3 G4 B4 | D5:5 B4:3 B4h | C5:4 A4:2 A4h | G4:1 A4:2 B4h:3 | G4:1 B4:3 G4 B4 | D5:5 B4:3 B4h | C5:4 A4:2 A4h | G4:1 B4:3 G4h:1 | A4:2 C5:4 C5 A4 | B4:3 D5:5 D5 B4 | A4:2 C5:4 B4:3 G4:1 | A4:2 B4:3 A4h:2 | G4:1 B4:3 G4 B4 | D5:5 B4:3 B4h | C5:4 A4:2 A4h | G4:1 B4:3 G4h:1"},"danse":{"lb":"Danse villageoise","deg":2,"page":15,"sig":3,"tempo":"Gaiement","rh":"E5:3 C5:1 E5:3 | G5:5 E5:3 G5:5 | F5:4 E5 D5 | E5h:3 C5 | E5 C5 E5 | G5:5 E5 G5 | F5 E5 D5 | C5hd","lh":"C3h:5 G3:1 | C3hd:5 | G3hd | C3 E3 G3 | C3h G3 | C3hd | G3hd | C3hd"},"berceuse":{"lb":"Berceuse","deg":2,"page":15,"sig":4,"tempo":"Très doux","rh":"E5h:3 G5h:5 | E5h:3 C5h | D5h:2 F5h:4 | E5h:3 C5h | E5h:3 G5h:5 | E5h C5h | D5h:2 F5h | E5 D5 C5h","lh":"C3:5 G3:1 E3:3 G3:1 | C3:5 G3 E3 G3 | F3:2 G3 D3:4 G3 | C3:5 G3 E3 G3 | C3 G3 E3 G3 | C3 G3 E3 G3 | F3:2 G3 D3:4 G3 | C3:5 G3 C3h"},"contentement":{"lb":"Contentement","deg":2,"page":15,"sig":4,"tempo":"Bien posé","rh":"C5:1 E5:3 G5h:5 | C5:1 E5:3 G5h:5 | F5:4 E5 D5 E5 | F5 E5 D5 E5 | C5:1 E5 G5h | C5 E5 G5h | F5:4 E5 D5 F5 | E5 D5 C5 E5:3 | D5:2 E5:3 C5:1 E5 | D5 E5 C5 E5 | D5h E5h | C5w","lh":"C3:5 G3:1 E3:3 G3:1 | C3:5 G3 E3 G3 | D3:4 G3:1 F3:2 G3:1 | D3:4 G3:1 F3:2 G3:1 | C3:5 G3 E3 G3 | C3 G3 E3 G3 | D3:4 G3 F3 G3 | C3:5 G3 C3h | G3h C3h | G3h C3h | G3w | C3w"},"bourree":{"lb":"Bourrée","deg":2,"page":17,"sig":3,"tempo":"Bien marquer le 1er temps","pos":"sol","rh":"G4h:1 B4:3 | G4h B4 | A4 G4 A4 | B4 D5 B4 | G4h:1 B4 | G4h B4 | D5:5 C5 B4 | A4hd | G4 G4 B4 | G4 G4 B4 | A4 G4 A4 | B4:3 D5:5 B4:3 | G4:1 G4 B4 | G4 G4 B4 | D5:5 A4:2 B4:3 | G4hd:1","lh":"G2:5 D3h:1 | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2 D3h | G2hd"},"abeille":{"lb":"Petite abeille bourdonne","deg":2,"page":17,"sig":4,"tempo":"Très soutenu","pos":"sol","rh":"D5h:5 C5h:4 | B4w:3 | A4:2 B4:3 C5 A4:2 | G4w:1 | B4:3 C5 D5 B4 | A4:2 B4 C5 A4 | B4:3 C5 D5 B4 | A4:2 B4 C5 A4 | D5h:5 C5h | B4w | A4:2 B4 C5 A4 | G4w","lh":"B2:3 D3:1 A2:4 D3:1 | G2:5 D3:1 B2:3 D3:1 | C3h:2 D3h:1 | B2:3 D3:1 B2:3 A2:4 | G2w:5 | D3w:1 | G2w:5 | D3w:1 | B2:3 D3:1 A2:4 D3:1 | G2:5 D3:1 B2:3 D3:1 | C3h:2 D3h:1 | B2:3 D3:1 G2h:5"},"bouteentrain":{"lb":"Boute-en-train","deg":3,"page":19,"sig":4,"pos":"MD sol / MG do","rh":"B4:3 D5:5 B4 D5 | C5:4 C5 C5h | A4:2 C5:4 A4 C5 | B4:3 B4 B4h | B4:3 D5 B4 D5 | C5 C5 C5h | A4 C5 A4 C5 | B4 A4 G4h","lh":"G3h:1 G3h | D3w:4 | D3h D3h | G3w | G3h:1 G3h | C3w:5 | D3h:4 D3h | G3:1 D3:4 G3h:1","auth":"Le pouce ne doit jamais être en dehors du clavier."},"contegrandmere":{"lb":"Conte de grand-mère","deg":3,"page":19,"sig":4,"pos":"MD do / MG sol (Do = do du milieu)","rh":"C5:1 E5:3 E5 C5 | D5:2 F5 F5 D5 | E5:3 G5 F5 E5 | E5h:3 D5h | C5:1 E5 E5 C5 | D5:2 F5 F5 D5 | E5:3 G5 F5 D5 | C5 E5 C5h | D5:2 F5:4 F5 D5 | E5:3 G5:5 G5 E5 | D5:2 F5:4 E5 D5 | E5:3 C5:1 G5h:5 | D5:2 F5:4 E5 D5 | E5:3 C5:1 G5h:5 | D5:2 F5:4 E5 D5 | E5:3 C5:1 G5h:5 | D5:2 F5:4 E5 D5 | E5:3 C5:1 G5h:5 | C5:1 E5:3 E5 C5 | D5:2 F5:4 F5 D5 | E5 G5 F5 E5 | D5 E5 D5h | C5:1 E5 E5 C5 | D5 F5 F5 D5 | E5 G5 F5 D5 | E5 D5 C5h","lh":"C4w:2 | G3w:5 | C4w:2 | G3:5 C4:2 B3:3 G3:5 | C4w:2 | G3w:5 | C4h:2 G3h:5 | C4:2 G3:5 C4h:2 | B3h:3 G3h:5 | C4h:2 G3h:5 | B3:3 D4:1 C4:2 B3:3 | C4:2 A3:4 G3h:5 | B3 D4 C4 B3 | C4 A3 G3h | B3 D4 C4 B3 | C4 A3 G3h | B3 D4 C4 B3 | C4 A3 G3h | C4w:2 | G3w:5 | C4h:2 G3h:5 | B3:3 C4:2 B3:3 G3:5 | C4w:2 | G3w:5 | C4h:2 G3h:5 | C4:2 G3:5 C4h:2","auth":"Le pouce ne doit jamais être en dehors du clavier.","tip":"Les mesures entourées « 4 fois » se jouent quatre fois de suite."},"petitevalse":{"lb":"Petite valse","deg":3,"page":21,"sig":3,"tempo":"Bien lié et gracieux","rh":"E5h:3 C5:1 | G5h:5 E5:3 | D5:2 E5 F5 | E5 C5 D5 | E5h C5 | G5h E5 | D5:2 E5 D5 | C5hd | D5h:2 F5:4 | E5h:3 G5:5 | F5:4 E5 D5 | E5 D5 C5 | D5h:2 F5:4 | E5:3 G5:5 F5 | E5 D5 C5 | D5hd:2 | E5h:3 C5 | G5h E5 | D5:2 E5 F5 | E5 C5 D5 | E5h:3 C5 | G5h E5 | D5:2 E5 D5 | C5hd","lh":"C3:5 E3:3 G3:1 | C3:5 E3 G3 | F3:2 E3 D3 | C3:5 G3h | C3:5 E3 G3 | C3 E3 G3 | F3:2 G3:1 F3:2 | E3hd:3 | B2:5 G3h | C3:5 G3h | D3:4 G3h | C3:5 G3h | B2:5 G3h | C3:5 G3h | C3 D3 E3 | G3:1 F3:2 D3:4 | C3:5 E3:3 G3:1 | C3 E3 G3 | F3:2 E3 D3 | C3:5 G3h | C3:5 E3 G3 | C3 E3 G3 | F3:2 G3:1 F3:2 | E3hd:3","auth":"Les mains tranquilles, les doigts arrondis."},"auclair":{"lb":"Au clair de la lune","deg":3,"page":21,"sig":4,"tempo":"Très simplement","pos":"do → sol → do","rh":"C5:1 C5 C5 D5:2 | E5h:3 D5h:2 | C5:1 E5:3 D5 D5 | C5w | C5:1 C5 C5 D5 | E5h D5h | C5 E5 D5 D5 | C5h:1 rh | D5:5 D5 D5 D5 | A4h:2 A4h | D5:5 C5:4 B4:3 A4:2 | G4h:1 rh | C5:1 C5 C5 D5 | E5h:3 D5h | C5 E5 D5 D5 | C5w","lh":"C3:5 G3:1 E3:3 G3 | C3 G3 F3 G3 | E3:3 G3 F3h | E3 G3 E3 G3 | C3:5 G3 E3 G3 | C3 G3 F3 G3 | E3:3 G3 F3h | E3:3 G3:1 E3:2 C3:4 | B2h:5 G3h:1 | C3:5 G3 C3 G3 | D3w:4 | G3:1 F3 E3 D3 | C3:5 G3:1 E3:3 F3:2 | G3h:1 F3h | E3:3 G3 F3h | E3:3 G3 C3h","auth":"Les mains tranquilles, les doigts arrondis.","tip":"« Enlevez la main » : la main droite se repose pendant que la gauche continue."},"suzon":{"lb":"Suzon","deg":3,"page":23,"sig":4,"tempo":"Bien doux","rh":"E5hd:3 E5 | G5hd:5 G5 | E5hd E5 | C5hd C5 | D5hd:2 D5 | G5:5 F5 E5 D5 | E5:3 D5 C5 D5 | E5hd:3 E5 | G5hd:5 C5 | E5:3 D5 C5 D5 | C5w","lh":"C3:5 G3:1 E3:3 G3:1 | C3:5 G3 E3 G3 | C3 G3 E3 G3 | C3 G3 E3 G3 | B2:5 G3:1 F3:2 G3:1 | G2h:5 G3h | C3:5 G3 E3 G3 | C3 G3 E3 G3 | C3 G3 E3 G3 | C3h G3h | C3w","auth":"Le pouce ne doit jamais être en dehors du clavier."},"petitpapa":{"lb":"Petit papa","deg":3,"page":23,"ks":1,"sig":4,"tempo":"Tendrement","pos":"sol (fa dièse à la clé)","rh":"B4h:3 B4 B4 | D5hd:5 B4 | G4 G4 A4 A4 | B4h G4h | B4h:3 B4 B4 | D5hd:5 B4 | G4 G4 A4 A4 | G4w | A4h:2 A4 A4 | B4h:3 G4 B4 | C5h:4 A4 C5 | B4h:3 G4h:1 | A4h:2 A4 A4 | B4h G4 B4 | C5h:4 A4:2 C5:4 | B4w:3 | B4h B4 B4 | D5hd B4 | G4 G4 A4 A4 | B4h G4h | B4h B4 B4 | D5hd B4 | G4 G4 A4 A4 | G4w","lh":"G2:5 D3:1 B2:3 D3 | G2 D3 B2 D3 | G2 D3 C3 D3 | G2 D3 B2 D3 | G2 D3 B2 D3 | G2 D3 B2 D3 | G2:5 D3:1 C3:2 D3:1 | B2:3 D3 G2h | C3:2 D3:1 C3 D3 | G2:5 D3 B2 D3 | A2:4 D3 C3 D3 | G2:5 D3 B2 D3 | C3:2 D3 C3 D3 | G2:5 D3 B2 D3 | A2:4 D3 C3 D3 | G2:5 D3:1 B2:3 A2:4 | G2 D3 B2 D3 | G2 D3 B2 D3 | G2 D3 C3 D3 | G2 D3 B2 D3 | G2 D3 B2 D3 | G2 D3 B2 D3 | G2 D3 C3 D3 | B2 D3 G2h","auth":"Le pouce ne doit jamais être en dehors du clavier.","tip":"Le dièse à la clé : tous les fa deviennent fa♯."},"soldats":{"lb":"Les petits soldats de bois","deg":3,"page":25,"ks":1,"sig":4,"tempo":"Fièrement","pos":"sol","rh":"B4:3 D5:5 D5 D5 | B4 D5 D5 D5 | B4:3 D5:5 A4:2 D5:5 | B4:3 G4:1 A4h:2 | B4:3 D5 D5 D5 | B4 D5 D5 D5 | B4:3 D5:5 C5 A4 | G4 B4 G4h | A4:2 C5:4 C5 C5 | A4:2 C5 C5 C5 | B4:3 A4 G4 B4 | D5:5 B4:3 A4h:2 | B4:3 D5:5 D5 D5 | B4 D5 D5 D5 | B4:3 D5:5 C5 A4 | G4 B4 G4h | G4:1 B4:3 D5:5 B4 | G4w","lh":"G2:5 D3:1 B2:3 D3:1 | G2:5 D3 B2 D3 | G2:5 D3 F#2:5 D3 | G2:5 B2:3 D3h:1 | G2:5 D3 B2 D3 | G2 D3 B2 D3 | G2:5 D3 F#2:5 D3 | G2:5 D3 G2h | C3:2 D3:1 A2:4 D3:1 | F#2:5 D3 A2:4 D3 | G2:5 D3 B2 D3 | G2:5 D3 F#2:5 D3 | G2:5 D3 B2 D3 | G2:5 D3 B2 D3 | G2:5 D3 F#2:5 D3 | G2:5 D3 G2h | G2:5 D3:1 B2:3 D3 | G2w","auth":"Il est important de commencer de bonne heure l'éducation de l'oreille. Habituez-vous donc à retenir et à jouer par cœur chacun de ces petits morceaux récréatifs. N'ayant pas à lire la musique, vous pourrez alors concentrer toute votre attention sur la bonne tenue de vos mains et la bonne attaque des notes."},"coucou":{"lb":"Le coucou","deg":3,"page":25,"ks":1,"sig":3,"tempo":"Gracieux","pos":"sol","rh":"D5h:5 B4:3 | D5h B4 | A4:2 G4 A4 | B4h G4 | D5h:5 B4 | D5h B4 | A4:2 B4 A4 | G4hd | A4:2 A4 B4 | C5h A4 | B4 B4 C5 | D5h B4 | D5h B4 | D5h B4 | C5:4 B4 A4 | G4hd","lh":"G2:5 B2:3 D3:1 | G2 B2 D3 | C3:2 B2 A2 | G2 B2 D3 | G2 B2 D3 | G2 B2 D3 | C3:2 D3 C3 | B2h D3 | F#2h:5 D3 | F#2h D3 | G2h:5 D3 | G2h D3 | G2 B2 D3 | G2 B2 D3 | F#2:5 D3:1 C3:2 | B2hd"},"demande":{"lb":"Demande & Réponse","deg":4,"page":27,"sig":4,"tempo":"Enfoncez bien les doigts. Comptez 1-2-3-4","pos":"MD do grave (do du milieu = 1)","rh":"C4:1 E4:3 D4 E4 | C4 D4 E4h | rw | rw | D4:2 F4:4 E4 F4 | D4 E4 F4h | rw | rw | E4:3 G4:5 F4 E4 | F4 E4 D4h | rw | rw | D4:2 F4 E4 D4 | E4 D4 C4h | rw | G4:5 F4 E4h","lh":"rw | rw | C3:5 E3:3 D3 E3 | C3 D3 E3h | rw | rw | D3:4 F3:2 E3 F3 | D3 E3 F3h | rw | rw | E3:3 G3:1 F3 E3 | F3 E3 D3h | rw | rw | D3:4 F3:2 E3 D3 | E3:3 D3 C3h","auth":"Enlevez les mains très exactement sur les silences.","tip":"Une main pose la question, l’autre répond : chacune se tait pendant que l’autre joue."},"marionnettes":{"lb":"Ainsi font les marionnettes","deg":4,"page":27,"sig":4,"pickup":2,"tempo":"Tranquillement","rh":"E5:3 E5 | C5h:1 E5h:3 | G5h:5 C5:1 C5 | D5:2 F5:4 E5 D5 | E5 C5 E5:3 E5 | C5h:1 E5h | G5h C5:1 C5 | D5:2 F5:4 E5 D5 | C5h rh | rw | rq rq C5:1 C5 | D5:2 F5:4 E5 D5 | E5 C5 rq rq | rw | rq rq C5 C5 | D5:2 F5:4 E5:3 D5 | C5hd E5:3 | C5hd:1 E5 | C5:1 E5 C5 E5 | C5w","lh":"rq rq | rw | rh E3h:3 | F3:2 D3:4 E3:3 F3:2 | G3h:1 rq rq | rw | rh E3h:3 | F3:2 D3:4 G3:1 F3 | E3 C3 E3:3 E3 | C3h:5 E3h:3 | G3h:1 E3h:3 | F3:2 D3:4 E3 F3 | G3h E3 E3 | C3h:5 E3h:3 | G3h:1 E3h | F3:2 D3:4 G3:1 F3:2 | E3:3 G3:1 C3:5 G3:1 | E3:3 G3 C3 G3 | E3:3 G3:1 E3 G3 | E3w","auth":"Enlevez les mains très exactement sur les silences.","tip":"La pièce commence par deux notes avant la première barre : on compte « 3 – 4 » puis on joue."},"menuet":{"lb":"Menuet rose","deg":4,"page":29,"sig":3,"tempo":"Modéré. Comptez 1 - 2 - 3","rh":"rhd | rhd | E5e:3 D5e C5 E5 | E5:3 D5h | F5e:4 E5e D5 F5 | F5:4 E5h | E5e:3 D5e C5 E5 | E5:3 D5h | D5e:2 E5e F5 D5 | E5e:3 D5e C5 D5 | E5e D5e C5 D5 | E5e D5e C5 D5 | C5hd","lh":"C3:5 E3:3 G3:1 | C3 E3 G3 | C3 E3 G3 | B2:5 F3:2 G3:1 | B2:5 D3:3 G3:1 | C3:5 E3:3 G3:1 | C3:5 E3 G3 | B2:5 F3:2 G3:1 | B2:5 D3:3 G3:1 | C3:5 E3 G3 | C3 E3 G3 | C3 E3 G3 | E3hd:3","auth":"Les doigts arrondis, la phalangette ne doit pas se creuser."},"gentil":{"lb":"C'est gentil !","deg":4,"page":29,"sig":3,"tempo":"Gaiement. Comptez 1 - 2 - 3","rh":"E5e:3 F5e:4 G5:5 G5:5 | C5e:1 D5e:2 E5:3 E5 | F5e:4 E5e D5 D5 | E5e:3 D5e C5 C5 | E5e:3 F5e G5 G5 | C5e:1 D5e E5 E5 | F5e:4 E5e D5e F5e E5e D5e | C5 C5 rq | D5e:2 E5e D5 D5 | E5e:3 F#5e:4 E5 E5 | F#5e:4 G5e F#5 F#5 | E5e:3 D5e G5 G5 | D5e:2 E5e D5 D5 | E5e:3 F#5e E5 E5 | F#5e:4 G5e F#5 F#5 | G5hd | E5e F5e G5 G5 | C5e D5e E5 E5 | F5e E5e D5 D5 | E5e D5e C5 C5 | E5e F5e G5 G5 | C5e D5e E5 E5 | F5e E5e D5e F5e E5e D5e | C5 C5 rq","lh":"C3:5 E3:3 G3:1 | C3:5 E3 G3 | B2:5 F3:2 G3:1 | C3:5 E3 G3 | C3:5 E3 G3 | C3:5 E3 G3 | B2:5 G3h:1 | C3:5 C3 rq | B2hd:3 | C3hd:2 | D3hd:1 | G2:5 rq rq | B2hd:3 | C3hd:2 | D3hd:1 | G2h:5 rq | C3 E3 G3 | C3 E3 G3 | B2 F3 G3 | C3 E3 G3 | C3 E3 G3 | C3 E3 G3 | B2 G3h | C3 C3 rq","auth":"Les doigts arrondis, la phalangette ne doit pas se creuser.","tip":"Le dièse ♯ hausse la note d’un demi-ton : fa♯ est la touche noire juste à droite du fa."},"cadetsgascogne":{"lb":"Les Cadets de Gascogne","deg":4,"page":31,"sig":4,"tempo":"Joyeusement","rh":"E5:3 E5e:3 C5e:1 E5:3 F5:4 | E5:3 E5e C5e E5 F5 | D5:2 D5e C5e D5 E5 | C5:1 D5 E5 rq | E5:3 E5e C5e E5 F5 | E5:3 E5e C5e E5 F5 | D5:2 D5e C5e D5 F5 | E5e:3 F5e:4 D5e:2 E5e:3 C5h:1 | D5:2 D5e C5e D5 E5 | D5:2 D5e C5e D5 E5 | F5:4 F5e G5e E5:3 E5e F5e | E5e:3 D5e C5e E5e D5h:2 | E5:3 E5e C5e E5 F5 | E5:3 E5e C5e E5 F5 | D5:2 D5e C5e D5 F5:4 | E5e:3 F5e:4 D5e:2 E5e:3 C5h:1","lh":"C3:5 G3:1 C3:5 G3:1 | C3 G3 C3 G3 | B2:5 G3:1 F3:2 G3:1 | E3:3 G3:1 C3e:5 G3e:1 E3e:3 D3e:4 | C3:5 G3 C3 G3 | C3:5 G3 C3 G3 | B2:5 G3 F3 G3 | C3:5 G3 C3 rq | B2:5 G3:1 F3:2 G3:1 | B2:5 G3:1 F3 E3 | D3:4 G3 C3:5 G3 | C3:5 E3:3 G3e:1 F3e E3e D3e | C3:5 G3:1 C3 G3 | C3 G3 C3 G3 | B2:5 G3:1 F3 G3 | C3:5 G3 C3h","auth":"Regardez vos doigts le moins possible."},"hiveradieu":{"lb":"Hiver, adieu !","deg":4,"page":31,"ks":1,"sig":3,"tempo":"Gracieux et très lié","rh":"B4:3 B4 A4 | G4hd | B4:3 B4 A4 | G4hd | B4:3 C5 D5 | D5:5 C5e:4 B4e C5 | A4:2 B4 C5 | C5:4 B4e:3 A4e B4 | B4:3 B4 C5 | D5hd | B4:3 B4 A4 | G4h:1 B4:3 | G4h:1 B4 | G4 G4 G4 | G4hd","lh":"D4e:1 G3e:5 D4:1 C4:2 | B3:3 G3:5 B3:3 | D4e:1 G3e:5 D4:1 C4:2 | B3:3 G3:5 B3:3 | D4:1 C4:2 B3:3 | A3:4 D4h:1 | C4:2 B3:3 A3:4 | G3:5 D4h:1 | G3:5 G3 A3 | B3:3 G3:5 B3:3 | D4e:1 G3e:5 D4:1 C4:2 | B3h:3 D4:1 | B3h:3 D4 | B3 B3 B3 | B3hd","auth":"Regardez vos doigts le moins possible."},"tourprendsgarde":{"lb":"La tour prends garde !","deg":4,"page":33,"sig":3,"pickup":1,"tempo":"Très décidé","rh":"E5:3 | C5h:1 D5:2 | E5d:3 C5e:1 E5:3 | C5h:1 D5 | E5 C5 E5 | G5hd:5 | E5d:3 C5e D5 | C5hd | C5h E5:3 | C5h:1 D5 | E5d C5e E5 | C5h D5 | E5 C5 E5 | G5hd:5 | E5d:3 C5e D5 | C5hd | C5hd","lh":"rq | C3:5 E3:3 G3:1 | C3 E3 G3 | C3 E3 G3 | C3 E3 G3 | B2:5 D3:3 G3:1 | C3:5 E3 G3 | C3 E3 G3 | C3h rq | C3:5 E3:3 G3:1 | C3 E3 G3 | C3 E3 G3 | C3 E3 G3 | B2:5 D3:3 G3:1 | C3:5 E3 G3 | C3 E3 G3 | C3hd","auth":"Ne serrez pas le pouce contre la main quand vous enfoncez le 5e doigt."},"chantdusoir":{"lb":"Chant du soir","deg":4,"page":33,"ks":1,"sig":4,"tempo":"Lent et très sentimental","rh":"B4d:3 C5e A4d:2 B4e:3 | G4e:1 A4e B4e C5e D5h | C5d:4 D5e B4d C5e | A4e:2 B4e C5e B4e A4h | B4d:3 C5e A4d B4e | G4e A4e B4e C5e D5h | C5d:4 B4e A4d G4e | A4e:2 G4e A4e B4e G4 B4 | A4e:2 G4e A4e B4e G4d B4e | A4e:2 G4e A4e B4e G4 B4 | G4 B4 G4h","lh":"G3:5 D4:1 F#3:5 D4:1 | G3:5 D4 B3 D4 | A3:4 D4:1 G3:5 D4:1 | F#3:5 D4:1 C4e:2 D4e:1 F#3e:5 D4e:1 | G3:5 D4 F#3:5 D4 | G3:5 D4 B3 D4 | A3:4 D4:1 F#3:5 D4:1 | C4e:2 B3e C4e D4e B3 D4 | C4e:2 B3e C4e D4e B3 D4 | C4e:2 B3e C4e D4e B3 D4 | B3 D4 B3h","auth":"Ne serrez pas le pouce contre la main quand vous enfoncez le 5e doigt."},"bontabac":{"lb":"J'ai du bon tabac","deg":4,"page":35,"sig":4,"pickup":2,"tempo":"Délibérément","rh":"C5e:1 D5e:2 E5e:3 C5e:1 | D5:2 D5e E5e F5 F5 | E5 E5 C5e D5e E5e C5e | D5 D5e E5e F5 G5 | C5h G5:5 G5e F5e | E5:3 D5e E5e F5 G5 | F5 E5 G5:5 G5e F5e | E5:3 D5e E5e F5 G5 | D5h:2 C5e:1 D5e E5e C5e | D5:2 D5e E5e F5 F5 | E5 E5 C5e D5e E5e C5e | D5 D5e E5e F5 G5 | C5 rq C5e:1 D5e E5e C5e | D5:2 D5e E5e F5 G5 | C5w","lh":"rq rq | B2:5 G3:1 D3:4 G3:1 | C3:5 G3:1 rq rq | B2:5 G3 D3:4 G3 | C3h:5 G3:1 G3e F3e | E3:3 D3e E3e F3 G3 | F3 E3 G3:1 G3e F3e | E3:3 D3e E3e F3 G3 | D3h:4 rq rq | B2:5 G3:1 D3:4 G3:1 | C3:5 G3:1 rq rq | B2:5 G3:1 D3:4 G3:1 | C3:5 rq C3e:5 D3e E3e C3e | D3:4 D3e E3e F3 G3 | C3w","auth":"Lire ou solfier avant de jouer."},"dodoenfant":{"lb":"Dodo, l'enfant do !","deg":4,"page":35,"ks":-1,"sig":4,"tempo":"Lentement et très lié","rh":"A5h:3 F5h:1 | G5:2 A5:3 F5h:1 | G5:2 A5:3 Bb5:4 A5:3 | G5:2 C6:5 A5:3 F5:1 | A5h:3 F5h:1 | G5:2 A5:3 F5h:1 | G5:2 A5:3 Bb5:4 A5:3 | G5:2 A5:3 F5h:1 | G5:2 A5 F5h | G5h:2 A5h:3 | F5h:1 G5h:2 | F5h G5h | F5w","lh":"F3:5 C4:1 A3:3 C4:1 | Bb3:2 C4:1 A3:3 C4:1 | E3h:5 C4h:1 | E3h C4h | F3:5 C4:1 A3:3 C4:1 | Bb3:2 C4:1 A3:3 C4:1 | E3h:5 C4h:1 | Bb3:2 C4:1 A3:3 C4:1 | Bb3:2 C4 A3h | Bb3h:2 C4h:1 | A3h:3 C4h:1 | A3h C4h | A3w","auth":"Lire ou solfier avant de jouer."},"aubadeprintaniere":{"lb":"Aubade printanière","deg":4,"page":37,"sig":3,"meter":"6/8","tempo":"Avec grâce","rh":"C5:1 D5e:2 E5e:3 G5e E5e | C5 D5e E5e G5e E5e | D5 E5e F5e G5e F5e | E5e D5e C5e D5e E5e D5e | C5 D5e E5e G5e E5e | C5 D5e E5e G5e E5e | D5e E5e F5e F5e:4 E5e D5e | C5d D5e:2 E5e D5e | C5d D5e:2 E5e D5e | C5e:1 E5e:3 G5e:5 E5e:3 G5e:5 E5e | C5h re re","lh":"C3e:5 E3e:3 G3e:1 C3e:5 E3e G3e | C3e E3e G3e C3e E3e G3e | B2e:5 D3e:3 G3e:1 B2e:5 D3e G3e | C3e:5 E3e G3e B2e:5 F3e:2 G3e:1 | C3e:5 E3e G3e C3e E3e G3e | C3e E3e G3e C3e E3e G3e | B2e:5 F3e G3e B2e F3e G3e | C3e:5 E3e C3e G3d | C3e E3e C3e G3d | C3d G3d | C3h re re","auth":"Enfoncez bien les touches."},"chansonbretonne":{"lb":"Chanson bretonne","deg":4,"page":37,"ks":1,"sig":1.5,"meter":"3/8","tempo":"Avec entrain","rh":"G4:1 B4e:3 | G4 B4e | D5:5 C5e | B4d | re A4e:2 B4e:3 | C5e:4 D5e:5 C5e | B4e A4e B4e | C5e:4 B4e A4e | G4:1 B4e:3 | G4:1 B4e | D5:5 C5e | B4d | re A4e:2 B4e:3 | C5e:4 B4e:3 A4e:2 | G4e:1 G4e B4e | G4e re G4e | A4:2 A4e | D5:5 C5e | B4:3 A4e | G4e re G4e | A4:2 A4e | D5e:5 C5e:4 A4e:2 | B4d:3 | G4d | G4:1 B4e:3 | G4 B4e | D5:5 C5e | B4d | re A4e:2 B4e:3 | C5e:4 B4e A4e | G4e:1 G4e B4e | G4 re","lh":"G3e:5 B3e:3 D4e:1 | G3e B3e D4e | G3e B3e D4e | G3e B3e D4e | F#3e:5 C4e:2 D4e:1 | F#3e C4e D4e | G3d:5 | D4d:1 | G3e:5 B3e D4e | G3e B3e D4e | G3e B3e D4e | G3e B3e D4e | F#3e:5 C4e:2 D4e:1 | F#3e:5 C4e:2 D4e:1 | G3e:5 B3e D4e | G3e re G3e:5 | A3:4 A3e | D4:1 C4e | B3:3 A3e | G3e re G3e | A3:4 A3e | D4e:1 C4e:2 A3e:4 | B3d:3 | G3d:5 | G3e:5 B3e D4e | G3e B3e D4e | G3e B3e D4e | G3e B3e D4e | F#3e:5 C4e:2 D4e:1 | F#3e:5 C4e D4e | G3e:5 B3e D4e | G3 re","auth":"Enfoncez bien les touches."},"meuniertudors":{"lb":"Meunier, tu dors !","deg":4,"page":39,"sig":3,"pickup":1,"lastbar":2,"tempo":"Un peu lourdement","rh":"E5:3 | E5h G5:5 | C5h:1 B4e:2 C5e:1 | D5:2 C5 D5 | E5 C5 E5 | E5h G5 | C5h:1 B4e:2 C5e:1 | D5:2 E5 D5 | C5h E5:3 | E5h G5:5 | C5h:1 B4e:2 C5e:1 | D5:2 C5 D5 | E5 C5 E5 | E5h G5 | C5h:1 B4e:2 C5e:1 | D5:2 E5 D5 | C5h","lh":"rq | C3hd:5 | C3hd | C3hd | C3hd | C3hd | C3hd | C3hd | C3h rq | C3hd:5 | C3hd | C3hd | C3hd | C3hd | C3hd | C3hd | C3h","lh2":"rq | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rh rq | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rq G3 G3 | rh","auth":"Tenez-vous droit. Ayez toujours un jeu très lié."},"petiteberceuse":{"lb":"Petite Berceuse","deg":4,"page":39,"ks":1,"sig":3,"meter":"6/8","pickup":1.5,"tempo":"Avec grande douceur","rh":"B4:3 A4e | G4e:1 F#4e:2 G4e:1 A4e:2 G4e:1 A4e:2 | B4:3 G4e:1 B4:3 A4e | G4e:1 F#4e:2 G4e:1 A4e:2 B4e A4e | G4d B4:3 A4e | G4e:1 F#4e:2 G4e:1 A4e:2 G4e:1 A4e:2 | B4:3 G4e B4 A4e | G4e:1 F#4e:2 G4e:1 A4e:2 B4e:3 A4e:2 | G4d:1 D5e:5 D5e D5e | B4e:3 G4e:1 A4e:2 B4e:3 C5e:4 B4e:3 | B4:3 A4e:2 D5e:5 D5e D5e | B4e:3 G4e:1 A4e:2 B4e:3 C5e:4 B4e:3 | A4d:2 B4:3 A4e | G4e:1 F#4e:2 G4e:1 A4e:2 G4e:1 A4e:2 | B4:3 G4e B4 A4e | G4e:1 F#4e:2 G4e:1 A4e:2 B4e:3 A4e | G4 re B5:3 A5e:2 | G5e:1 F#5e:2 G5e:1 A5e:2 G5e A5e | B5:3 G5e B5 A5e | G5e:1 F#5e:2 G5e:1 A5e:2 B5e A5e | G5d:1 A5e:2 B5e:3 A5e | G5d:1 A5e:2 B5e A5e | G5d:1 A5d:2 | G5d:1 A5d | G5hd","lh":"rq re | G3d:2 D3d:5 | G3d:2 rq re | G3d D3d | G3d rq re | G3d D3d | G3d rq re | G3d D3d | G3d rq re | G3d:2 G3d | D3d:5 rq re | G3d G3d | D3d D4:1 C4e:2 | B3e:3 A3e:4 B3e:3 C4e:2 B3e:3 C4e:2 | D4:1 B3e D4 C4e | B3e:3 A3e:4 B3e:3 C4e:2 D4e:1 C4e | B3 re D5:1 C5e:2 | B4e:3 A4e:4 B4e:3 C5e:2 B4e:3 C5e:2 | D5:1 B4e D5 C5e | B4e:3 A4e:4 B4e:3 C5e:2 D5e:1 C5e:2 | B4:3 D5e:1 C5e:2 D5e:1 C5e:2 | B4:3 D5e:1 C5e:2 D5e C5e | B4:3 D5e:1 C5:2 D5e:1 | B4:3 D5e C5 D5e | B4hd:3","auth":"Tenez-vous droit. Ayez toujours un jeu très lié."},"cyrano":{"lb":"Cyrano de Bergerac","deg":5,"page":41,"sig":4,"pickup":1,"tempo":"Avec belle humeur","rh":"G5e:5 F5e:4 | E5:3 C5:1 C5:1 D5e:2 E5e:3 | F5:4 B4:1 B4 F5e:5 E5e | D5:3 G4:1 G4:1 C5e:3 D5e | E5:5 C5:3 C5:1 G5e F5e | E5:3 C5:1 C5:1 D5e E5e | F5 B4 B4 F5e:5 E5e | D5 G4 G4 E5e:5 D5e | C5 E5 C5 B4e:2 C5e:3 | D5:4 B4:2 D5 B4 | D5e:4 C5e B4e C5e A4:1 A4e:1 B4e | C5 A4 C5 A4 | C5e:4 B4e A4e B4e G4:1 G5e:5 F5e | E5 C5 C5 D5e E5e | F5 B4 B4 F5e:5 E5e | D5 G4 G4 E5e:5 D5e | C5 E5 C5 rq","lh":"rq | C3:5 E3+G3 E3+G3 rq | D3:4 F3+G3 F3+G3 rq | B2:5 F3+G3 F3+G3 rq | C3 E3+G3 E3+G3 rq | C3 E3+G3 E3+G3 rq | D3 F3+G3 F3+G3 rq | B2 F3+G3 F3+G3 rq | C3+E3 G3 C3+E3 rq | G3w:5 | F#3hd:5 rq | F#3w:5 | G3hd:5 rq | C3:5 E3+G3 E3+G3 rq | D3:4 F3+G3 F3+G3 rq | B2:5 F3+G3 F3+G3 rq | C3+E3 G3 C3+E3 rq","lh2":"rq | rw | rw | rw | rw | rw | rw | rw | rw | rq B3+D4 B3+D4h | rq C4+D4 C4+D4 rq | rq C4+D4 C4+D4h | rq C4+D4 B3+D4 rq | rw | rw | rw | rw","auth":"Suivez scrupuleusement les doigtés indiqués. Un bon doigté, c'est l'orthographe de l'exécution."},"valsealsacienne":{"lb":"Valse Alsacienne","deg":5,"page":41,"ks":1,"sig":3,"pickup":1,"tempo":"Très rythmé","rh":"B4e:3 C5e:4 | D5:5 B4 B4 | B4 A4 A4e:2 B4e | C5:4 A4 A4 | B4h B4e C5e | D5 B4 B4 | B4 A4 A4e B4e | C5 A4 A4 | G4h B4e:3 C5e | D5:5 B4 B4 | B4 A4 A4e:2 B4e | C5:4 A4 A4 | B4h B4e C5e | D5 B4 B4 | B4 A4 A4e B4e | C5 A4 A4 | G4h rq | G4+B4 G4+B4 G4+B4 | G4+B4hd | B4+D5hd | G4+B4hd","lh":"rq | G3:5 B3+D4 B3+D4 | F#3:5 C4+D4 rq | A3:4 C4+D4 C4+D4 | G3:5 B3+D4 rq | G3:5 B3+D4 B3+D4 | F#3:5 C4+D4 rq | D3:5 C4+D4 C4+D4 | G3:5 B3+D4 rq | G3:5 B3+D4 B3+D4 | F#3:5 C4+D4 rq | A3:4 C4+D4 C4+D4 | G3:5 B3+D4 rq | G3:5 B3+D4 B3+D4 | F#3:5 C4+D4 rq | D3:5 C4+D4 C4+D4 | G3+B3+D4h rq | G3:5 B3 D4 | G3hd | D4hd | G3hd","auth":"Suivez scrupuleusement les doigtés indiqués. Un bon doigté, c'est l'orthographe de l'exécution."},"valsonstoujours":{"lb":"Valsons toujours","deg":5,"page":43,"sig":3,"tempo":"Avec brio","rh":"C5h:1 E5:3 | C5h E5 | G5h:5 E5 | C5h E5:3 | D5h:2 G5:5 | F5h D5 | E5hd:3 | C5hd | C5h:1 E5 | C5h E5 | G5h E5 | C5h E5 | D5h:2 G5:5 | F5:4 E5:3 D5:2 | C5hd:1 | C5 rq rq | D5h:2 E5:3 | D5h:2 E5:3 | F#5h:4 E5:3 | E5:3 D5:2 D5 | D5h:2 E5:3 | D5h:2 E5:3 | F#5h:4 D5:2 | G5hd:5 | D5h E5 | D5h E5 | F#5h E5 | E5 D5 D5 | D5h E5 | D5h E5 | F#5h D5 | G5hd | C5h E5 | C5h E5 | G5h E5 | C5h E5 | D5h G5 | F5h D5 | E5hd | C5hd | C5h E5 | C5h E5 | G5h E5 | C5h E5 | D5h G5 | F5 E5 D5 | C5hd | C5 rq rq","lh":"C3:5 E3+G3h | C3 E3+G3h | C3 E3 G3 | C3 E3 G3 | B2:5 F3+G3h | B2:5 F3+G3h | C3:5 E3 G3 | C3 E3 G3 | C3 E3+G3h | C3 E3+G3h | C3 E3 G3 | C3 E3 G3 | B2:5 F3+G3h | B2 F3 G3 | C3:5 E3 G3 | C3 rq rq | G3:5 B3:3 D4:1 | G3:5 B3 D4 | A3:4 C4:2 D4:1 | G3:5 B3:3 D4:1 | G3:5 B3 D4 | G3 B3 D4 | A3:4 C4:2 D4:1 | G3+B3h rq | G3 B3 D4 | G3 B3 D4 | A3 C4 D4 | G3 B3 D4 | G3 B3 D4 | G3 B3 D4 | A3 C4 D4 | G3+B3h rq | C3 E3+G3h | C3 E3+G3h | C3 E3 G3 | C3 E3 G3 | B2 F3+G3h | B2 F3+G3h | C3 E3 G3 | C3 E3 G3 | C3 E3+G3h | C3 E3+G3h | C3 E3 G3 | C3 E3 G3 | B2 F3+G3h | B2 F3 G3 | C3 E3 G3 | C3 rq rq","auth":"Ne relevez la touche qu'au moment d'abaisser la suivante."},"chantarabe":{"lb":"Chant arabe","deg":5,"page":43,"sig":3,"tempo":"Marquez bien les accents.","rh":"C5d:3 B4e A4 | A4e B4e C5h | D5d:4 C5e B4 | B4e C5e D5h | E5d:5 D5e C5 | D5e:4 E5e D5h | D5d:4 C5e B4 | C5e B4e A4h | B4:2 B4e C5e B4e C5e | B4 A4 B4 | C5e D5e E5 C5 | E5e:5 D5e C5e D5e E5 | B4:2 B4e C5e B4e C5e | B4 A4 B4 | C5e:3 D5e E5e D5e C5e D5e | E5e:5 B4e D5e E5e D5e E5e | C5d B4e A4 | A4e B4e C5h | D5d C5e B4 | B4e C5e D5h | E5d D5e C5 | D5e E5e D5h | D5d C5e B4 | C5e B4e A4h","lh":"A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3h | E2:5 E3h:1 | E2 E3h | E2 E3h | E2 E3h | E2 E3h | E2 E3h | E2h:5 F2:4 | E2h:5 E3:1 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3 A2+E3 | A2+E3 A2+E3h","auth":"Ne relevez la touche qu'au moment d'abaisser la suivante."},"bonvoyage":{"lb":"Bon voyage !","deg":5,"page":45,"sig":4,"tempo":"Modéré et avec entrain","rh":"E5h:3 G5:5 G5 | E5h G5 G5 | F5:4 G5 F5 E5 | D5 E5e F5e G5h | E5h:3 G5:5 G5 | E5h G5 G5 | G5:5 F5e E5e D5 E5 | C5:1 E5e:3 D5e C5 rq | D5:2 D5e E5e F5 F5 | D5:2 D5e E5e F5 F5 | E5:3 C5e:1 D5e:2 E5:3 C5 | D5e:2 E5e D5e E5e D5h | E5h:3 G5:5 G5 | E5h G5 G5 | G5:5 F5e E5e D5 E5 | C5h rh","lh":"C3:5 G3e:1 F3e:2 E3:3 G3:1 | C3:5 G3e:1 F3e:2 E3:3 G3:1 | D3:4 G3:1 D3:3 C3:4 | B2:5 G3:1 F3e:2 G3e:1 D3e:4 G3e:1 | C3:5 G3e:1 F3e:2 E3:3 G3:1 | C3:5 G3e F3e E3 G3 | D3:4 G3:1 F3:2 G3:1 | E3:3 G3e:1 F3e:2 E3:3 rq | B2:5 G3:1 D3:3 G3:1 | B2:5 G3:1 D3:3 G3:1 | C3:5 G3:1 C3:5 E3:3 | G3:1 G2:5 G3e:1 F3e:2 E3e D3e | C3:5 G3e:1 F3e:2 E3:3 G3:1 | C3:5 G3e F3e E3 G3 | B2:5 G3:1 F3:2 G3:1 | re E3e:3 F3e G3e C3h"},"airdautrefois":{"lb":"Air d'autrefois","deg":5,"page":45,"ks":-2,"sig":4,"tempo":"Jeu lent et soutenu","rh":"G4:1 D5:5 D5 D5 | D5e C5e Bb4e C5e D5h | rw | rw | G4:1 D5:5 D5 D5 | D5:5 C5e Bb4e A4h | A4:2 C5:4 C5 C5 | C5:4 Bb4e A4e G4h | G4:1 D5:5 D5 D5 | D5 C5e Bb4e A4h | A4e:2 Bb4e C5e A4e Bb4e:3 C5e D5e Bb4e:3 | A4:2 A4e Bb4e G4h","lh":"rw | rw | G3:5 D4:1 D4 D4 | D4e C4e Bb3e C4e D4h | G3+Bb3 D4:1 Bb3:3 D4:1 | A3:4 D4:1 F#3:5 D4:1 | C4:2 D4:1 A3:4 D4:1 | G3:5 D4 Bb3 D4 | G3+Bb3 D4:1 Bb3:3 D4:1 | A3:4 D4:1 F#3:5 D4:1 | C4:2 D4:1 G3:5 D4:1 | F#3+C4 D4:1 G3+Bb3h"},"souvenirdebale":{"lb":"Souvenir de Bâle","deg":5,"page":47,"ks":-1,"sig":3,"tempo":"Avec délicatesse","rh":"A4:3 C5e:5 A4e:3 F4:1 | A4 C5e A4e F4 | G4:2 F4:1 G4:2 | A4h:3 F4 | A4:3 C5e A4e F4 | A4 C5e A4e F4 | G4e:2 C5e:5 B4e:4 C5e:5 Bb4e:4 G4e:2 | F4hd:1 | A4 C5e A4e F4 | A4 C5e A4e F4 | G4 F4 G4 | A4h F4 | A4 C5e A4e F4 | A4 C5e A4e F4 | G4e C5e B4e C5e Bb4e G4e | F4hd","lh":"F3:5 A3:3 C4:1 | F3 A3 C4 | F3 A3 C4 | F3 C4h | F3 A3 C4 | F3 A3 C4 | E3:5 G3:3 C4:1 | F3+A3hd | F3 A3 C4 | F3 A3 C4 | F3 A3 C4 | F3 C4h | F3 A3 C4 | F3 A3 C4 | E3 G3 C4 | F3+A3hd"},"omatendremusette":{"lb":"O ma tendre musette !","deg":5,"page":47,"ks":-1,"sig":3,"meter":"6/8","tempo":"Avec beaucoup de sentiment","rh":"D5e:1 D5e D5e F5:3 F5e | A5:5 G5e F5d | G5e:4 A5e:5 G5e F5 E5e | D5hd | D5e D5e D5e F5 F5e | A5 G5e F5d | G5e A5e G5e F5 E5e | D5hd | E5e:2 F5e:3 G5e:4 G5e:4 F5e:3 E5e:2 | D5d:1 C#5d:2 | D5e:1 C#5e:2 D5e:1 E5:2 F5e:3 | F5d:3 E5d:2 | D5e:1 D5e D5e F5:3 F5e | A5:5 G5e F5d | G5e:4 A5e:5 G5e F5 E5e | D5hd | E5e F5e G5e G5e F5e E5e | D5d C#5d | D5e C#5e D5e E5 F5e | F5d E5d | D5e D5e D5e F5 F5e | A5 G5e F5d | G5e A5e G5e F5 E5e | D5hd","lh":"D3e:5 F3e:3 A3e:1 D3e:5 F3e A3e | D3e F3e A3e D3e:5 F3e:3 A3e:1 | D3e:5 G3e:2 Bb3e:1 C#3e:5 G3e:2 A3e:1 | D3e F3e A3e D3 re | D3e F3e A3e D3e F3e A3e | D3e F3e A3e D3e F3e A3e | D3e G3e Bb3e C#3e G3e A3e | D3e F3e A3e D3 re | A3:5 E4e:1 A3e:5 D4e:3 E4e:2 | F4d:1 E4d:2 | A3+F4e A3+E4e A3+D4e A3+C#4 A3+D4e | A3+D4d A3+C#4 re | D3e:5 F3e:3 A3e:1 D3e:5 F3e A3e | D3e F3e A3e D3e:5 F3e:3 A3e:1 | D3e:5 G3e:2 Bb3e:1 C#3e:5 G3e:2 A3e:1 | D3e:5 F3e A3e D3 re | A3 E4e A3e D4e E4e | F4d E4d | A3+F4e A3+E4e A3+D4e A3+C#4 A3+D4e | A3+D4d A3+C#4 re | D3e F3e A3e D3e F3e A3e | D3e F3e A3e D3e F3e A3e | D3e G3e Bb3e C#3e G3e A3e | D3e F3e A3e D3 re"},"ex1_1":{"lb":"Exercices des 5 doigts — Do","deg":1,"page":5,"sig":4,"unison":true,"rh":"C5:1 D5:2 E5:3 F5:4 | G5:5 F5:4 E5:3 D5:2 | C5:1 D5:2 E5:3 F5:4 | G5:5 F5:4 E5:3 D5:2 | C5w:1 | C5:1 D5:2 E5:3 F5:4 | G5:5 F5:4 E5:3 D5:2 | C5:1 D5:2 E5:3 F5:4 | G5:5 F5:4 E5:3 D5:2 | C5w:1","lhf":"5 4 3 2 1 2 3 4 5 4 3 2 1 2 3 4 5 5 4 3 2 1 2 3 4 5 4 3 2 1 2 3 4 5","auth":"Placez-vous bien au milieu du clavier en face de la note MI. Ayez les pieds appuyés, la tête droite, les bras très souples. Posez votre main naturellement, sans raideur, de telle façon que le pouce se trouve sur la même ligne que le petit doigt. Les doigts auront une forme arrondie. Le pouce ne doit jamais être en dehors du clavier."},"ex1_2":{"lb":"Exercices des 5 doigts — Ré","deg":1,"page":5,"sig":4,"unison":true,"rh":"D5:2 E5:3 F5:4 G5:5 | F5:4 E5:3 D5:2 C5:1 | D5:2 E5:3 F5:4 G5:5 | F5:4 E5:3 D5:2 C5:1 | D5w:2 | D5:2 E5:3 F5:4 G5:5 | F5:4 E5:3 D5:2 C5:1 | D5:2 E5:3 F5:4 G5:5 | F5:4 E5:3 D5:2 C5:1 | D5w:2","lhf":"4 3 2 1 2 3 4 5 4 3 2 1 2 3 4 5 4 4 3 2 1 2 3 4 5 4 3 2 1 2 3 4 5 4","auth":"Jouez d'abord chaque main séparément, puis les deux mains ensemble. La main gauche jouera une ou deux octaves au-dessous de la main droite."},"ex1_3":{"lb":"Exercices des 5 doigts — Mi","deg":1,"page":5,"sig":4,"unison":true,"rh":"E5:3 F5:4 G5:5 F5:4 | E5:3 D5:2 C5:1 D5:2 | E5:3 F5:4 G5:5 F5:4 | E5:3 D5:2 C5:1 D5:2 | E5w:3 | E5:3 F5:4 G5:5 F5:4 | E5:3 D5:2 C5:1 D5:2 | E5:3 F5:4 G5:5 F5:4 | E5:3 D5:2 C5:1 D5:2 | E5w:3","lhf":"3 2 1 2 3 4 5 4 3 2 1 2 3 4 5 4 3 3 2 1 2 3 4 5 4 3 2 1 2 3 4 5 4 3","auth":"Jouez d'abord chaque main séparément, puis les deux mains ensemble. La main gauche jouera une ou deux octaves au-dessous de la main droite."},"ex1_4":{"lb":"Exercices des 5 doigts — Fa","deg":1,"page":5,"sig":4,"unison":true,"rh":"F5:4 G5:5 F5:4 E5:3 | D5:2 C5:1 D5:2 E5:3 | F5:4 G5:5 F5:4 E5:3 | D5:2 C5:1 D5:2 E5:3 | F5w:4 | F5:4 G5:5 F5:4 E5:3 | D5:2 C5:1 D5:2 E5:3 | F5:4 G5:5 F5:4 E5:3 | D5:2 C5:1 D5:2 E5:3 | F5w:4","lhf":"2 1 2 3 4 5 4 3 2 1 2 3 4 5 4 3 2 2 1 2 3 4 5 4 3 2 1 2 3 4 5 4 3 2","auth":"Jouez d'abord chaque main séparément, puis les deux mains ensemble. La main gauche jouera une ou deux octaves au-dessous de la main droite."},"ex1_5":{"lb":"Exercices des 5 doigts — Sol","deg":1,"page":5,"sig":4,"unison":true,"rh":"G5:5 F5:4 E5:3 D5:2 | C5:1 D5:2 E5:3 F5:4 | G5:5 F5:4 E5:3 D5:2 | C5:1 D5:2 E5:3 F5:4 | G5w:5 | G5:5 F5:4 E5:3 D5:2 | C5:1 D5:2 E5:3 F5:4 | G5:5 F5:4 E5:3 D5:2 | C5:1 D5:2 E5:3 F5:4 | G5w:5","lhf":"1 2 3 4 5 4 3 2 1 2 3 4 5 4 3 2 1 1 2 3 4 5 4 3 2 1 2 3 4 5 4 3 2 1","auth":"Jouez d'abord chaque main séparément, puis les deux mains ensemble. La main gauche jouera une ou deux octaves au-dessous de la main droite."},"chantmontagnes":{"lb":"Chant des montagnes","deg":5,"page":49,"sig":1.5,"meter":"3/8","pickup":0.5,"tempo":"Doux et gracieux","rh":"C5e:1 | E5e:3 E5e:2 E5e:1 | G5e:3 G5e:2 G5e:1 | A5:4 A5e:3 | G5e:2 re C5e:1 | E5e:3 E5e:2 E5e:1 | G5e:3 G5e:2 G5e:1 | G5e:5 F5e:4 E5e:3 | D5:2 C5e:1 | E5e:3 E5e:2 E5e:1 | G5e:3 G5e:2 G5e:1 | A5:4 A5e:3 | G5e:2 re C5e:1 | E5e:3 E5e:2 E5e:1 | G5e:5 D5e:2 G5e:5 | F5e:4 E5e:3 D5e:2 | C5d:1","lh":"re | C3e:5 E3e:3 G3e:1 | C3e E3e G3e | C3e:5 F3e:2 A3e:1 | C3e:5 E3+G3 | C3e E3e G3e | C3e E3e G3e | B2e:5 G3e:1 C3e:4 | B2e:5 G3:1 | C3e:5 E3e G3e | C3e E3e G3e | C3e:5 F3e:2 A3e:1 | C3e E3+G3 | C3e E3e G3e | C3e F3e G3e | G2e:5 G3e:1 F3e:2 | C3+E3d"},"marietrempe":{"lb":"Marie tremp' ton pain","deg":5,"page":49,"ks":-1,"sig":3,"meter":"6/8","tempo":"Gaiement","rh":"A4:4 F4e:2 F4e:2 E4e:1 F4e:2 | A4:4 F4e F4e E4e F4e | G4:3 G4e:2 C5:5 C5e | A4d:3 F4d:1 | A4:4 F4e:2 F4e:2 E4e:1 F4e:2 | A4 F4e F4e E4e F4e | G4:3 G4e:2 C5:5 C5e | F4d F4 re | G4:2 G4e:2 C5:5 C5e | A4d:3 F4d:1 | G4:2 G4e:2 C5:5 C5e | A4d F4d:1 | D5:4 Bb4e:2 Bb4e:3 A4e Bb4e | C5:4 A4e:2 A4e:3 G4e A4e | Bb4:4 G4e:2 F4:1 E4e:2 | F4d:3 F4 re | A4:4 F4e:2 F4e:2 E4e:1 F4e:2 | A4:4 F4e F4e E4e F4e | G4:3 G4e:2 C5:5 C5e | A4d:3 F4d:1 | A4:4 F4e:2 F4e:2 E4e:1 F4e:2 | A4 F4e F4e E4e F4e | G4:3 G4e:2 C5:5 C5e | F4d F4 re","lh":"F3e:5 A3e:3 C4e:1 F3e A3e C4e | F3e A3e C4e F3e A3e C4e | E3e:5 G3e:3 C4e:1 E3e G3e C4e | F3e:5 A3e C4e F3+A3d | F3e:5 A3e C4e F3e A3e C4e | F3e A3e C4e F3e A3e C4e | E3e:5 G3e C4e E3e G3e C4e | F3e A3e C4e F3+A3 re | E3e:5 G3e C4e E3e G3e C4e | F3e:5 A3e C4e F3e A3e C4e | E3e:5 G3e C4e E3e G3e C4e | F3e A3e C4e F3e A3e C4e | Bb3d:2 G3d:4 | A3d:3 F3d:5 | G3:4 Bb3e:2 C4d:1 | re A3e:3 C4e:1 F3:5 re | F3e:5 A3e:3 C4e:1 F3e A3e C4e | F3e A3e C4e F3e A3e C4e | E3e:5 G3e:3 C4e:1 E3e G3e C4e | F3e:5 A3e C4e F3+A3d | F3e:5 A3e C4e F3e A3e C4e | F3e A3e C4e F3e A3e C4e | E3e:5 G3e C4e E3e G3e C4e | F3e A3e C4e F3+A3 re","auth":"Observez bien les doigtés indiqués."},"carnavalvenise":{"lb":"Carnaval de Venise","deg":6,"page":51,"sig":3,"meter":"6/8","pickup":0.5,"tempo":"Mouvement de Barcarolle","rh":"G5e:4 | A5:5 G5e F5 E5e | G5:4 F5e D5:1 D5e:1 | E5:2 F5e A5 G5e | E5d:2 E5e re G5e:4 | A5:5 G5e F5 E5e | G5:4 F5e D5 D5e:1 | E5:2 F5e A5 G5e | E5d E5e re G5e:4 | G5e:3 F5e E5e:1 E5e:4 D5e C5e | B4e:1 re D5e:2 A5:5 G5e | F#5:3 G5e:4 F5:3 G5e:4 | E5d:2 C5e:1 re G5e:4 | G5e:3 F5e E5e:1 E5e:4 D5e C5e | B4e re D5e:2 A5:5 G5e | F#5:3 G5e:4 F5:3 D5e:1 | C5d:2 C5e re G5e:4 | A5:5 G5e F5 E5e | G5:4 F5e D5 D5e:1 | E5:2 F5e A5 G5e | E5d:2 E5e re G5e:4 | A5:5 G5e F5 E5e | G5:4 F5e D5 D5e:1 | E5:2 F5e A5 G5e | C5hd","lh":"re | C3e:5 E3e:3 G3e:1 C3e E3e G3e | B2e:5 F3e G3e B2e F3e G3e | B2e:5 D3e:3 G3e:1 B2e D3e G3e | C3e:5 E3e G3e C3e E3e G3e | C3e E3e G3e C3e E3e G3e | B2e:5 D3e:3 G3e:1 B2e D3e G3e | B2e D3e G3e B2e D3e G3e | C3e:5 E3e G3e E3+G3 re | C3e E3e G3e C3e E3e G3e | D3e:4 F3e G3e D3e F3e G3e | B2e:5 D3e G3e B2e D3e G3e | C3e:5 E3e G3e C3e E3e G3e | C3e E3e G3e C3e E3e G3e | D3e:4 F3e G3e D3e F3e G3e | B2e:5 D3e G3e B2e D3e G3e | C3e:5 E3e G3e C3e re re | C3e:5 E3e:3 G3e:1 C3e E3e G3e | B2e F3e G3e B2e F3e G3e | B2e:5 D3e:3 G3e:1 B2e D3e G3e | C3e:5 E3e G3e C3e E3e G3e | C3e E3e G3e C3e E3e G3e | B2e:5 D3e:3 G3e:1 B2e D3e G3e | B2e D3e G3e B2e D3e G3e | C3e:5 E3e G3e E3+G3d"},"petitebrebis":{"lb":"Petite brebis","deg":6,"page":51,"ks":1,"sig":2,"tempo":"Avec tranquillité","rh":"B4e:3 B4e D5e:5 D5e | C5:4 A4:2 | G4e:1 A4e B4e C5e | A4h:2 | C5e:4 C5e:3 B4e:2 B4e:2 | E5:5 D5:4 | D5e:5 C5e B4e A4e | G4 rq | B4e:3 B4e D5e:5 D5e | C5:4 A4:2 | G4e:1 A4e B4e C5e | A4h:2 | C5e:4 C5e:3 B4e:2 B4e:2 | E5:5 D5:4 | D5e:5 C5e B4e A4e | G4 rq","lh":"G3:4 B3:2 | A3:3 C4:1 | B3e:2 A3e:3 G3e:4 A3e:3 | F#3e:5 D4e:1 C4e:2 D4e:1 | A3:4 G3:5 | C4e:2 G3e:5 B3e:3 G3e:5 | A3e:4 C4e:2 D4e:1 C4e:2 | B3e:3 D4e:1 G3:5 | G3:4 B3:2 | A3:3 C4:1 | B3e:2 A3e:3 G3e:4 A3e:3 | F#3e:5 D4e:1 C4e:2 D4e:1 | A3:4 G3:5 | C4e:2 G3e:5 B3e:3 G3e:5 | A3e:4 C4e:2 D4e:1 C4e:2 | B3e:3 D4e:1 G3:5","auth":"Appliquez-vous à observer toutes les nuances."},"bergere":{"lb":"Il était une bergère","deg":6,"page":53,"ks":-1,"sig":3,"meter":"6/8","pickup":0.5,"tempo":"En caressant chaque note","rh":"C4e:1 | F4:3 C4e F4 C4e | F4d F4e re C5e:1 | F5:3 G5e:4 A5:5 G5e | F5d C5 C5e | D5 D5e C5e C5e C5e | D5 D5e C5 C5e:1 | F5:3 G5e A5 G5e | F5d C5 C6e:5 | A5:3 F5e:1 G5:3 E5e | F5:3 F5e:2 F5:1 C6e:5 | A5:3 F5e:1 G5:3 E5e:1 | F5d:2 F5e re C4e:5 | A3:3 F3e:1 G3:2 C4e:5 | F3hd:1","lh":"C3e:5 | F3:2 C3e F3 C3e | F3d F3e re re | F4+A4:3 Bb4e:2 C5:1 Bb4e:2 | F4:5+A4hd:3 | F4:5+Bb4d:2 A4d:3 | F4:5+Bb4d:2 A4d:3 | F4:5+A4:3 Bb4e:2 C5:1 Bb4e:2 | F4:5+A4hd:3 | F4:5+C5d:1 Bb4d:2 | F4:5+A4hd:3 | F4:5+C5d:1 Bb4d:2 | F4+A4d F4+A4e re re | F2+C3hd | F2+C3hd","auth":"Observer les nuances. Bien tenir les blanches pointées."},"melodieirlandaise":{"lb":"Mélodie irlandaise","deg":6,"page":53,"sig":4,"tempo":"Assez lent et très soutenu","rh":"C5:3 C5e:1 D5e:2 E5:3 E5e:1 F5e:2 | G5:3 A5e:4 G5e:3 E5h:1 | G5:5 F5e E5e D5h:2 | F5:5 E5e D5e C5:2 G4:1 | C5:3 C5e:1 D5e:2 E5:3 E5e:1 F5e:2 | G5:3 A5e:4 G5e:3 E5h:1 | G5:5 F5e:4 E5e:3 D5e:2 F5e:4 E5e D5e | C5 E5 C5 rq | G5:5 F5e E5e D5:2 G4:1 | F5:5 E5e D5e C5:2 G4 | G5:5 F5e E5e D5:2 G4:1 | F5:5 E5e D5e C5:2 G4 | C5:3 C5e:1 D5e:2 E5:3 E5e:1 F5e:2 | G5:3 A5e:4 G5e:3 E5h:1 | G5:5 F5e E5e D5e F5e E5e D5e | C5e E5e D5e E5e C5h","lh":"C3:5 E3:3+G3:1 E3+G3 E3+G3 | C3 E3+G3 E3+G3 E3+G3 | B2:5 F3:2+G3:1 F3+G3 F3+G3 | C3:5 E3+G3 E3+G3h | C3 E3+G3 E3+G3 E3+G3 | C3 E3+G3 E3+G3 E3+G3 | B2 F3+G3 B2 F3+G3 | C3+E3 G3 C3+E3 rq | B2e:5 G3e:1 D3e:3 G3e:1 B2e:5 G3e D3e G3e | C3e:5 G3e E3e G3e C3e:5 G3e E3e G3e | B2e:5 G3e:1 D3e:3 G3e:1 B2e:5 G3e D3e G3e | C3e:5 G3e E3e G3e C3e G3e E3e G3e | C3:5 E3+G3 E3+G3 E3+G3 | C3 E3+G3 E3+G3 E3+G3 | B2 F3+G3 B2 F3+G3 | C3 F3+G3 C3+E3+G3h"},"tyrolienne":{"lb":"Tyrolienne","deg":6,"page":55,"ks":-1,"sig":3,"pickup":1,"tempo":"Style pastoral","rh":"A4e:3 Bb4e:4 | A4:3 G4:2 G4 | F4 A4 A4 | C5 G4 G4 | C5h A4e:3 Bb4e | A4 G4 G4 | F4 A4 A4 | C5 G4 G4e A4e | F4 rq A5e:3 Bb5e:4 | A5:3 G5:2 G5 | F5 A5 A5 | C6 G5 G5 | C6h A5e:3 Bb5e | A5 G5 G5 | F5 A5 A5 | C6 G5 G5e A5e | F5h A5e:3 Bb5e:4 | A5:3 G5 G5e A5e | F5 rq A4e:3 Bb4e:4 | A4 G4 G4e A4e | F4h rq | A3:1+F4h:5 rq | A3:1+C4:2+F4:5 A3+C4+F4 A3+C4+F4 | A3+C4+F4hd","lh":"rq | F3:5 Bb3:2+C4:1 Bb3+C4 | F3 A3+C4 A3+C4 | F3 Bb3+C4 Bb3+C4 | F3 A3+C4h | F3 Bb3+C4 Bb3+C4 | F3 A3+C4 A3+C4 | F3 Bb3+C4 Bb3+C4 | F3 A3+C4 rq | F4 Bb4+C5 Bb4+C5 | F4 A4+C5 A4+C5 | F4 Bb4+C5 Bb4+C5 | F4 A4+C5h | F4 Bb4+C5 Bb4+C5 | F4 A4+C5 A4+C5 | F4 Bb4+C5 Bb4+C5 | F4 A4+C5 rq | C4:5+Bb4hd:1 | G4:2+Bb4h:1 rq | C3:5+Bb3hd:1 | F3:2+A3h:1 rq | F3h:2 rq | F3:1 C3:2 A2:4 | F2hd:5","auth":"Les mains tranquilles, les doigts arrondis."},"airpopulaire":{"lb":"Air populaire","deg":6,"page":55,"sig":4,"lastbar":3,"tempo":"Bien soutenu","rh":"E5:4 F5e:5 E5e D5:3 E5e D5e | C5h:2 G4:1 C5:2 | D5:3 D5:2 D5:1 D5:2 | G5h:5 E5 rq | E5:4 F5e:5 E5e D5:3 E5e D5e | C5h:2 G4:1 C5:2 | D5:3 D5:2 D5:1 D5e:2 E5e | C5h rq G5:5 | D5:2 D5 D5 D5e E5e | C5h rq G5:5 | D5:2 D5 D5 D5e E5e | C5h rq C6:5 | F#5:2 F#5 F#5 F#5e A5e | G5 G5 G5 B5e G5e | F#5:2 F#5 F#5 G5e A5e | G5hd:3 G4:1 | E5:4 F5e:5 E5e D5:3 E5e D5e | C5h:2 G4:1 C5:2 | D5:3 D5:2 D5:1 D5:2 | G5h:5 E5 rq | E5:4 F5e:5 E5e D5:3 E5e D5e | C5h:2 G4:1 C5:2 | D5:3 D5:2 D5:1 D5e:2 E5e | C5h rq","lh":"C3:5+G3h:1 C3+F3h:2 | C3:5+E3:3 C3+E3 C3+E3 rq | B2:5+G3:1 rq F3+G3 rq | E3+G3 D3+G3 C3+G3 rq | C3:5+G3h:1 C3+F3h:2 | C3:5+E3:3 C3+E3 C3+E3 rq | F3:2+G3:1 rq B2:5+G3:1 rq | C3:5+E3:3+G3:1 C3+E3+G3 C3+E3+G3 rq | G3:5+B3:3+D4w:1 | C4:2+E4:1 C4+E4 C4+E4 rq | G3+D4+F4w | C4:3+E4:1 C4+E4 C4+E4 rq | D3:5+A3+C4:1 D3+A3+C4 D3+A3+C4 rq | G3:3+B3:1 G3+B3 G3+B3 rq | D3:5+A3:2+C4:1 D3+A3+C4 D3+A3+C4 rq | G3:3+B3:1 G3+B3 G3+B3 rq | C3:5+G3h:1 C3+F3h:2 | C3:5+E3:3 C3+E3 C3+E3 rq | B2:5+G3:1 rq F3+G3 rq | E3+G3 D3+G3 C3+G3 rq | C3:5+G3h:1 C3+F3h:2 | C3:5+E3:3 C3+E3 C3+E3 rq | F3:2+G3:1 rq B2:5+G3:1 rq | C3:5+E3:3+G3:1 C3+E3+G3 C3+E3+G3","auth":"Les mains tranquilles, les doigts arrondis."},"etoiledusoir":{"lb":"Étoile du soir","deg":6,"page":57,"ks":-2,"sig":3,"pickup":1,"lastbar":2,"tempo":"Avec beaucoup de charme","rh":"D5:5 | G4d:1 A4e Bb4e C5e | D5d C5e Bb4e A4e | Bb4e:3 A4e:2 G4:1 Eb5:5 | D5h:4 D5 | D5d:5 C5e D5e C5e | A4h:2 C5:4 | Bb4d:3 A4e Bb4e A4e | G4h D5:5 | G4d:1 A4e Bb4e C5e | D5d C5e Bb4e A4e | Bb4e:3 A4e:2 G4:1 Eb5:5 | D5h:4 D5 | D5d:5 C5e D5e C5e | A4h:2 C5:4 | Bb4d:3 A4e Bb4e A4e | G4h","lh":"rq | re G3e:5 Bb3:3+D4h:1 | re G3e Bb3+D4h | G3:5 C4:2+Eb4:1 C4+Eb4 | G3 Bb3+D4 rq | re F#3e:5 C4:2+D4h:1 | re F#3e C4+D4h | D3:5 F#3:3+C4:1 F#3+C4 | G3:2+Bb3h:1 rq | re G3e:5 Bb3:3+D4h:1 | re G3e Bb3+D4h | G3:5 C4:2+Eb4:1 C4+Eb4 | G3 Bb3+D4 rq | re F#3e:5 C4:2+D4h:1 | re F#3e C4+D4h | D3:5 F#3:3+C4:1 F#3+C4 | G3:2+Bb3h:1","auth":"Travaillez à obtenir la grâce et la beauté des mouvements."},"roidagobert":{"lb":"Le Roi Dagobert","deg":6,"page":57,"ks":1,"sig":3,"meter":"6/8","pickup":0.5,"tempo":"Air de chasse","rh":"B4e:3 | B4 A4e A4 G4e | G4d A4d | B4e C5e B4e A4e G4e A4e | A4d:2 A4 B4e:3 | B4 A4e A4 G4e | G4d A4d | B4e C5e B4e A4e G4e A4e | G4h G4e:1 A4e | B4:3 B4e B4e C5e D5e | A4:2 A4e A4e G4e A4e | B4:3 B4e B4e C5e D5e | A4:2 A4e:1 A4:2 B4e:3 | B4 A4e A4 G4e | G4d A4d | B4e C5e B4e A4e G4e A4e | G4h G4e:1 A4e | B4:3 B4e B4e C5e D5e | A4:2 A4e A4e G4e A4e | B4:3 B4e B4e C5e D5e | A4:2 A4e:1 A4:2 B4e:3 | B4 A4e A4 G4e | G4d A4d | B4e C5e B4e A4e G4e A4e | G4hd","lh":"re | G3d:5 D4d:1 | B3d:3 D4d:1 | G3d:5 D4d:1 | F#3d:5 D4:1 re | G3d:5 D4d:1 | B3d:3 D4d:1 | G3d:5 D4:1 C4e:2 | B3e:3 D4e:1 B3e:3 G3e:5 re re | G3d:5 D4d:1 | F#3d:5 D4d:1 | G3d:5 D4d:1 | F#3d:5 D4:1 re | G3d:5 D4d:1 | B3d:3 D4d:1 | G3d:5 D4:1 C4e:2 | B3e:3 D4e:1 B3e:3 G3e:5 re re | G3d:5 D4d:1 | F#3d:5 D4d:1 | G3d:5 D4d:1 | F#3d:5 D4:1 re | G3d:5 D4d:1 | B3d:3 D4d:1 | G3d:5 D4:1 C4e | B3e D4e B3e G3d"}};
+const ROSE_ORDER=["ex1_1", "ex1_2", "ex1_3", "ex1_4", "ex1_5", "petitsamis", "valserose", "rondeenfantine", "jecommence", "premierspas", "danse", "berceuse", "contentement", "bourree", "abeille", "bouteentrain", "contegrandmere", "petitevalse", "auclair", "suzon", "petitpapa", "soldats", "coucou", "demande", "marionnettes", "menuet", "gentil", "cadetsgascogne", "hiveradieu", "tourprendsgarde", "chantdusoir", "bontabac", "dodoenfant", "aubadeprintaniere", "chansonbretonne", "meuniertudors", "petiteberceuse", "cyrano", "valsealsacienne", "valsonstoujours", "chantarabe", "bonvoyage", "airdautrefois", "souvenirdebale", "omatendremusette", "chantmontagnes", "marietrempe", "carnavalvenise", "petitebrebis", "bergere", "melodieirlandaise", "tyrolienne", "airpopulaire", "etoiledusoir", "roidagobert"];
+/* ═══════════════════════ 🌹 MÉTHODE ROSE — moteur « pièce à deux mains » ═══════════════════════
+   Pièces d’Ernest Van de Velde († 1949 — œuvre du domaine public), transcrites du recueil, sans les illustrations.
+   Jetons : note+octave+durée (h blanche, w ronde, e croche, s double, d noire pointée, hd blanche pointée, ed croche pointée),
+   r… silences, A+B accord, :n doigté, | barre. */
+const RS_D={'':1,h:2,w:4,e:.5,s:.25,d:1.5,hd:3,ed:.75,t:1/3};
+const RS_R={rq:1,rh:2,rw:4,rhd:3,re:.5,rs:.25,rd:1.5};
+const RS_PC={C:0,D:2,E:4,F:5,G:7,A:9,B:11},RS_L='CDEFGAB';
+function rsTok(tok,shift){const parts=tok.split('+');let d=1;const ns=[];
+  for(let i=0;i<parts.length;i++){const mm=parts[i].match(/^([A-G])([#b]?)(-?\d)([a-z]*)(?::(\d))?$/);if(!mm)continue;
+    const oct=+mm[3]+(shift||0),acc=mm[2];if(mm[4]!==''||i===parts.length-1)d=RS_D[mm[4]]!=null?RS_D[mm[4]]:1;
+    ns.push({m:(oct+1)*12+RS_PC[mm[1]]+(acc==='#'?1:(acc==='b'?-1:0)),st:oct*7+RS_L.indexOf(mm[1]),acc:acc,f:mm[5]?+mm[5]:null});}
+  return {d:d,ns:ns};}
+function rsParse(str,shift,fing){const toks=str.split(/\s+/).filter(Boolean);let t=0,k=0;const ev=[],bars=[0];
+  toks.forEach(function(tok){if(tok==='|'){bars.push(t);return;}
+    if(tok[0]==='r'){const d=RS_R[tok.split(':')[0]]||1;ev.push({t:t,d:d,rest:true});t+=d;return;}
+    const r=rsTok(tok,shift);if(fing){const f=fing[k];r.ns.forEach(function(n){n.f=(f&&f!=='.')?+f:null;});}k++;
+    r.ns.forEach(function(n){n.d=r.d;});ev.push({t:t,d:r.d,ns:r.ns});t+=r.d;});
+  bars.push(t);return {ev:ev,bars:bars,len:t};}
+function rsMerge(a,b){if(!b)return a;const map={};const out=[];a.ev.concat(b.ev).forEach(function(e){if(e.rest){if(!a.ev.some(function(x){return !x.rest&&x.t<=e.t&&x.t+x.d>e.t;}))out.push(e);return;}
+    const key=e.t.toFixed(4);if(map[key]){map[key].ns=map[key].ns.concat(e.ns);}else{map[key]={t:e.t,d:e.d,ns:e.ns.slice()};out.push(map[key]);}});
+  out.sort(function(x,y){return x.t-y.t;});return {ev:out,bars:a.bars,len:a.len};}
+/* une pièce prête à jouer : {rh,lh,bars,steps…} */
+function rsLoad(id){const R=ROSE[id];if(R._c)return R._c;
+  const rh=rsParse(R.rh);let lh;
+  if(R.lh)lh=rsMerge(rsParse(R.lh),R.lh2?rsParse(R.lh2):null);
+  else if(R.unison)lh=rsParse(R.rh,-1,R.lhf?R.lhf.split(/\s+/):[]);
+  R._c={R:R,rh:rh,lh:lh,bars:rh.bars,len:rh.len};return R._c;}
+function rsSteps(c,hands){const map={};const add=function(h,e){if(e.rest)return;const k=e.t.toFixed(4);(map[k]=map[k]||{t:e.t,need:[],h:{}}).need.push.apply(map[k].need,e.ns.map(function(n){return n.m;}));map[k].h[h]=1;};
+  if(hands.indexOf('rh')>=0)c.rh.ev.forEach(function(e){add('rh',e);});if(hands.indexOf('lh')>=0&&c.lh)c.lh.ev.forEach(function(e){add('lh',e);});
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return a.t-b.t;});}
+const KS_LET={'♯':'FCGDAEB','♭':'BEADGCF'};
+function rsMeter(R){return R.meter?R.meter.split('/'):(R.sig===1.5?['3','8']:[String(R.sig),'4']);}
+/* ─── la partition : double portée, fenêtre de quelques mesures ─── */
+function pieceSVG(c,hands,curT,nb){const R=c.R,sp=10;const bars=c.bars;const nbar=bars.length-1;
+  let bi=0;for(let i=0;i<nbar;i++)if(curT>=bars[i]-1e-6)bi=i;const b0=Math.floor(bi/nb)*nb,b1=Math.min(nbar,b0+nb);const T0=bars[b0],T1=bars[b1];
+  const ksn=R.ks||0,ksS=ksn>0?'♯':'♭',ksL=KS_LET[ksS].slice(0,Math.abs(ksn)),ksMap={};for(let i=0;i<ksL.length;i++)ksMap[ksL[i]]=ksn>0?'#':'b';
+  const KS_STEP={'♯':{F:8,C:5,G:9,D:6,A:3,E:7,B:4},'♭':{B:4,E:7,A:3,D:6,G:2,C:5,F:1}};
+  const hd=[{h:'rh',c:c.rh,B0:30},{h:'lh',c:c.lh,B0:18}];
+  /* colonnes : tous les débuts d'événements dans la fenêtre */
+  const ts={};hd.forEach(function(H){if(!H.c)return;H.c.ev.forEach(function(e){if(e.t>=T0-1e-6&&e.t<T1-1e-6)ts[e.t.toFixed(4)]=e.t;});});for(let b=b0;b<b1;b++)ts[bars[b].toFixed(4)]=bars[b];
+  const tl=Object.keys(ts).map(function(k){return ts[k];}).sort(function(a,b){return a-b;});
+  const x0=sp*1.2,head=sp*4.2+(ksL.length?ksL.length*sp*.95+sp*.6:0)+(b0===0?sp*2.6:0);const X={};let x=x0+head+sp*1.6;
+  const barX=[];tl.forEach(function(t,i){if(bars.slice(b0+1,b1).some(function(bt){return Math.abs(bt-t)<1e-6;})){barX.push(x-sp*.9);x+=sp*1.2;}X[t.toFixed(4)]=x;const nx=i+1<tl.length?tl[i+1]:T1;x+=sp*(2.5+1.5*Math.min(2,nx-t));});
+  const W=x+sp*.8,padT=sp*4.2,hS=sp*4,gap=sp*5.6,H=padT+2*hS+gap+sp*4.2;const top=[padT,padT+hS+gap];
+  let o='';
+  [0,1].forEach(function(i){const t=top[i];for(let k=0;k<5;k++)o+='<line x1="'+x0+'" x2="'+(W-sp*.4)+'" y1="'+(t+k*sp)+'" y2="'+(t+k*sp)+'" stroke="#B8C0DA" stroke-width="1"/>';
+    o+=i===0?'<text x="'+(x0+sp*.3)+'" y="'+(t+hS+sp*.75)+'" font-family="serif" font-size="'+(sp*5.4)+'" fill="#F4F6FF">𝄞</text>':'<text x="'+(x0+sp*.4)+'" y="'+(t+hS-sp*.1)+'" font-family="serif" font-size="'+(sp*4.2)+'" fill="#F4F6FF">𝄢</text>';
+    for(let k=0;k<ksL.length;k++){const st=KS_STEP[ksS][ksL[k]]-(i?2:0);o+='<text x="'+(x0+sp*4.6+k*sp*.95)+'" y="'+(t+hS-st*sp/2+sp*.5)+'" text-anchor="middle" font-family="serif" font-size="'+(sp*2)+'" fill="#F4F6FF">'+ksS+'</text>';}
+    if(b0===0){const mt=rsMeter(R),mx=x0+head-sp*2.2;o+='<text x="'+mx+'" y="'+(t+sp*1.85)+'" font-family="serif" font-weight="900" font-size="'+(sp*2.1)+'" fill="#F4F6FF">'+mt[0]+'</text><text x="'+mx+'" y="'+(t+sp*3.85)+'" font-family="serif" font-weight="900" font-size="'+(sp*2.1)+'" fill="#F4F6FF">'+mt[1]+'</text>';}});
+  const yB=top[1]+hS;o+='<line x1="'+x0+'" x2="'+x0+'" y1="'+top[0]+'" y2="'+yB+'" stroke="#B8C0DA" stroke-width="2"/>';
+  barX.concat([W-sp*.4]).forEach(function(bx,j){o+='<line x1="'+bx+'" x2="'+bx+'" y1="'+top[0]+'" y2="'+yB+'" stroke="#B8C0DA" stroke-width="'+(b1===nbar&&j===barX.length?3:1.2)+'"/>';});
+  o+='<text x="'+(x0+head)+'" y="'+(top[0]-sp*2.6)+'" font-family="Nunito,sans-serif" font-weight="800" font-size="'+(sp*1.1)+'" fill="#9AA3C7">mesure '+(b0+1)+'</text>';
+  hd.forEach(function(H,si){if(!H.c)return;const bot=top[si]+hS,mine=hands.indexOf(H.h)>=0;const accSt={};let curBar=-1;
+    H.c.ev.forEach(function(e){if(e.t<T0-1e-6||e.t>=T1-1e-6)return;let bb=0;for(let i=0;i<nbar;i++)if(e.t>=bars[i]-1e-6)bb=i;if(bb!==curBar){curBar=bb;for(const k in accSt)delete accSt[k];}
+      const cx=X[e.t.toFixed(4)];const done=mine&&e.t<curT-1e-6,cur=mine&&Math.abs(e.t-curT)<1e-6;const col=cur?'#FFC83D':(done?'#3ECF8E':(mine?'#F4F6FF':'#8A93B8'));
+      if(e.rest){const g=e.d>=4?'𝄻':(e.d>=2?'𝄼':(e.d>=1?'𝄽':(e.d>=.5?'𝄾':'𝄿')));o+='<text x="'+cx+'" y="'+(bot-sp*1.6)+'" text-anchor="middle" font-family="serif" font-size="'+(sp*2.6)+'" fill="'+col+'">'+g+'</text>'+((e.d===3||e.d===1.5||e.d===.75)?'<circle cx="'+(cx+sp*1.1)+'" cy="'+(bot-sp*2.5)+'" r="'+(sp*.2)+'" fill="'+col+'"/>':'');return;}
+      const N=e.ns.map(function(n){return {n:n,s:n.st-H.B0};}).sort(function(a,b){return a.s-b.s;});
+      N.forEach(function(q){if(q.s<=-2)for(let k=-2;k>=q.s;k-=2)o+='<line x1="'+(cx-sp*1.1)+'" x2="'+(cx+sp*1.1)+'" y1="'+(bot-k*sp/2)+'" y2="'+(bot-k*sp/2)+'" stroke="#B8C0DA" stroke-width="1"/>';
+        if(q.s>=10)for(let k=10;k<=q.s;k+=2)o+='<line x1="'+(cx-sp*1.1)+'" x2="'+(cx+sp*1.1)+'" y1="'+(bot-k*sp/2)+'" y2="'+(bot-k*sp/2)+'" stroke="#B8C0DA" stroke-width="1"/>';});
+      let prev=null,sh=false;N.forEach(function(q){sh=(prev!=null&&q.s-prev===1)?!sh:false;q.dx=sh?sp*1.3:0;prev=q.s;});
+      const d=e.d,up=(N[0].s+N[N.length-1].s)/2<4;
+      N.forEach(function(q){const cy=bot-q.s*sp/2,xx=cx+q.dx;const L=RS_L[((q.n.st%7)+7)%7],stk=L+q.n.st,want=q.n.acc,have=accSt[stk]!=null?accSt[stk]:(ksMap[L]||'');
+        if(want!==have){o+='<text x="'+(xx-sp*1.8)+'" y="'+(cy+sp*.55)+'" text-anchor="middle" font-family="serif" font-size="'+(sp*1.9)+'" fill="'+col+'">'+(want==='#'?'♯':(want==='b'?'♭':'♮'))+'</text>';accSt[stk]=want;}
+        const hol=d>=2;o+='<ellipse cx="'+xx+'" cy="'+cy+'" rx="'+(sp*.68)+'" ry="'+(sp*.48)+'" transform="rotate(-20 '+xx+' '+cy+')" fill="'+(hol?'none':col)+'"'+(hol?' stroke="'+col+'" stroke-width="'+(sp*.22)+'"':'')+'/>';
+        if(d===3||d===1.5||d===.75)o+='<circle cx="'+(xx+sp*1.15)+'" cy="'+(cy-(q.s%2===0?sp*.25:0))+'" r="'+(sp*.2)+'" fill="'+col+'"/>';});
+      if(d<4){const lo=N[0],hi=N[N.length-1],sx=up?cx+sp*.64:cx-sp*.64;const y1=up?bot-lo.s*sp/2:bot-hi.s*sp/2,y2=up?bot-hi.s*sp/2-sp*3.3:bot-lo.s*sp/2+sp*3.3;
+        o+='<line x1="'+sx+'" x2="'+sx+'" y1="'+y1+'" y2="'+y2+'" stroke="'+col+'" stroke-width="1.3"/>';
+        const fl=d<=.25?2:(d<=.75?1:0);for(let k=0;k<fl;k++){const fy=y2+(up?k*sp*.8:-k*sp*.8);o+='<path d="M'+sx+','+fy+' q'+(sp*.9)+','+(up?sp*.8:-sp*.8)+' '+(sp*.5)+','+(up?sp*2:-sp*2)+'" fill="none" stroke="'+col+'" stroke-width="'+(sp*.2)+'"/>';}}
+      const fs=N.map(function(q){return q.n.f;}).filter(function(f){return f;});if(fs.length){const fy=si===0?Math.min(top[0]-sp*.6,bot-N[N.length-1].s*sp/2-sp*(up?4.2:1.4)):Math.max(yB+sp*1.8,bot-N[0].s*sp/2+sp*(up?1.9:4.6));
+        const fl=si===0?fs.slice().reverse():fs;fl.forEach(function(f,j){o+='<text x="'+cx+'" y="'+(si===0?fy-(fl.length-1-j)*sp*1.15:fy+j*sp*1.15)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="'+(sp*1.1)+'" fill="#FFC83D">'+f+'</text>';});}});});
+  return '<div class="stf wide"><svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+o+'</svg></div>';}
+
+/* ─── l'exercice ─── */
+function vPiece(sid){const S=stepById(sid),s=S.s,id=s.drill.id,c=rsLoad(id),R=c.R;
+  const keep=DR.pmode||{hands:['rh'],timed:false,bpm:R.bpm||66};
+  DR={on:true,piece:true,sid:sid,c:c,pmode:keep,k:0,err:0,errAt:{},fresh:new Set(),t0:Date.now(),res:[],qs:[]};
+  const all=[];['rh','lh'].forEach(function(h){if(c[h])c[h].ev.forEach(function(e){if(!e.rest)e.ns.forEach(function(n){all.push(n.m);});});});
+  const lo=Math.max(21,12*Math.floor(Math.min.apply(null,all)/12)),hi=Math.min(108,Math.max(lo+24,12*Math.ceil((Math.max.apply(null,all)+1)/12)));KB={lo:lo,hi:hi};
+  const hb=function(h,t){return '<button class="btn s '+((keep.hands.join()===h)?'v':'g')+'" data-h="'+h+'">'+t+'</button>';};
+  M.innerHTML='<h2>🌹 '+s.lb+'</h2><div class="stage" id="stage"><div class="q" id="q"></div>'
+    +'<div class="row" style="justify-content:center;gap:6px;flex-wrap:wrap">'+hb('rh','👉 Main droite')+(c.lh?hb('lh','👈 Main gauche')+hb('rh,lh','🙌 Les deux'):'')+'</div>'
+    +'<div class="row" style="justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn s '+(keep.timed?'g':'v')+'" data-t="0">🐢 Note à note</button><button class="btn s '+(keep.timed?'v':'g')+'" data-t="1">🥁 En rythme</button>'
+    +'<select id="bpm" class="btn s g" style="padding:6px">'+[[46,'très lent'],[56,'lent'],[66,'modéré'],[80,'allant'],[96,'vif']].map(function(b){return '<option value="'+b[0]+'"'+(b[0]===keep.bpm?' selected':'')+'>♩ '+b[0]+' · '+b[1]+'</option>';}).join('')+'</select></div>'
+    +'<div id="stf"></div><div class="fb" id="fb"></div><div class="prog" id="prog"></div><div class="kbw"><div class="kb" id="kb"></div></div>'
+    +'<div class="row" style="justify-content:center;margin-top:10px"><button class="btn s g" id="listen">🔊 Écouter la pièce</button><button class="btn s g" id="go">▶️ Commencer</button><button class="btn s g" id="help">💡 Aide clavier</button><button class="btn s g" id="quit">Arrêter</button></div></div>';
+  kbHTML('kb',KB.lo,KB.hi,Math.max(20,Math.min(40,Math.floor((M.clientWidth-60)/((KB.hi-KB.lo)*7/12+1)))));
+  M.querySelectorAll('[data-h]').forEach(function(b){b.onclick=function(){keep.hands=b.dataset.h.split(',');DR.pmode=keep;vPiece(sid);};});
+  M.querySelectorAll('[data-t]').forEach(function(b){b.onclick=function(){keep.timed=b.dataset.t==='1';DR.pmode=keep;vPiece(sid);};});
+  document.getElementById('bpm').onchange=function(e){keep.bpm=+e.target.value;};
+  document.getElementById('listen').onclick=function(){pieceListen();};
+  document.getElementById('go').onclick=function(){pieceStart();};
+  document.getElementById('help').onclick=function(){keep.help=!keep.help;pieceShow();};
+  document.getElementById('quit').onclick=function(){go('isle',S.I.id);};
+  if(keep.help==null)keep.help=true;
+  DR.steps=rsSteps(c,keep.hands);DR.running=false;pieceShow();
+  const hn=keep.hands.length===2?'les deux mains':(keep.hands[0]==='rh'?'la main droite':'la main gauche');
+  document.getElementById('fb').className='fb';document.getElementById('fb').textContent=keep.timed?'🥁 Une mesure de clics, puis joue en rythme avec '+hn+'. L’autre main est jouée pour toi.':'🐢 Joue chaque note jaune avec '+hn+', à ton rythme.'+(keep.hands.length<2&&c.lh?' L’autre main est jouée pour toi.':'');
+}
+function pieceShow(){if(!DR.piece||!document.getElementById('stf'))return;const c=DR.c,st=DR.steps[DR.k];const curT=st?st.t:c.len+1;
+  const nb=M.clientWidth>760?4:2;document.getElementById('stf').innerHTML=pieceSVG(c,DR.pmode.hands,curT,nb);
+  document.getElementById('q').innerHTML=(DR.running?'<b>'+Math.min(DR.k+1,DR.steps.length)+'</b> / '+DR.steps.length:'Choisis la main et le mode, puis <b>▶️ Commencer</b>');
+  const n=DR.steps.length,seg=20;document.getElementById('prog').innerHTML=Array.from({length:Math.min(seg,n)},function(_,j){const a=Math.floor(j*n/Math.min(seg,n)),b=Math.floor((j+1)*n/Math.min(seg,n));let cls='';if(DR.k>=b)cls=Object.keys(DR.errAt).some(function(e){return e>=a&&e<b;})?'ko':'ok';else if(DR.k>=a&&DR.running)cls='cur';return '<i class="'+cls+'"></i>';}).join('');
+  KBMAP={};if(st&&DR.pmode.help&&DR.running)st.need.forEach(function(m){if(!DR.fresh.has(m))KBMAP[m]='want';});DR.fresh.forEach(function(m){if(st&&st.need.indexOf(m)>=0)KBMAP[m]='ok';});kbPaint('kb',KBMAP);}
+function pieceAuto(t0,t1,delayBeat){/* joue l'autre main entre t0 et t1 */const c=DR.c,beat=60/DR.pmode.bpm;const other=['rh','lh'].filter(function(h){return DR.pmode.hands.indexOf(h)<0&&c[h];});
+  other.forEach(function(h){c[h].ev.forEach(function(e){if(e.rest||e.t<t0-1e-6||e.t>=t1-1e-6)return;const ms=((e.t-t0)+(delayBeat||0))*beat*1000;DR.autoT=(DR.autoT||[]);DR.autoT.push(setTimeout(function(){if(DR.piece)play(e.ns.map(function(n){return n.m;}),Math.max(.25,e.d*beat*.95));},ms));});});}
+function pieceStop(){if(DR.autoT)DR.autoT.forEach(clearTimeout);DR.autoT=[];clearInterval(DR.met);clearInterval(DR.tick);DR.running=false;}
+function pieceListen(){pieceStop();const c=DR.c,beat=60/DR.pmode.bpm;DR.autoT=[];['rh','lh'].forEach(function(h){if(!c[h])return;c[h].ev.forEach(function(e){if(e.rest)return;DR.autoT.push(setTimeout(function(){if(DR.piece){play(e.ns.map(function(n){return n.m;}),Math.max(.25,e.d*beat*.95));if(h==='rh'||!c.rh){let k=0;DR.steps.forEach(function(s,i){if(s.t<=e.t+1e-6)k=i;});DR.k=k;pieceShow();}}},e.t*beat*1000+200));});});
+  DR.autoT.push(setTimeout(function(){DR.k=0;pieceShow();},(c.len*beat+.6)*1000));}
+function pieceStart(){pieceStop();DR.k=0;DR.err=0;DR.errAt={};DR.fresh=new Set();DR.running=true;DR.t0=Date.now();const c=DR.c;
+  if(!DR.pmode.timed){if(DR.steps[0]&&DR.steps[0].t>0)pieceAuto(0,DR.steps[0].t,0);pieceShow();say('À toi !');return;}
+  const beat=60000/DR.pmode.bpm,R=c.R,cnt=Math.round(R.sig===1.5?3:(rsMeter(R)[1]==='8'?R.sig*2:R.sig)),cb=R.sig/cnt;/* clics = temps du chiffrage */
+  const lead=R.sig*beat;DR.T0=performance.now()+lead;DR.done={};let i=0;
+  DR.met=setInterval(function(){if(i<cnt){play([i===0?88:76],.08);}i++;if(i>=cnt)clearInterval(DR.met);},cb*beat);
+  pieceAuto(0,c.len+1,R.sig);
+  DR.tick=setInterval(function(){if(!DR.running)return;if(pieceAdv())pieceShow();if(DR.k>=DR.steps.length){clearInterval(DR.tick);setTimeout(pieceEnd,500);}},40);
+  pieceShow();}
+function pieceAdv(){const beat=60000/DR.pmode.bpm,now=(performance.now()-DR.T0)/beat;let moved=false;
+  while(DR.k<DR.steps.length&&now>DR.steps[DR.k].t+Math.min(.45,300/beat)){const st=DR.steps[DR.k];if(!(DR.done[DR.k]&&st.need.every(function(m){return DR.done[DR.k].has(m);}))){DR.errAt[DR.k]=1;}DR.k++;DR.fresh=new Set();moved=true;}return moved;}
+function pieceNote(m){if(DR.running&&DR.pmode.timed)pieceAdv();if(!DR.running)return;const st=DR.steps[DR.k];if(!st)return;const beat=60000/DR.pmode.bpm;
+  if(DR.pmode.timed){const now=(performance.now()-DR.T0)/beat;let best=-1,bd=1e9;for(let j=Math.max(0,DR.k-1);j<Math.min(DR.steps.length,DR.k+2);j++){const dd=Math.abs(DR.steps[j].t-now);if(DR.steps[j].need.indexOf(m)>=0&&dd<bd){bd=dd;best=j;}}
+    const tol=Math.min(.45,300/beat);if(best<0||bd>tol){DR.errAt[DR.k]=1;flash(false);const fb=document.getElementById('fb');fb.className='fb bad';fb.textContent=best<0?'✕ '+cap(noteFr(m))+' — pas cette note':'✕ '+(now<DR.steps[best].t?'Trop tôt':'Trop tard');KBMAP={};KBMAP[m]='bad';kbPaint('kb',KBMAP);return;}
+    (DR.done[best]=DR.done[best]||new Set()).add(m);DR.fresh.add(m);document.getElementById('fb').className='fb good';document.getElementById('fb').textContent='♪';pieceShow();return;}
+  if(st.need.indexOf(m)<0){if(!DR.errAt[DR.k]){DR.err++;}DR.errAt[DR.k]=1;flash(false);ding(false);const w=st.need.filter(function(x){return !DR.fresh.has(x);})[0];
+    const fb=document.getElementById('fb');fb.className='fb bad';let t='✕ '+cap(noteFr(m));if(w!=null)t+=w%12===m%12?' — bonne note, mais '+(w>m?'plus haut →':'← plus bas'):' — il faut '+frn(w%12)+(w>m?', plus haut →':', ← plus bas');fb.textContent=t;
+    KBMAP={};KBMAP[m]='bad';st.need.forEach(function(x){if(!DR.fresh.has(x))KBMAP[x]='want';});kbPaint('kb',KBMAP);return;}
+  DR.fresh.add(m);if(st.need.every(function(x){return DR.fresh.has(x);})){const nx=DR.steps[DR.k+1];pieceAuto(st.t,nx?nx.t:DR.c.len+1,0);DR.k++;DR.fresh=new Set();document.getElementById('fb').textContent='';
+    if(DR.k>=DR.steps.length){pieceShow();setTimeout(pieceEnd,700);return;}}
+  pieceShow();}
+function pieceEnd(){if(!DR.piece||!DR.running)return;pieceStop();const n=DR.steps.length,bad=Object.keys(DR.errAt).length;
+  DR.qs=new Array(n).fill(0);DR.res=DR.qs.map(function(_,i){return !DR.errAt[i];});DR.oneHand=DR.pmode.hands.length<2&&!!DR.c.lh;finish();}
+
+/* 🌹 îles de la Méthode Rose, une par degré */
+const ROSE_DEG={1:['Les cinq doigts','Position de do, les deux mains jouent la même mélodie'],2:['Mélodie et accompagnement','La main droite chante, la main gauche accompagne'],3:['Changer de position','Les mains se déplacent : position de sol, de do…'],4:['Silences et croches','Compter, se taire au bon moment, jouer plus vite'],5:['3/8, 6/8 et armures','De nouvelles mesures, des dièses et des bémols à la clé'],6:['Nuances et grandes pièces','Jouer doux, fort, lié — et des morceaux plus longs']};
+function roseIsles(){const out=[];for(let g=1;g<=6;g++){const ids=ROSE_ORDER.filter(function(k){return ROSE[k].deg===g;});if(!ids.length)continue;
+  out.push({id:'rose'+g,ic:'🌹',t:'Méthode Rose · '+g+(g===1?'er':'e')+' degré',d:ROSE_DEG[g][0]+' — '+ROSE_DEG[g][1],col:'#FF6FB5',steps:ids.map(function(k){const R=ROSE[k];
+    const mt=rsMeter(R).join('/'),ksn=R.ks||0,kst=ksn===0?'pas d’altération à la clé':(Math.abs(ksn)+' '+(ksn>0?'dièse':'bémol')+(Math.abs(ksn)>1?'s':'')+' à la clé');
+    const les=[['🌹','« '+R.lb+' » — Méthode Rose d’Ernest Van de Velde, '+g+(g===1?'er':'e')+' degré, page '+R.page+'.'],
+      ['🎼','Mesure à '+mt+' · '+kst+(R.pos?' · position : '+R.pos:'')+(R.tempo?' · « '+R.tempo+' »':'')+(R.unison?' · les deux mains jouent la même mélodie, à une octave d’écart':'')+'.']];
+    if(R.tip)les.push(['💡',R.tip]);if(R.auth)les.push(['📖','Le conseil du livre : « '+R.auth+' »']);
+    les.push(['⭐','Écoute d’abord. Puis main droite, main gauche, et enfin les deux mains — note à note, puis en rythme. Les deux mains donnent la 3e étoile !']);
+    return {id:'rose_'+k,lb:R.lb,les:les,drill:{type:'piece',id:k}};})});}
+  return out;}
+ISLES.push.apply(ISLES,roseIsles());
+/* ─────────── ⚔️ duel ─────────── */
+function duelPick(){const others=DB.profs.filter(function(p){return p.id!==DB.cur;});if(!others.length){toast('Il faut un deuxième joueur : ajoute-le sur l’écran d’accueil');go('isle','jeux');return false;}
+  M.innerHTML='<h1>⚔️ Duel</h1><div class="card"><div class="hint">'+P().name+' contre…</div><div class="profs" style="margin-top:10px">'+others.map(function(p){return '<div class="prof" data-p="'+p.id+'"><div class="av">'+p.av+'</div><div class="nm">'+p.name+'</div></div>';}).join('')+'</div></div>';
+  M.querySelectorAll('[data-p]').forEach(function(e){e.onclick=function(){DR.duelB=e.dataset.p;DR.duelA=DB.cur;DR.duel=1;vDrillReal(DR.sid);};});return true;}
+function duelNext(){if(DR.duel===1){DR.duelScoreA=DR.score;DR.duel=2;DB.cur=DR.duelB;const sid=DR.sid;toast('À '+P().name+' de jouer !');DR.tmo=setTimeout(function(){vDrillReal(sid);},1200);}
+  else{DR.duelScoreB=DR.score;const A=DB.profs.filter(function(p){return p.id===DR.duelA;})[0],B=P();const sa=DR.duelScoreA,sb=DR.duelScoreB;const win=sa===sb?null:(sa>sb?A:B);
+    [[A,sa],[B,sb]].forEach(function(x){x[0].stars=x[0].stars||{};const st=(win&&win.id===x[0].id)?3:(x[1]>=10?1:0);x[0].stars[DR.sid]=Math.max(x[0].stars[DR.sid]||0,st);});save();DB.cur=DR.duelA;save();DR.on=false;
+    M.innerHTML='<div class="card result"><div class="big">⚔️</div><h1>'+(win?win.av+' '+win.name+' gagne !':'Égalité !')+'</h1><div class="hint" style="font-size:22px">'+A.av+' '+A.name+' : '+sa+' · '+B.av+' '+B.name+' : '+sb+'</div><div class="row" style="justify-content:center;margin-top:18px"><button class="btn" id="again">🔁 Revanche</button><button class="btn v" id="next">🏝 Les îles</button></div></div>';
+    document.getElementById('again').onclick=function(){go('drill',DR.sid);};document.getElementById('next').onclick=function(){go('home');};}}
+/* ─────────── 🏅 badges ─────────── */
+const BADGES=[
+  {id:'first',ic:'🌱',lb:'Première étoile',t:function(p){return totalStars(p)>=1;}},
+  {id:'ten',ic:'⭐',lb:'10 étoiles',t:function(p){return totalStars(p)>=10;}},
+  {id:'fifty',ic:'🌟',lb:'50 étoiles',t:function(p){return totalStars(p)>=50;}},
+  {id:'hundred',ic:'💫',lb:'100 étoiles',t:function(p){return totalStars(p)>=100;}},
+  {id:'isle1',ic:'🏝',lb:'Première île finie',t:function(p){return ISLES.some(function(I){return I.steps.every(function(s){return (p.stars||{})[s.id]>=1;});});}},
+  {id:'maj12',ic:'🧱',lb:'Les 12 majeurs',t:function(p){return (p.stars||{}).b4>=2;}},
+  {id:'reader',ic:'🎼',lb:'Lecteur de portée',t:function(p){return (p.stars||{}).p3>=2&&(p.stars||{}).p4>=2;}},
+  {id:'ear',ic:'👂',lb:'Oreille fine',t:function(p){return (p.stars||{}).j4>=3&&(p.stars||{}).j5>=3;}},
+  {id:'memo7',ic:'🧠',lb:'Mémo 7 notes',t:function(p){return ((p.best||{}).j3||0)>=7;}},
+  {id:'speed',ic:'⚡',lb:'25 notes en 30 s',t:function(p){return ((p.best||{}).j1||0)>=25;}},
+  {id:'days3',ic:'📅',lb:'3 séries du jour',t:function(p){return (p.days||[]).length>=3;}},
+  {id:'days7',ic:'🔥',lb:'7 séries du jour',t:function(p){return (p.days||[]).length>=7;}},
+  {id:'gospel',ic:'⛪',lb:'Prêt pour l’église',t:function(p){return (p.stars||{}).g6>=2;}},
+  {id:'all',ic:'🏆',lb:'Tout le parcours',t:function(p){return ISLES.every(function(I){return I.steps.every(function(s){return (p.stars||{})[s.id]>=1;});});}}];
+function badgesHTML(p){p.badges=p.badges||[];const nw=[];BADGES.forEach(function(b){if(b.t(p)&&p.badges.indexOf(b.id)<0){p.badges.push(b.id);nw.push(b);}});if(nw.length)save();
+  return nw.length?'<div class="msg" style="margin-top:14px">🏅 Nouveau badge : '+nw.map(function(b){return b.ic+' '+b.lb;}).join(' · ')+'</div>':'';}
+function badgesList(p){return '<div class="row" style="margin-top:6px">'+BADGES.map(function(b){const on=(p.badges||[]).indexOf(b.id)>=0;return '<span class="pill" style="'+(on?'':'opacity:.35')+'" title="'+b.lb+'">'+b.ic+' '+b.lb+'</span>';}).join('')+'</div>';}
+
+/* ─────────── coin parent ─────────── */
+function vParent(){
+  if(DB.pin&&!DR.parentOk){M.innerHTML='<h1>👨‍👩‍👧 Coin des parents</h1><div class="card"><div class="hint">Code parent</div><input type="password" id="pin" inputmode="numeric"><div class="row" style="margin-top:12px"><button class="btn b" id="ok">Entrer</button><button class="btn g" id="back">Retour</button></div></div>';
+    document.getElementById('ok').onclick=function(){if(document.getElementById('pin').value===DB.pin){DR.parentOk=true;vParent();}else toast('Mauvais code');};document.getElementById('back').onclick=function(){go('profs');};return;}
+  const rows=DB.profs.map(function(p){const sug=suggested(p);const last=(p.log||[]).slice(-5).reverse();const weak=weakOf(p);
+    return '<div class="card"><h2>'+p.av+' '+p.name+' <span class="hint">⭐ '+totalStars(p)+' · '+Math.round((p.time||0)/60)+' min</span></h2>'
+      +'<div class="hint">'+(sug?'Prochaine étape : '+sug.I.t+' › '+sug.s.lb:'🏆 Parcours terminé')+'</div>'
+      +(weak?'<div style="color:#FFB3BA;font-weight:800;margin-top:6px">⚠ Ce qui bloque : '+weak+'</div>':'')+badgesList(p)
+      +'<table style="margin-top:8px"><tr><th>Date</th><th>Étape</th><th>Score</th><th>Étoiles</th></tr>'+last.map(function(l){const R=stepById(l.s);return '<tr><td>'+l.d+'</td><td>'+(R?R.I.ic+' '+R.s.lb:l.s)+'</td><td>'+l.ok+'/'+l.n+'</td><td>'+'⭐'.repeat(l.st)+'</td></tr>';}).join('')+'</table>'
+      +'<div class="row" style="margin-top:8px"><button class="btn s g" data-del="'+p.id+'">🗑 Supprimer ce joueur</button></div></div>';}).join('');
+  M.innerHTML='<h1>👨‍👩‍👧 Coin des parents</h1>'+rows+'<div class="card"><h2>💌 Message pour les enfants</h2><input type="text" id="msg" value="'+esc(DB.msg||'')+'" placeholder="Ex. : Bravo Rosy pour tes étoiles !"><div class="row" style="margin-top:10px"><button class="btn s b" id="savemsg">Enregistrer</button></div></div>'
+    +'<div class="card"><h2>🔒 Code parent</h2><div class="hint">Pour que les enfants ne modifient rien ici. Vide = pas de code.</div><input type="password" id="newpin" value="'+esc(DB.pin||'')+'" inputmode="numeric"><div class="row" style="margin-top:10px"><button class="btn s b" id="savepin">Enregistrer</button><label class="pill"><input type="checkbox" id="voice" '+(DB.voice?'checked':'')+'> Voix qui lit les consignes</label></div></div>'
+    +'<div class="card"><h2>🎙 Enregistrer une comptine</h2><div class="hint">Joue la mélodie au piano (MIDI ou clavier à l’écran), note après note, bien en rythme. Garden mesure les durées. Puis donne-lui un nom.</div>'
+    +'<div class="row" style="margin-top:10px"><button class="btn s v" id="recStart">● Commencer</button><button class="btn s g" id="recStop">■ Terminer</button><button class="btn s g" id="recPlay">▶ Réécouter</button><span class="pill" id="recInfo">—</span></div>'
+    +'<div id="recStf"></div><div class="row" style="margin-top:8px"><input type="text" id="recName" placeholder="Nom de la comptine" style="flex:1"><select id="recSig" style="font:inherit;padding:10px;border-radius:12px;background:var(--bg);color:var(--blanc);border:2px solid var(--gris2)"><option value="4">4/4</option><option value="3">3/4</option></select><button class="btn s b" id="recSave">Ajouter à l’île des comptines</button></div>'
+    +((DB.songs||[]).length?'<div class="hint" style="margin-top:8px">Enregistrées : '+(DB.songs||[]).map(function(sg){return '<span class="pill">'+esc(sg.lb)+' <button class="btn s g" data-sdel="'+sg.id+'" style="padding:2px 8px;font-size:12px">🗑</button></span>';}).join(' ')+'</div>':'')
+    +'<div class="kbw" style="margin-top:8px"><div class="kb" id="kb"></div></div></div>'
+    +'<div class="card"><h2>💾 Sauvegarde</h2><div class="row"><button class="btn s g" id="exp">Exporter</button><button class="btn s g" id="imp">Importer</button></div><textarea id="bk" style="width:100%;height:80px;margin-top:8px;font-size:12px;background:var(--bg);color:var(--gris);border:1px solid var(--gris2);border-radius:10px"></textarea></div>'
+    +'<div class="row"><button class="btn g" id="back">← Retour</button></div>';
+  M.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){if(confirm('Supprimer ce joueur et ses étoiles ?')){DB.profs=DB.profs.filter(function(p){return p.id!==b.dataset.del;});if(DB.cur===b.dataset.del)DB.cur=null;save();vParent();}};});
+  document.getElementById('savemsg').onclick=function(){DB.msg=document.getElementById('msg').value.trim();save();toast('Message enregistré');};
+  document.getElementById('savepin').onclick=function(){DB.pin=document.getElementById('newpin').value.trim();DB.voice=document.getElementById('voice').checked;save();toast('Enregistré');};
+  document.getElementById('voice').onchange=function(){DB.voice=this.checked;save();};
+  document.getElementById('exp').onclick=function(){document.getElementById('bk').value=JSON.stringify(DB);};
+  document.getElementById('imp').onclick=function(){try{const o=JSON.parse(document.getElementById('bk').value);if(o&&o.profs){DB=o;save();toast('Importé');vParent();}}catch(e){toast('Texte invalide');}};
+  document.getElementById('back').onclick=function(){DR.parentOk=false;REC=null;go('profs');};
+  KB={lo:48,hi:84};kbHTML('kb',48,84,Math.max(22,Math.min(36,Math.floor((M.clientWidth-60)/22))));
+  document.getElementById('recStart').onclick=function(){ac();REC={on:true,notes:[],t:[]};document.getElementById('recInfo').textContent='● Je t’écoute…';};
+  document.getElementById('recStop').onclick=function(){if(!REC)return;REC.on=false;recQuantize();};
+  document.getElementById('recPlay').onclick=function(){if(!REC||!REC.mel)return;let t=0;REC.mel.forEach(function(x){const tt=t;setTimeout(function(){play([x[0]],x[1]*.6);},tt);t+=x[1]*600;});};
+  document.getElementById('recSave').onclick=function(){if(!REC||!REC.mel||REC.mel.length<3){toast('Enregistre d’abord au moins 3 notes');return;}const nm=document.getElementById('recName').value.trim();if(!nm){toast('Donne un nom');return;}
+    DB.songs=DB.songs||[];DB.songs.push({id:'u'+Date.now(),lb:nm,mel:REC.mel,sig:+document.getElementById('recSig').value,ks:0});save();userSongsLoad();REC=null;toast('« '+nm+' » ajoutée aux comptines');vParent();};
+  M.querySelectorAll('[data-sdel]').forEach(function(b){b.onclick=function(){DB.songs=(DB.songs||[]).filter(function(x){return x.id!==b.dataset.sdel;});save();userSongsLoad();vParent();};});
+}
+/* ─────────── 🎙 enregistreur : durées = écarts entre les attaques, quantifiés au demi-temps ; le temps = l'écart le plus fréquent ─────────── */
+let REC=null;
+function recNote(m){if(!REC||!REC.on)return;REC.notes.push(m);REC.t.push(performance.now());document.getElementById('recInfo').textContent='● '+REC.notes.length+' notes';}
+function recQuantize(){if(REC.notes.length<2){REC.mel=REC.notes.map(function(m){return [m,1];});}else{
+  const d=[];for(let i=1;i<REC.t.length;i++)d.push(REC.t[i]-REC.t[i-1]);const sorted=d.slice().sort(function(a,b){return a-b;});const beat=sorted[Math.floor(sorted.length/2)]||600;
+  REC.mel=REC.notes.map(function(m,i){let dur=i<d.length?d[i]/beat:1;dur=Math.max(.5,Math.round(dur*2)/2);if(dur>4)dur=4;return [m,dur];});}
+  document.getElementById('recInfo').textContent='■ '+REC.mel.length+' notes — réécoute, puis nomme-la';
+  document.getElementById('recStf').innerHTML=staffSVG(REC.mel.map(function(x){return {notes:[{m:x[0],dur:x[1]}]};}),{sp:8,ks:0});}
+function weakOf(p){const L=(p.log||[]).slice(-12);const bad={};L.forEach(function(l){if(l.st<=1){bad[l.s]=(bad[l.s]||0)+1;}});const k=Object.keys(bad).sort(function(a,b){return bad[b]-bad[a];})[0];if(!k)return '';const R=stepById(k);return R?R.I.t+' › '+R.s.lb+' ('+bad[k]+' fois en dessous de 2 étoiles)':'';}
+
+/* ─────────── démarrage ─────────── */
+document.getElementById('btnMidi').onclick=function(){ac();midiConnect();};
+document.getElementById('btnHome').onclick=function(){ac();go(P()?'home':'profs');};
+document.getElementById('btnParent').onclick=function(){go('parent');};
+document.getElementById('btnSound').onclick=function(){DB.voice=!DB.voice;save();this.classList.toggle('on',DB.voice);toast(DB.voice?'La voix lit les consignes':'Voix coupée');};
+document.getElementById('btnSound').classList.toggle('on',DB.voice);
+/* clavier d'ordinateur : a z e r t y u = do ré mi fa sol la si (ligne du haut), q s d f g h j = une octave en dessous */
+const KEYMAP={a:60,z:62,e:64,r:65,t:67,y:69,u:71,i:72,q:48,s:50,d:52,f:53,g:55,h:57,j:59,k:60};
+document.addEventListener('keydown',function(e){if(e.repeat||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;const m=KEYMAP[e.key];if(m!=null){ac();noteOn(m,true);}});
+document.addEventListener('keyup',function(e){const m=KEYMAP[e.key];if(m!=null)noteOff(m);});
+if(navigator.requestMIDIAccess)midiConnect(true);
+userSongsLoad();
+go(P()?'home':'profs');
+</script>
+</body>
+</html>

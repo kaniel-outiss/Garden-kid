@@ -1,0 +1,6 @@
+{
+  "appId": "com.pianotools.gardenkids",
+  "appName": "Garden Kids",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}
