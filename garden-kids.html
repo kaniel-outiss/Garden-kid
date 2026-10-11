@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v1.7 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v1.8 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -127,6 +127,10 @@ input[type=text],input[type=password]{font:inherit;font-size:22px;padding:12px 1
 .skin-neon .kb .wk{background:linear-gradient(180deg,#151a33,#0c1024);border-color:#58A6FF;box-shadow:inset 0 0 8px #58A6FF}.skin-neon .kb .bk{background:#05060f;border-color:#FF6FB5;box-shadow:0 0 8px #FF6FB5}.skin-neon .kb .nl{color:#8fb8ff}
 .skin-gold .kb .wk{background:linear-gradient(180deg,#fff8dc,#f3d27a)}.skin-gold .kb .bk{background:linear-gradient(180deg,#5a3d08,#2a1b02)}
 .sk-candy{filter:hue-rotate(290deg)}.sk-ocean{filter:hue-rotate(180deg)}.sk-neon{filter:drop-shadow(0 0 6px #58A6FF)}.sk-gold{filter:sepia(1) saturate(3)}
+
+.avf{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1}.fr-laurier{box-shadow:0 0 0 3px #3ECF8E;padding:2px}.fr-etoiles{box-shadow:0 0 0 3px #FFC83D,0 0 10px #FFC83D;padding:2px}.fr-flamme{box-shadow:0 0 0 3px #FF9F43,0 0 14px #FF5A6A;padding:2px}.fr-or{box-shadow:0 0 0 4px #FFC83D,0 0 0 7px #b8860b,0 0 16px #FFC83D;padding:2px}
+.story{max-width:720px;margin:10px auto;text-align:center}.story .sti{font-size:80px}.story .stp{font-size:24px;font-weight:700;line-height:1.45;margin:18px 6px;min-height:150px}
+.coach{display:flex;gap:12px;align-items:center;border:2px solid rgba(88,166,255,.45)}.coach .cp{font-size:44px}.ctip{font-weight:800;margin:4px 0}.ctip .btn{margin-left:6px}
 /* 🏁 univers */
 #fx{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
 #fx .cf{position:absolute;width:10px;height:14px;border-radius:2px;animation:cf 1s ease-out forwards}
@@ -201,7 +205,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='1.7';
+const VERSION='1.8';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -217,7 +221,7 @@ const QN={maj:'majeur',min:'mineur','7':'7',m7:'m7',maj7:'maj7'};
 function chordName(pc,q){return cap(frn(pc))+(typeof QN2!=='undefined'&&QN2[q]!=null?QN2[q]:(q==='maj'?'':(q==='min'?' mineur':' '+q)));}
 
 /* ─────────── profils ─────────── */
-const AVS=['🦁','🐼','🦊','🐸','🦄','🐯','🐙','🦋','🐨','🐥','🦖','🐬'];
+const AVS=['🦁','🐼','🦊','🐸','🐑','🐯','🐙','🦋','🐨','🐥','🐢','🐬'];
 let DB=(function(){try{const o=JSON.parse(localStorage.getItem('gk_v1'));if(o&&o.profs)return o;}catch(e){}return {profs:[],cur:null,pin:'',msg:'',voice:true};})();
 function save(){try{localStorage.setItem('gk_v1',JSON.stringify(DB));}catch(e){}}
 function P(){return DB.profs.filter(function(p){return p.id===DB.cur;})[0]||null;}
@@ -226,7 +230,7 @@ function P(){return DB.profs.filter(function(p){return p.id===DB.cur;})[0]||null
 let AC=null;function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}catch(e){}return AC;}
 /* play(notes, durée, [instant audio], [volume]) — l'instant permet de programmer les sons sur l'horloge audio (rythme exact) */
 let SCHED=[];
-function play(notes,dur,when,vol){dur=dur||1;vol=vol||.22;try{const c=ac();if(!c)return;const t=when!=null?Math.max(when,c.currentTime):c.currentTime;notes.forEach(function(m,i){const f=440*Math.pow(2,(m-69)/12);const o=c.createOscillator(),o2=c.createOscillator(),g=c.createGain(),g2=c.createGain();o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.15;o.connect(g);o2.connect(g2);g2.connect(g);g.connect(c.destination);const at=t+i*.01;g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(vol,at+.02);g.gain.exponentialRampToValueAtTime(.001,at+dur);o.start(at);o2.start(at);o.stop(at+dur+.05);o2.stop(at+dur+.05);if(when!=null){SCHED.push(o,o2);if(SCHED.length>4000)SCHED=SCHED.slice(-2000);}});}catch(e){}}
+function play(notes,dur,when,vol){dur=dur||1;vol=vol||.22;try{const c=ac();if(!c)return;const t=when!=null?Math.max(when,c.currentTime):c.currentTime;const ins=(when==null||dur>.15)?INSTR:'piano';notes.forEach(function(m,i){const f=440*Math.pow(2,(m-69)/12);const o=c.createOscillator(),o2=c.createOscillator(),g=c.createGain(),g2=c.createGain();o.type=ins==='orgue'?'square':(ins==='piano'?'triangle':'sine');o2.type='sine';o.frequency.value=f;o2.frequency.value=f*({piano:2,orgue:2,xylo:4,flute:2,cloche:2.76})[ins];g2.gain.value=({piano:.15,orgue:.5,xylo:.25,flute:.04,cloche:.35})[ins];o.connect(g);o2.connect(g2);g2.connect(g);g.connect(c.destination);const at=t+i*.01;const v=vol*(ins==='orgue'?.45:1);g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(v,at+(ins==='flute'?.07:(ins==='orgue'?.03:.02)));if(ins==='orgue'||ins==='flute'){g.gain.setValueAtTime(v*.85,at+Math.max(.05,dur*.85));g.gain.linearRampToValueAtTime(.0001,at+dur);}else g.gain.exponentialRampToValueAtTime(.001,at+(ins==='xylo'?Math.min(dur,.45):(ins==='cloche'?Math.max(dur,1.6):dur)));if(ins==='cloche')dur=Math.max(dur,1.6);o.start(at);o2.start(at);o.stop(at+dur+.05);o2.stop(at+dur+.05);if(when!=null){SCHED.push(o,o2);if(SCHED.length>4000)SCHED=SCHED.slice(-2000);}});}catch(e){}}
 function schedStop(){SCHED.forEach(function(o){try{o.stop();}catch(e){}});SCHED=[];}
 function ding(ok){play(ok?[84,88,91]:[50,49],ok?.5:.4);}
 function say(t){if(!DB.voice||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[🎹🌱⭐🏆👉✓✕·]/g,''));u.lang='fr-FR';u.rate=.95;speechSynthesis.speak(u);}catch(e){}}
@@ -667,14 +671,14 @@ function stepById(id){for(const I of ISLES)for(const s of I.steps)if(s.id===id)r
 const M=document.getElementById('main');
 let VIEW='profs';
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(function(){e.style.display='none';},2200);}
-function go(v,a){VIEW=v;stopDrill();({profs:vProfs,home:vHome,isle:vIsle,lesson:vLesson,drill:vDrill,parent:vParent,newprof:vNewProf,code:vCode,setcode:vSetCode,shop:vShop,arcade:vArcade,game:vGame})[v](a);window.scrollTo(0,0);}
+function go(v,a){VIEW=v;stopDrill();({story:vStory,profs:vProfs,home:vHome,isle:vIsle,lesson:vLesson,drill:vDrill,parent:vParent,newprof:vNewProf,code:vCode,setcode:vSetCode,shop:vShop,arcade:vArcade,game:vGame})[v](a);window.scrollTo(0,0);}
 function starsOf(p,id){const n=(p.stars||{})[id]||0;return '⭐'.repeat(n)+'☆'.repeat(3-n);}
 function isleProg(p,I){let t=0;I.steps.forEach(function(s){t+=Math.min(3,(p.stars||{})[s.id]||0);});return t/(I.steps.length*3);}
 function suggested(p){for(const I of ISLES)for(const s of I.steps)if(!((p.stars||{})[s.id]>=1))return {I:I,s:s};return null;}
 
 function vProfs(){
   document.getElementById('who').style.display='none';UNLOCK=null;skinApply();
-  M.innerHTML='<h1>Qui joue aujourd’hui ?</h1><div class="profs">'+DB.profs.map(function(p){return '<div class="prof" data-p="'+p.id+'"><div class="av">'+p.av+'</div><div class="nm">'+(p.code?'🔒 ':'')+p.name+'</div><div class="st">⭐ '+totalStars(p)+' · Niv. '+lvlOf(p.xp)+'</div></div>';}).join('')
+  M.innerHTML='<h1>Qui joue aujourd’hui ?</h1><div class="profs">'+DB.profs.map(function(p){return '<div class="prof" data-p="'+p.id+'"><div class="av">'+avHTML(p)+'</div><div class="nm">'+(p.code?'🔒 ':'')+p.name+'</div><div class="st">⭐ '+totalStars(p)+' · Niv. '+lvlOf(p.xp)+'</div></div>';}).join('')
     +'<div class="prof add" data-new="1"><div class="av">➕</div><div class="nm">Nouveau joueur</div></div></div>'
     +(DB.msg?'<div class="card msg">💌 Message des parents : '+esc(DB.msg)+'</div>':'');
   M.querySelectorAll('[data-p]').forEach(function(e){e.onclick=function(){const p=DB.profs.filter(function(x){return x.id===e.dataset.p;})[0];if(p.code&&UNLOCK!==p.id){go('code',p.id);return;}UNLOCK=p.id;DB.cur=p.id;save();go('home');};});
@@ -697,10 +701,11 @@ function vHome(){
   M.innerHTML='<h1>Bonjour '+p.name+' '+p.av+' <span class="hint" style="font-size:18px">🏅 '+(p.badges||[]).length+'/'+BADGES.length+' badges</span></h1>'+(sug?'<div class="hint">Prochaine étape conseillée : <b style="color:var(--or)">'+sug.I.t+' › '+sug.s.lb+'</b> — mais tu peux aller où tu veux.</div>':'<div class="hint">🏆 Tu as fini tout le parcours ! Rejoue ce que tu veux pour gagner 3 étoiles partout.</div>')
     +(DB.msg?'<div class="card msg">💌 '+esc(DB.msg)+'</div>':'')
     +'<div class="dash"><div class="dc"><b>🔥 '+streakOf(p)+'</b><span>jour'+(streakOf(p)>1?'s':'')+' de suite</span></div><div class="dc"><b>⭐ Niv. '+lvlOf(p.xp)+'</b><div class="bar"><i style="width:'+(function(){const r=lvlRange(lvlOf(p.xp));return Math.round(((p.xp||0)-r[0])/(r[1]-r[0])*100);})()+'%"></i></div><span>'+(p.xp||0)+' XP</span></div><div class="dc"><b>🪙 '+(p.coins||0)+'</b><span>pièces</span></div></div>'
-    +'<div class="row hbtn"><button class="btn b" id="goArc">🕹 L’arcade</button><button class="btn v" id="goShop">🛍 Boutique</button><button class="btn g" id="goCode">'+(p.code?'🔒 Mon code':'🔓 Créer mon code')+'</button></div>'+missionsHTML(p)+leagueHTML()+'<h2 style="margin-top:18px">🗺 Le monde de Garden</h2>'+worldHTML(p)+'<div style="display:none">'
+    +'<div class="row hbtn"><button class="btn b" id="goArc">🕹 L’arcade</button><button class="btn v" id="goShop">🛍 Boutique</button><button class="btn g" id="goCode">'+(p.code?'🔒 Mon code':'🔓 Créer mon code')+'</button></div>'+coachHTML(p)+missionsHTML(p)+leagueHTML()+'<h2 style="margin-top:18px">🗺 Le monde de Garden</h2>'+worldHTML(p)+'<div style="display:none">'
     +CUPS.map(function(C){const cs=cupState(p,C);const IS=ISLES.filter(function(I){return C.isles.indexOf(I.id)>=0;});return '<div class="cup"><div class="cuph"><span class="cupi'+(cs.gold?' gold':(cs.done?' won':''))+'">'+(cs.gold?'🏆':(cs.done?'🏆':C.ic))+'</span><div><div class="cupt">'+C.ic+' '+C.t+'</div><div class="hint">'+C.d+'</div></div><div class="cupp">'+cs.one+'/'+cs.n+'<div class="bar"><i style="width:'+Math.round(cs.one/Math.max(1,cs.n)*100)+'%"></i></div></div></div><div class="isles">'+IS.map(function(I){const pr=isleProg(p,I),done=I.steps.every(function(s){return (p.stars||{})[s.id]>=1;});
       return '<div class="isle'+(sug&&sug.I.id===I.id?' sug':'')+'" data-i="'+I.id+'" style="border-color:'+(sug&&sug.I.id===I.id?'var(--or)':I.col+'55')+'">'+(done?'<div class="tro">🏆</div>':'')+'<div class="ic">'+I.ic+'</div><div class="t">'+I.t+'</div><div class="d">'+I.d+'</div><div class="bar"><i style="width:'+Math.round(pr*100)+'%"></i></div></div>';}).join('')+'</div></div>';}).join('')+'</div>'+albumHTML(p);
   whoUpdate();
+  M.querySelectorAll('[data-coach]').forEach(function(b){b.onclick=function(){go('lesson',b.dataset.coach);};});
   document.getElementById('goArc').onclick=function(){go('arcade');};document.getElementById('goShop').onclick=function(){go('shop');};document.getElementById('goCode').onclick=function(){go('setcode');};
   const cl=document.getElementById('claim');if(cl)cl.onclick=function(){const q=missions(p);q.claimed=true;p.stickers=p.stickers||[];const left=STICKERS.filter(function(s){return p.stickers.indexOf(s[0])<0;});let msg;if(left.length){const s=pick(left);p.stickers.push(s[0]);msg=s[0]+' '+s[1]+' + 25 pièces !';}else msg='+40 pièces !';p.coins=(p.coins||0)+(left.length?25:40);save();confetti(90);play([72,76,79,84,88,91,96],1,null,.16);banner('🎁 '+msg,'#FFC83D');setTimeout(function(){go('home');},1400);};
   M.querySelectorAll('[data-i]').forEach(function(e){e.onclick=function(){go('isle',e.dataset.i);};});
@@ -894,7 +899,7 @@ function good(){const q=DR.qs[DR.i];if(DR.res[DR.i]==null){DR.res[DR.i]=!DR.wron
   document.getElementById('fb').className='fb good';document.getElementById('fb').textContent=pick(['Bravo !','Super !','Oui !','Parfait !','Génial !']);
   KBMAP={};targetNotes(q).forEach(function(m){KBMAP[m]='ok';});if(q.any)held.forEach(function(m){KBMAP[m]='ok';});if(q.ivs&&q.r!=null&&!q.flash){const played=Array.from(DR.fresh);if(played.length)KBMAP=etageMap(q.r,q.ivs,played);}else if(q.flash)KBMAP=etageMap(q.r,q.ivs,q.notes);kbPaint('kb',KBMAP);if(q.reveal)document.getElementById('fb').textContent+=' '+q.reveal;
   halo();DR.tmo2=setTimeout(function(){if(!DR.on)return;DR.i++;DR.ptr=0;DR.fresh=new Set();DR.wrong=false;DR.help=false;DR.lock=false;DR.flashOff=false;if(DR.chronoOn&&DR.i>=DR.qs.length)DR.i=0;showQ();},DR.chronoOn?350:900);}
-function fail(m,want){if(!DR.wrong){DR.err++;DR.res[DR.i]=false;keyStat(DR.qs[DR.i]||{},false);fxBad();}DR.wrong=true;flash(false);ding(false);
+function fail(m,want){if(!DR.wrong){DR.err++;DR.res[DR.i]=false;keyStat(DR.qs[DR.i]||{},false);fxBad();}DR.qf=DR.qf||{};DR.qf[DR.i]=(DR.qf[DR.i]||0)+1;if(DR.qf[DR.i]===2&&!DR.help){DR.help=true;setTimeout(function(){const fb=document.getElementById('fb');if(fb&&DR.wrong){fb.className='fb';fb.textContent='🤝 Je t’aide : regarde les touches entourées en pointillés.';}},1400);}DR.wrong=true;flash(false);ding(false);
   const w=want[0];const d=w!=null?((w%12)-(m%12)+12)%12:null;
   let t='✕ '+cap(noteFr(m));
   if(w!=null&&DR.qs[DR.i]&&(DR.qs[DR.i].from!=null)){const diff=w-m;t+=' — '+(Math.abs(diff)===1?'une marche':Math.abs(diff)+' marches')+(diff>0?' plus haut →':' ← plus bas')+' : '+frn(w%12);}
@@ -1173,7 +1178,7 @@ ISLES.push(
   {id:'fo1',lb:'⚪⚪⚪ do, fa, sol',les:[['👀','Regarde l’accord de do majeur : trois touches BLANCHES. C’est une forme, comme une photo.'],['🧩','Fa majeur et sol majeur ont exactement la même photo : blanc-blanc-blanc.'],['⭐','Joue do, fa ou sol majeur. Pense à la photo, pas aux notes une par une.']],drill:{type:'chord',q:'maj',roots:[0,5,7],n:8,colors:true}},
   {id:'fo2',lb:'⚪⚫⚪ ré, mi, la',les:[['👀','Ré majeur : blanche – NOIRE – blanche. La touche du milieu est noire.'],['🧩','Mi majeur et la majeur ont la même photo : ⚪⚫⚪.'],['⭐','Trois accords, une seule forme à retenir.']],drill:{type:'chord',q:'maj',roots:[2,4,9],n:8,colors:true}},
   {id:'fo3',lb:'⚫⚪⚫ ré♭, mi♭, la♭',les:[['👀','Ré♭ majeur : noire – BLANCHE – noire. C’est l’inverse de la famille d’avant !'],['🧩','Mi♭ et la♭ majeur ont la même photo : ⚫⚪⚫.'],['⭐','Joue ré♭, mi♭ ou la♭ majeur.']],drill:{type:'chord',q:'maj',roots:[1,3,8],n:8,colors:true}},
-  {id:'fo4',lb:'Les cas à part : si, si♭, fa♯',les:[['🦄','Trois accords n’ont pas de famille : si majeur (⚪⚫⚫), si♭ majeur (⚫⚪⚪) et fa♯ majeur (⚫⚫⚫, tout noir !).'],['👀','Prends une photo de chacun : ce sont les originaux.'],['⭐','Joue si, si♭ ou fa♯ majeur.']],drill:{type:'chord',q:'maj',roots:[11,10,6],n:8,colors:true}},
+  {id:'fo4',lb:'Les cas à part : si, si♭, fa♯',les:[['🧩','Trois accords n’ont pas de famille : si majeur (⚪⚫⚫), si♭ majeur (⚫⚪⚪) et fa♯ majeur (⚫⚫⚫, tout noir !).'],['👀','Prends une photo de chacun : ce sont les originaux.'],['⭐','Joue si, si♭ ou fa♯ majeur.']],drill:{type:'chord',q:'maj',roots:[11,10,6],n:8,colors:true}},
   {id:'fo5',lb:'Quelle famille ?',les:[['🧩','Quatre familles : ⚪⚪⚪ (do fa sol), ⚪⚫⚪ (ré mi la), ⚫⚪⚫ (ré♭ mi♭ la♭) et les cas à part.'],['🤔','Pour chaque accord, retrouve sa famille sans le jouer.'],['⭐','Tu peux tricher en regardant le clavier allumé !']],drill:{type:'qshape',n:10}},
   {id:'fo6',lb:'Les formes des mineurs',les:[['🎭','En mineur, les familles changent de costume : ré, mi et la mineur deviennent tout blancs ⚪⚪⚪.'],['🎭','Do, fa et sol mineur deviennent ⚪⚫⚪ : la note du milieu descend sur une noire.'],['⭐','Joue ces six mineurs en pensant à leur nouvelle photo.']],drill:{type:'chord',q:'min',roots:[2,4,9,0,5,7],n:10,colors:true}},
   {id:'fo7',lb:'📸 Le flash',les:[['📸','Un accord s’allume une seconde… puis disparaît !'],['🧠','Garde la photo dans ta tête, puis rejoue-le exactement, au même endroit.'],['⭐','Plus tu réussis, plus le flash devient rapide.']],drill:{type:'flash',q:'both',n:8,ms:2000}},
@@ -1315,7 +1320,7 @@ const CUPS=[
 (function(){const ord=[];CUPS.forEach(function(C){C.isles.forEach(function(id){ord.push(id);});});ISLES.sort(function(a,b){const ia=ord.indexOf(a.id),ib=ord.indexOf(b.id);return (ia<0?999:ia)-(ib<0?999:ib);});})();
 function cupOf(isleId){return CUPS.filter(function(C){return C.isles.indexOf(isleId)>=0;})[0];}
 function cupState(p,C){const I=ISLES.filter(function(x){return C.isles.indexOf(x.id)>=0;});let n=0,one=0,three=0;I.forEach(function(x){x.steps.forEach(function(s){n++;const st=(p.stars||{})[s.id]||0;if(st>=1)one++;if(st>=3)three++;});});return {n:n,one:one,three:three,done:n&&one===n,gold:n&&three===n};}
-const STICKERS=[['🦊','Renard rusé'],['🐬','Dauphin'],['🦄','Licorne'],['🚀','Fusée'],['🌈','Arc-en-ciel'],['🎸','Guitare'],['🐢','Tortue turbo'],['🦁','Lion'],['🐙','Pieuvre pianiste'],['🦖','Dino'],['🐝','Abeille'],['🦉','Hibou'],['🐧','Pingouin'],['🦋','Papillon'],['🍉','Pastèque'],['🍦','Glace'],['🎈','Ballon'],['🎺','Trompette'],['🥁','Tambour'],['🎻','Violon'],['🪐','Planète'],['⚡','Éclair'],['👑','Couronne'],['💎','Diamant'],['🏎','Bolide'],['🛸','Soucoupe'],['🌋','Volcan'],['🐳','Baleine'],['🦜','Perroquet'],['🐼','Panda'],['🦩','Flamant'],['🍀','Trèfle']];
+const STICKERS=[['🦊','Renard rusé'],['🐬','Dauphin'],['🐑','Agneau'],['🚀','Fusée'],['🌈','Arc-en-ciel'],['🎸','Guitare'],['🐢','Tortue turbo'],['🦁','Lion'],['🐙','Pieuvre pianiste'],['🦖','Dino'],['🐝','Abeille'],['🦉','Hibou'],['🐧','Pingouin'],['🦋','Papillon'],['🍉','Pastèque'],['🍦','Glace'],['🎈','Ballon'],['🎺','Trompette'],['🥁','Tambour'],['🎻','Violon'],['🪐','Planète'],['⚡','Éclair'],['👑','Couronne'],['💎','Diamant'],['🏎','Bolide'],['🛸','Soucoupe'],['🌋','Volcan'],['🐳','Baleine'],['🦜','Perroquet'],['🐼','Panda'],['🦩','Flamant'],['🍀','Trèfle']];
 function fxOn(){return DB.fx!==false&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
 function fxLayer(){let L=document.getElementById('fx');if(!L){L=document.createElement('div');L.id='fx';document.body.appendChild(L);}return L;}
 function fxCenter(){const st=document.getElementById('stage');if(!st)return [window.innerWidth/2,window.innerHeight/2];const r=st.getBoundingClientRect();return [r.left+r.width/2,Math.max(80,r.top+Math.min(r.height*.3,180))];}
@@ -1339,12 +1344,13 @@ function mascot(ok,combo){const m=document.getElementById('masc');if(!m)return;c
 /* appelé à chaque bonne réponse / erreur */
 function fxGood(){const p=P();if(!DR.wrong){DR.combo=(DR.combo||0)+1;}else DR.combo=0;const cb=DR.combo||0;DR.bestCombo=Math.max(DR.bestCombo||0,cb);
   const gain=cb>=10?3:(cb>=5?2:1);if(p){p.coins=(p.coins||0)+gain;}DR.coinsWon=(DR.coinsWon||0)+gain;addXP(gain*2);
-  mascot(true,cb);confetti(cb>=5?28:14);coinFly(Math.min(3,gain));emoPop(cb>=10?'🤩':(cb>=5?'🔥':pick(['⭐','✨','🎉','💫','😀'])));
-  if(cb===3)banner('COMBO ×3','#FFC83D');else if(cb===5){banner('🔥 TURBO !','#FF9F43');play([72,76,79,84,88],.5,null,.12);}else if(cb===10){banner('🌈 SUPER TURBO !','#FF6FB5');play([72,76,79,84,88,91,96],.6,null,.12);}else if(cb>10&&cb%5===0)banner('🌈 ×'+cb,'#FF6FB5');
+  const lv=DB.fxlvl||'normal',mile=cb===5||cb===10||(cb>10&&cb%5===0);mascot(true,cb);coinFly(lv==='doux'?1:Math.min(3,gain));
+  if(lv==='fete'){confetti(cb>=5?28:14);emoPop(cb>=10?'🤩':(cb>=5?'🔥':pick(['⭐','✨','🎉','💫','😀'])));}else if(lv==='normal'){if(mile){confetti(22);emoPop(cb>=10?'🤩':'🔥');}else if(!DR.wrong&&cb%3===0)emoPop(pick(['⭐','✨','💫']));}else if(mile)confetti(14);
+  if(cb===3&&lv==='fete')banner('COMBO ×3','#FFC83D');else if(cb===5){banner('🔥 TURBO !','#FF9F43');play([72,76,79,84,88],.5,null,.12);}else if(cb===10){banner('🌈 SUPER TURBO !','#FF6FB5');play([72,76,79,84,88,91,96],.6,null,.12);}else if(cb>10&&cb%5===0)banner('🌈 ×'+cb,'#FF6FB5');
   comboShow();whoUpdate();}
 function fxBad(){DR.combo=0;mascot(false,0);comboShow();}
 function comboShow(){const e=document.getElementById('combo');if(!e)return;const cb=DR.combo||0;e.innerHTML=cb>=2?'🔥 ×'+cb:'';e.className='combo'+(cb>=10?' rb':(cb>=5?' hot':''));}
-function whoUpdate(){const p=P(),w=document.getElementById('who');if(p&&w&&w.style.display!=='none')w.innerHTML=p.av+' '+p.name+' · ⭐ '+totalStars(p)+' · 🪙 '+(p.coins||0);}
+function whoUpdate(){const p=P(),w=document.getElementById('who');if(p&&w&&w.style.display!=='none')w.innerHTML=avHTML(p)+' '+esc(p.name)+(p.title?' <small>· '+esc(p.title)+'</small>':'')+' · ⭐ '+totalStars(p)+' · 🪙 '+(p.coins||0);}
 /* boîte surprise en fin d'exercice : autocollant (ou pièces si l'album est complet) */
 function prizeBox(stars){const p=P();if(!p||stars<2)return '';p.stickers=p.stickers||[];const left=STICKERS.filter(function(s){return p.stickers.indexOf(s[0])<0;});let prize;
   if(left.length&&(stars===3||Math.random()<.6)){const s=pick(left);p.stickers.push(s[0]);prize='<div class="big2">'+s[0]+'</div><div>Nouvel autocollant : <b>'+s[1]+'</b> ('+p.stickers.length+'/'+STICKERS.length+')</div>';}
@@ -1353,7 +1359,7 @@ function prizeBox(stars){const p=P();if(!p||stars<2)return '';p.stickers=p.stick
 function prizeWire(){const b=document.getElementById('pbox');if(!b)return;const open=function(){if(b.dataset.o)return;b.dataset.o=1;b.querySelector('.q3').classList.add('open');play([79,84,88],.4,null,.15);setTimeout(function(){b.querySelector('.q3').style.display='none';b.querySelector('.pin').style.display='';confetti(30);},420);};b.onclick=open;}
 /* ═══════════ 🔒 codes secrets · 🗺 carte du monde · 🔥 série · 🎯 missions · 🏅 ligue · 🛍 boutique · 🕹 arcade ═══════════ */
 let UNLOCK=null;
-const CODE_EM=['🐶','🐱','🐸','🦁','🐼','🐵','🦄','🐙','🐢'];
+const CODE_EM=['🐶','🐱','🐸','🦁','🐼','🐵','🐑','🐙','🐢'];
 function canEnter(p){return p&&(!p.code||UNLOCK===p.id);}
 function vCode(pid){const p=DB.profs.filter(function(x){return x.id===pid;})[0];if(!p){go('profs');return;}let entry=[];
   const draw=function(msg){M.innerHTML='<div class="card codec"><div class="av" style="font-size:64px">'+p.av+'</div><h1>'+esc(p.name)+'</h1><div class="hint">'+(msg||'Ton code secret : touche tes 3 animaux')+'</div><div class="dots3">'+[0,1,2].map(function(i){return '<span>'+(entry[i]?'●':'○')+'</span>';}).join('')+'</div><div class="cgrid">'+CODE_EM.map(function(e){return '<button data-e="'+e+'">'+e+'</button>';}).join('')+'</div><div class="row" style="justify-content:center;margin-top:14px"><button class="btn g" id="back">← Retour</button><button class="btn s g" id="forgot">J’ai oublié</button></div></div>';
@@ -1386,19 +1392,27 @@ function missionsHTML(p){const q=missions(p);const all=q.ids.every(function(id){
 function leagueHTML(){const w=weekId();const L=DB.profs.map(function(p){return {p:p,x:(p.wxp&&p.wxp.w===w)?p.wxp.xp:0};}).sort(function(a,b){return b.x-a.x;});if(L.length<2)return '';
   return '<div class="card"><h2>🏅 Ligue de la famille <span class="hint">cette semaine</span></h2>'+L.map(function(r,i){return '<div class="lrow'+(r.p.id===DB.cur?' me':'')+'"><span class="lr">'+(['🥇','🥈','🥉'][i]||(i+1))+'</span><span>'+r.p.av+' '+esc(r.p.name)+'</span><b>'+r.x+' XP</b></div>';}).join('')+'</div>';}
 /* ── boutique : compagnons et claviers ── */
-const PETS=[['🌱','Pousse',0],['🐣','Poussin',30],['🐸','Grenouille',60],['🦊','Renard',100],['🐲','Dragon',160],['🦄','Licorne',240],['🤖','Robot',320],['👽','Alien',400]];
+const PETS=[['🌱','Pousse',0],['🐣','Poussin',30],['🐸','Grenouille',60],['🦊','Renard',100],['🐑','Agneau',140],['🦁','Lion',200],['🕊','Colombe',260],['🤖','Robot',320]];
 const SKINS=[['classic','🎹 Classique',0],['candy','🍬 Bonbon',50],['ocean','🌊 Océan',90],['neon','💡 Néon',140],['gold','👑 Or',300]];
-function vShop(){const p=P();if(!p){go('profs');return;}p.owned=p.owned||['🌱','classic'];
+function vShop(){const p=P();if(!p){go('profs');return;}p.owned=p.owned||['🌱','classic'];const w0=document.getElementById('who');if(w0)w0.style.display='';setTimeout(whoUpdate,0);
   M.innerHTML='<h1>🛍 La boutique <span class="hint">🪙 '+(p.coins||0)+' pièces</span></h1><div class="card"><h2>Ton compagnon</h2><div class="hint">Il t’accompagne dans les exercices et réagit à ce que tu joues.</div><div class="shop">'+PETS.map(function(x){const own=p.owned.indexOf(x[0])>=0,on=(p.pet||'🌱')===x[0];return '<button class="sh'+(on?' on':'')+'" data-pet="'+x[0]+'"><span class="big3">'+x[0]+'</span><span>'+x[1]+'</span><b>'+(on?'✔ choisi':(own?'Choisir':'🪙 '+x[2]))+'</b></button>';}).join('')+'</div></div>'
+    +'<div class="card"><h2>📚 Histoires de jeunes prodiges</h2><div class="hint">Des enfants qui ont aimé la musique comme toi. La première est offerte !</div><div class="shop">'+STORIES.map(function(s){const own=s.cost===0||p.owned.indexOf('st_'+s.id)>=0;const rd=(p.read||[]).indexOf(s.id)>=0;return '<button class="sh" data-story="'+s.id+'"><span class="big3">'+s.ic+'</span><span>'+s.t+'</span><b>'+(own?(rd?'✔ Relire':'📖 Lire'):'🪙 '+s.cost)+'</b></button>';}).join('')+'</div></div>'
+    +'<div class="card"><h2>🎵 Le son de ton clavier</h2><div class="shop">'+SOUNDS.map(function(x){const own=p.owned.indexOf('snd_'+x[0])>=0||x[2]===0,on=(p.sound||'piano')===x[0];return '<button class="sh'+(on?' on':'')+'" data-snd="'+x[0]+'"><span class="big3">'+x[1].split(' ')[0]+'</span><span>'+x[1].split(' ').slice(1).join(' ')+'</span><b>'+(on?'✔ choisi':(own?'Choisir':'🪙 '+x[2]))+'</b></button>';}).join('')+'</div></div>'
+    +'<div class="card"><h2>🖼 Le cadre de ton animal</h2><div class="shop">'+FRAMES.map(function(x){const own=p.owned.indexOf('fr_'+x[0])>=0||x[2]===0,on=(p.frame||'')===x[0];return '<button class="sh'+(on?' on':'')+'" data-frame="'+x[0]+'"><span class="big3"><span class="avf'+(x[0]?' fr-'+x[0]:'')+'">'+p.av+'</span></span><span>'+x[1]+'</span><b>'+(on?'✔ choisi':(own?'Choisir':'🪙 '+x[2]))+'</b></button>';}).join('')+'</div></div>'
+    +'<div class="card"><h2>🏷 Ton titre</h2><div class="shop">'+TITLES.map(function(x){const own=p.owned.indexOf('ti_'+x[0])>=0||x[2]===0,on=(p.title||'')===x[0];return '<button class="sh'+(on?' on':'')+'" data-title="'+x[0]+'"><span class="big3">🏷</span><span>'+x[1]+'</span><b>'+(on?'✔ choisi':(own?'Choisir':'🪙 '+x[2]))+'</b></button>';}).join('')+'</div></div>'
     +'<div class="card"><h2>Ton clavier</h2><div class="shop">'+SKINS.map(function(x){const own=p.owned.indexOf(x[0])>=0,on=(p.skin||'classic')===x[0];return '<button class="sh'+(on?' on':'')+'" data-skin="'+x[0]+'"><span class="big3 sk-'+x[0]+'">🎹</span><span>'+x[1]+'</span><b>'+(on?'✔ choisi':(own?'Choisir':'🪙 '+x[2]))+'</b></button>';}).join('')+'</div></div><div class="row"><button class="btn g" id="back">← Retour</button></div>';
-  const buy=function(id,cost,set){if(p.owned.indexOf(id)<0){if((p.coins||0)<cost){toast('Il te manque '+(cost-(p.coins||0))+' pièces — joue encore !');return;}p.coins-=cost;p.owned.push(id);confetti(40);play([72,76,79,84,88],.6,null,.15);}set();save();skinApply();vShop();};
+  const buy=function(id,cost,set){if(cost===0&&p.owned.indexOf(id)<0)p.owned.push(id);if(p.owned.indexOf(id)<0){if((p.coins||0)<cost){toast('Il te manque '+(cost-(p.coins||0))+' pièces — joue encore !');return;}p.coins-=cost;p.owned.push(id);confetti(40);play([72,76,79,84,88],.6,null,.15);}set();save();skinApply();if(id.indexOf('st_')!==0)vShop();};
   M.querySelectorAll('[data-pet]').forEach(function(b){const x=PETS.filter(function(y){return y[0]===b.dataset.pet;})[0];b.onclick=function(){buy(x[0],x[2],function(){p.pet=x[0];});};});
   M.querySelectorAll('[data-skin]').forEach(function(b){const x=SKINS.filter(function(y){return y[0]===b.dataset.skin;})[0];b.onclick=function(){buy(x[0],x[2],function(){p.skin=x[0];});};});
+  M.querySelectorAll('[data-story]').forEach(function(b){const s=STORIES.filter(function(y){return y.id===b.dataset.story;})[0];b.onclick=function(){if(s.cost===0||p.owned.indexOf('st_'+s.id)>=0){go('story',s.id);return;}buy('st_'+s.id,s.cost,function(){});if(p.owned.indexOf('st_'+s.id)>=0)go('story',s.id);};});
+  M.querySelectorAll('[data-snd]').forEach(function(b){const x=SOUNDS.filter(function(y){return y[0]===b.dataset.snd;})[0];b.onclick=function(){buy('snd_'+x[0],x[2],function(){p.sound=x[0];});play([60,64,67,72],.8);};});
+  M.querySelectorAll('[data-frame]').forEach(function(b){const x=FRAMES.filter(function(y){return y[0]===b.dataset.frame;})[0];b.onclick=function(){buy('fr_'+x[0],x[2],function(){p.frame=x[0];});};});
+  M.querySelectorAll('[data-title]').forEach(function(b){const x=TITLES.filter(function(y){return y[0]===b.dataset.title;})[0];b.onclick=function(){buy('ti_'+x[0],x[2],function(){p.title=x[0];});};});
   document.getElementById('back').onclick=function(){go('home');};}
-function skinApply(){const p=P();document.body.className=document.body.className.replace(/\bskin-\w+/g,'').trim();if(p&&p.skin&&p.skin!=='classic')document.body.classList.add('skin-'+p.skin);}
+function skinApply(){const p=P();INSTR=(p&&p.sound)||'piano';document.body.className=document.body.className.replace(/\bskin-\w+/g,'').trim();if(p&&p.skin&&p.skin!=='classic')document.body.classList.add('skin-'+p.skin);}
 function petOf(){const p=P();return (p&&p.pet)||'🌱';}
 /* ── 🗺 la carte du monde : une coupe = un monde, les îles sur un chemin ── */
-const WORLD={graine:{bg:'linear-gradient(180deg,#1f4d2e,#16341f)',deco:['🌳','🌿','🍄','🐞','🌼','🦋','🌲']},fleur:{bg:'linear-gradient(180deg,#5a2d52,#3a1d3a)',deco:['🌷','🌸','🐝','🌻','🦋','🌺','🐌']},etoile:{bg:'linear-gradient(180deg,#1b2459,#0e1438)',deco:['⭐','✨','🌙','🪐','☄️','🌟','🛰']},arc:{bg:'linear-gradient(180deg,#2b4f7a,#1d3352)',deco:['☁️','🌈','🎈','🪁','☁️','🕊','🌤']},couronne:{bg:'linear-gradient(180deg,#5a3a12,#3a240a)',deco:['🏰','👑','💎','🐉','🗝','⚔️','🛡']}};
+const WORLD={graine:{bg:'linear-gradient(180deg,#1f4d2e,#16341f)',deco:['🌳','🌿','🍄','🐞','🌼','🦋','🌲']},fleur:{bg:'linear-gradient(180deg,#5a2d52,#3a1d3a)',deco:['🌷','🌸','🐝','🌻','🦋','🌺','🐌']},etoile:{bg:'linear-gradient(180deg,#1b2459,#0e1438)',deco:['⭐','✨','🌙','🪐','☄️','🌟','🛰']},arc:{bg:'linear-gradient(180deg,#2b4f7a,#1d3352)',deco:['☁️','🌈','🎈','🪁','☁️','🕊','🌤']},couronne:{bg:'linear-gradient(180deg,#5a3a12,#3a240a)',deco:['🏰','👑','💎','🦁','🗝','🎺','🛡']}};
 function worldHTML(p){let sug=suggested(p);const curIsle=sug?sug.I.id:null;let gi=0;
   return CUPS.map(function(C,ci){const cs=cupState(p,C),W=WORLD[C.id];const IS=ISLES.filter(function(I){return C.isles.indexOf(I.id)>=0;});
     const deco=[];for(let k=0;k<IS.length*2+2;k++){const side=k%2?'right':'left';deco.push('<span class="dco" style="'+side+':'+(4+((k*37)%18))+'%;top:'+(70+k*62)+'px;animation-delay:'+(k*.4)+'s">'+W.deco[k%W.deco.length]+'</span>');}
@@ -1435,12 +1449,76 @@ function vGame(kind){const p=P();if(!p){go('profs');return;}const pro=kind==='ru
     if(rec){confetti(80);play([72,76,79,84,88,91,96],1.2,null,.16);}document.getElementById('again').onclick=function(){go('game',kind);};document.getElementById('arc').onclick=function(){go('arcade');};};
   document.getElementById('quit').onclick=function(){if(DR.on)gameOver();};countdown();setTimeout(function(){if(DR.game===kind){DR.t0=DR.last=performance.now();requestAnimationFrame(loop);}},1300);}
 
+/* ═══════════ 📚 histoires de jeunes prodiges · 🎵 sons · 🖼 cadres · 🏷 titres · 💡 coach ═══════════ */
+const STORIES=[
+ {id:'bach',ic:'🌙',t:'Bach et la musique au clair de lune',who:'Jean-Sébastien Bach (1685-1750)',cost:0,go:'c6',goLb:'Joue le cantique « Amazing Grace »',pages:[
+  'Jean-Sébastien devient orphelin à 10 ans. Il part vivre chez son grand frère, Johann Christoph, qui est organiste.',
+  'Le grand frère possède un cahier de belles pièces pour clavier, rangé derrière une grille. On raconte que Jean-Sébastien, la nuit, le recopiait note par note… à la lumière de la lune, pendant des mois !',
+  'Devenu grand, Bach écrit des centaines d’œuvres pour l’église. À la fin de ses partitions, il note souvent trois lettres : S.D.G. — « Soli Deo Gloria », à Dieu seul la gloire.',
+  '💡 Ce qu’on retient : la musique demande de la patience. Et on peut jouer pour faire plaisir à Dieu, pas seulement pour être applaudi.']},
+ {id:'mozart',ic:'🎩',t:'Mozart, 6 ans, en tournée',who:'Wolfgang Amadeus Mozart (1756-1791)',cost:15,go:'c4',goLb:'Joue « Ah ! vous dirai-je, maman »',pages:[
+  'Le petit Wolfgang regarde sa grande sœur prendre ses leçons de clavecin… et à 5 ans, il invente déjà ses propres petites pièces !',
+  'À 6 ans, il part en voyage avec sa famille et joue devant l’impératrice Marie-Thérèse, à Vienne. On l’applaudit dans toute l’Europe.',
+  'Plus tard, il écrit 12 variations sur un air que tu connais : « Ah ! vous dirai-je, maman » (le même que « Twinkle, twinkle little star »).',
+  '💡 Ce qu’on retient : on commence par des petites mélodies simples… et on les fait grandir.']},
+ {id:'nannerl',ic:'👧',t:'Nannerl, la grande sœur',who:'Maria Anna « Nannerl » Mozart (1751-1829)',cost:15,go:'rose_petitsamis',goLb:'Joue « Les petits amis » à quatre mains',pages:[
+  'Avant Wolfgang, il y avait Nannerl, sa grande sœur, de 5 ans plus âgée. Elle jouait du clavecin de façon brillante.',
+  'Les deux enfants partaient en tournée ensemble et jouaient parfois à quatre mains, sur le même clavier.',
+  'Wolfgang admirait beaucoup sa sœur et lui écrivait des lettres pleines de blagues.',
+  '💡 Ce qu’on retient : la musique se partage en famille. Joue à quatre mains avec un frère ou une sœur !']},
+ {id:'clara',ic:'🎀',t:'Clara, 11 ans, sur la grande scène',who:'Clara Wieck-Schumann (1819-1896)',cost:20,go:'rose_valserose',goLb:'Joue « La valse rose »',pages:[
+  'Clara grandit à Leipzig. Son papa est professeur de piano et la fait travailler un peu chaque jour, sans jamais sauter un jour.',
+  'À 9 ans, elle joue pour la première fois devant le public. À 11 ans, elle donne son propre concert !',
+  'Elle devient l’une des plus grandes pianistes de son temps, et compose aussi sa propre musique.',
+  '💡 Ce qu’on retient : un petit peu chaque jour vaut mieux que beaucoup une fois. C’est ta série 🔥 !']},
+ {id:'saintsaens',ic:'🧠',t:'Saint-Saëns et sa mémoire incroyable',who:'Camille Saint-Saëns (1835-1921)',cost:20,go:'fo7',goLb:'Essaie le jeu du flash (mémoire)',pages:[
+  'Camille commence le piano avant ses 3 ans ! Il reconnaît toutes les notes à l’oreille.',
+  'À 10 ans, pour son premier concert à Paris, il propose de jouer en plus, PAR CŒUR, n’importe laquelle des 32 sonates de Beethoven.',
+  'Devenu adulte, il est organiste pendant près de 20 ans dans une grande église de Paris, la Madeleine.',
+  '💡 Ce qu’on retient : la mémoire, ça s’entraîne. Regarde bien… puis rejoue sans regarder !']},
+ {id:'stevie',ic:'🕶',t:'Stevie, 11 ans, chez Motown',who:'Stevie Wonder (né en 1950)',cost:25,go:'m3',goLb:'Improvise avec les 5 notes magiques',pages:[
+  'Stevie est aveugle depuis qu’il est bébé. Mais ses oreilles sont extraordinaires !',
+  'Enfant, il chante dans la chorale de son église et apprend tout seul le piano, l’harmonica et la batterie.',
+  'À 11 ans, la célèbre maison de disques Motown lui fait signer un contrat. À 13 ans, sa chanson est numéro 1 !',
+  '💡 Ce qu’on retient : écoute beaucoup, essaie, invente. L’oreille est ton super-pouvoir.']},
+ {id:'preston',ic:'⛪',t:'Billy, 10 ans, à l’orgue',who:'Billy Preston (1946-2006)',cost:25,go:'g1',goLb:'Découvre l’accord de 7 du gospel',pages:[
+  'Billy grandit en jouant à l’église. Il adore l’orgue et ses accords pleins de couleurs.',
+  'À 10 ans, il accompagne à l’orgue la grande chanteuse de gospel Mahalia Jackson !',
+  'Plus tard, il joue avec les plus grands groupes du monde, mais il n’oublie jamais la musique de l’église.',
+  '💡 Ce qu’on retient : servir à l’église, c’est une magnifique école de musique.']},
+ {id:'franklin',ic:'🎤',t:'Kirk, 11 ans, chef de chorale',who:'Kirk Franklin (né en 1970)',cost:30,go:'ch5',goLb:'Joue la suite gospel 1 – 5 – 6 – 4',pages:[
+  'Kirk est élevé par sa tante, qui économise pour lui payer des leçons de piano dès 4 ans.',
+  'À 11 ans, il dirige déjà la chorale des adultes de son église !',
+  'Aujourd’hui, il est l’un des musiciens de gospel les plus connus au monde.',
+  '💡 Ce qu’on retient : même jeune, on peut servir et entraîner les autres avec la musique.']}];
+const SOUNDS=[['piano','🎹 Piano',0],['orgue','⛪ Orgue',40],['xylo','🎶 Xylophone',60],['flute','🎵 Flûte',80],['cloche','🔔 Cloches',120]];
+const FRAMES=[['','Aucun',0],['laurier','🌿 Laurier',50],['etoiles','⭐ Étoiles',80],['flamme','🔥 Flamme',120],['or','👑 Or',200]];
+const TITLES=[['','Apprenti',0],['Petit musicien','Petit musicien',30],['Psalmiste','Psalmiste 🎶',100],['Maestro','Maestro',150],['Virtuose','Virtuose',250]];
+let INSTR='piano';
+function avHTML(p){return '<span class="avf'+(p.frame?' fr-'+p.frame:'')+'">'+p.av+'</span>';}
+/* ── lecture d'une histoire ── */
+function vStory(id){const p=P(),S=STORIES.filter(function(s){return s.id===id;})[0];if(!p||!S){go('home');return;}let i=0;
+  const draw=function(){const last=i===S.pages.length-1;M.innerHTML='<div class="card story"><div class="sti">'+S.ic+'</div><h1>'+S.t+'</h1><div class="hint">'+S.who+'</div><div class="stp">'+S.pages[i]+'</div><div class="dots">'+S.pages.map(function(x,k){return '<i'+(k===i?' class="on"':'')+'></i>';}).join('')+'</div>'
+    +'<div class="row" style="justify-content:center"><button class="btn g" id="prev">←</button><button class="btn s g" id="say">🔊 Lire</button>'+(last?'<button class="btn v" id="defi">⭐ '+S.goLb+'</button>':'<button class="btn b" id="next">Suite →</button>')+'</div></div>';
+    say(S.pages[i]);document.getElementById('prev').onclick=function(){if(i>0){i--;draw();}else go('shop');};document.getElementById('say').onclick=function(){say(S.pages[i]);};
+    const n=document.getElementById('next');if(n)n.onclick=function(){i++;draw();};
+    const d=document.getElementById('defi');if(d)d.onclick=function(){p.read=p.read||[];if(p.read.indexOf(S.id)<0){p.read.push(S.id);addXP(10);save();}go('lesson',S.go);};};draw();}
+/* ── 💡 le coach : 1 ou 2 conseils personnalisés, jamais plus ── */
+function coachHTML(p){const tips=[];const st=streakOf(p),played=(p.pdays||[]).indexOf(today())>=0;
+  if(st>0&&!played)tips.push(['🔥','Joue un petit exercice aujourd’hui pour garder ta série de '+st+' jour'+(st>1?'s':'')+' !',null]);
+  const L=(p.log||[]).slice(-12),bad={};L.forEach(function(l){if(l.st<=1)bad[l.s]=(bad[l.s]||0)+1;});const wk=Object.keys(bad).sort(function(a,b){return bad[b]-bad[a];})[0];
+  if(wk&&bad[wk]>=2){const R=stepById(wk);if(R)tips.push(['🤝','« '+R.s.lb+' » te résiste un peu. On la refait ensemble, tranquillement ? Utilise le bouton 💡 si tu bloques.',wk]);}
+  const r=lvlRange(lvlOf(p.xp)),need=r[1]-(p.xp||0);if(tips.length<2&&need<=15)tips.push(['⭐','Plus que '+need+' XP pour passer au niveau '+(lvlOf(p.xp)+1)+' !',null]);
+  if(tips.length<2){const q=missions(p);const left=q.ids.filter(function(id){const m=MISS.filter(function(x){return x[0]===id;})[0];return (q.prog[id]||0)<m[2];});if(left.length===1){const m=MISS.filter(function(x){return x[0]===left[0];})[0];tips.push(['🎯','Encore une mission et le coffre est à toi : '+m[1].toLowerCase()+'.',null]);}}
+  if(tips.length<2){const sg=suggested(p);if(sg)tips.push(['🧭','Prochaine aventure : '+sg.I.ic+' '+sg.s.lb,sg.s.id]);}
+  if(!tips.length)return '';return '<div class="card coach"><div class="cp">'+petOf()+'</div><div style="flex:1">'+tips.slice(0,2).map(function(t){return '<div class="ctip">'+t[0]+' '+t[1]+(t[2]?' <button class="btn s b" data-coach="'+t[2]+'">Y aller</button>':'')+'</div>';}).join('')+'</div></div>';}
+
 function medal(stars){return stars===3?'🥇':(stars===2?'🥈':(stars===1?'🥉':'💪'));}
 function albumHTML(p){const own=p.stickers||[];return '<div class="card"><h2>📒 Mon album <span class="hint">'+own.length+'/'+STICKERS.length+' · 🪙 '+(p.coins||0)+' pièces</span></h2><div class="album">'+STICKERS.map(function(s){const on=own.indexOf(s[0])>=0;return '<span class="stk'+(on?'':' off')+'" title="'+(on?s[1]:'?')+'">'+(on?s[0]:'❔')+'</span>';}).join('')+'</div><div class="hint">Gagne 2 ou 3 étoiles pour ouvrir une boîte surprise ❓</div></div>';}
 
 /* ─────────── ⚔️ duel ─────────── */
 function duelPick(){const others=DB.profs.filter(function(p){return p.id!==DB.cur;});if(!others.length){toast('Il faut un deuxième joueur : ajoute-le sur l’écran d’accueil');go('isle','jeux');return false;}
-  M.innerHTML='<h1>⚔️ Duel</h1><div class="card"><div class="hint">'+P().name+' contre…</div><div class="profs" style="margin-top:10px">'+others.map(function(p){return '<div class="prof" data-p="'+p.id+'"><div class="av">'+p.av+'</div><div class="nm">'+p.name+'</div></div>';}).join('')+'</div></div>';
+  M.innerHTML='<h1>⚔️ Duel</h1><div class="card"><div class="hint">'+P().name+' contre…</div><div class="profs" style="margin-top:10px">'+others.map(function(p){return '<div class="prof" data-p="'+p.id+'"><div class="av">'+avHTML(p)+'</div><div class="nm">'+p.name+'</div></div>';}).join('')+'</div></div>';
   M.querySelectorAll('[data-p]').forEach(function(e){e.onclick=function(){DR.duelB=e.dataset.p;DR.duelA=DB.cur;DR.duel=1;vDrillReal(DR.sid);};});return true;}
 function duelNext(){if(DR.duel===1){DR.duelScoreA=DR.score;DR.duel=2;DB.cur=DR.duelB;const sid=DR.sid;toast('À '+P().name+' de jouer !');DR.tmo=setTimeout(function(){vDrillReal(sid);},1200);}
   else{DR.duelScoreB=DR.score;const A=DB.profs.filter(function(p){return p.id===DR.duelA;})[0],B=P();const sa=DR.duelScoreA,sb=DR.duelScoreB;const win=sa===sb?null:(sa>sb?A:B);
@@ -1482,7 +1560,7 @@ function vParent(){
       +'<table style="margin-top:8px"><tr><th>Date</th><th>Étape</th><th>Score</th><th>Étoiles</th></tr>'+last.map(function(l){const R=stepById(l.s);return '<tr><td>'+l.d+'</td><td>'+(R?R.I.ic+' '+R.s.lb:l.s)+'</td><td>'+l.ok+'/'+l.n+'</td><td>'+'⭐'.repeat(l.st)+'</td></tr>';}).join('')+'</table>'
       +(p.kst?'<h3 style="margin-top:10px">🗺 Tour du monde</h3>'+keyGrid(p,ISLES.filter(function(I){return I.id==='monde';})[0]):'')+'<div class="row" style="margin-top:8px">'+(p.code?'<button class="btn s g" data-uncode="'+p.id+'">🔓 Effacer son code secret</button>':'')+'<button class="btn s g" data-del="'+p.id+'">🗑 Supprimer ce joueur</button></div></div>';}).join('');
   M.innerHTML='<h1>👨‍👩‍👧 Coin des parents</h1>'+rows+'<div class="card"><h2>💌 Message pour les enfants</h2><input type="text" id="msg" value="'+esc(DB.msg||'')+'" placeholder="Ex. : Bravo Rosy pour tes étoiles !"><div class="row" style="margin-top:10px"><button class="btn s b" id="savemsg">Enregistrer</button></div></div>'
-    +'<div class="card"><h2>🔒 Code parent</h2><div class="hint">Pour que les enfants ne modifient rien ici. Vide = pas de code.</div><input type="password" id="newpin" value="'+esc(DB.pin||'')+'" inputmode="numeric"><div class="row" style="margin-top:10px"><button class="btn s b" id="savepin">Enregistrer</button><label class="pill"><input type="checkbox" id="voice" '+(DB.voice?'checked':'')+'> Voix qui lit les consignes</label><label class="pill"><input type="checkbox" id="fxon" '+(DB.fx!==false?'checked':'')+'> Effets et animations</label></div></div>'
+    +'<div class="card"><h2>🔒 Code parent</h2><div class="hint">Pour que les enfants ne modifient rien ici. Vide = pas de code.</div><input type="password" id="newpin" value="'+esc(DB.pin||'')+'" inputmode="numeric"><div class="row" style="margin-top:10px"><button class="btn s b" id="savepin">Enregistrer</button><label class="pill"><input type="checkbox" id="voice" '+(DB.voice?'checked':'')+'> Voix qui lit les consignes</label><label class="pill"><input type="checkbox" id="fxon" '+(DB.fx!==false?'checked':'')+'> Effets et animations</label><label class="pill">Intensité <select id="fxlvl">'+[['doux','douce'],['normal','normale'],['fete','fête !']].map(function(o){return '<option value="'+o[0]+'"'+((DB.fxlvl||'normal')===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></label></div></div>'
     +'<div class="card"><h2>🎙 Enregistrer une comptine</h2><div class="hint">Joue la mélodie au piano (MIDI ou clavier à l’écran), note après note, bien en rythme. Garden mesure les durées. Puis donne-lui un nom.</div>'
     +'<div class="row" style="margin-top:10px"><button class="btn s v" id="recStart">● Commencer</button><button class="btn s g" id="recStop">■ Terminer</button><button class="btn s g" id="recPlay">▶ Réécouter</button><span class="pill" id="recInfo">—</span></div>'
     +'<div id="recStf"></div><div class="row" style="margin-top:8px"><input type="text" id="recName" placeholder="Nom de la comptine" style="flex:1"><select id="recSig" style="font:inherit;padding:10px;border-radius:12px;background:var(--bg);color:var(--blanc);border:2px solid var(--gris2)"><option value="4">4/4</option><option value="3">3/4</option></select><button class="btn s b" id="recSave">Ajouter à l’île des comptines</button></div>'
@@ -1495,6 +1573,7 @@ function vParent(){
   document.getElementById('savepin').onclick=function(){DB.pin=document.getElementById('newpin').value.trim();DB.voice=document.getElementById('voice').checked;save();toast('Enregistré');};
   document.getElementById('voice').onchange=function(){DB.voice=this.checked;save();};
   document.getElementById('fxon').onchange=function(){DB.fx=this.checked;save();};
+  document.getElementById('fxlvl').onchange=function(){DB.fxlvl=this.value;save();};
   M.querySelectorAll('[data-uncode]').forEach(function(b){b.onclick=function(){const q=DB.profs.filter(function(x){return x.id===b.dataset.uncode;})[0];delete q.code;save();toast('Code effacé');vParent();};});
   document.getElementById('exp').onclick=function(){document.getElementById('bk').value=JSON.stringify(DB);};
   document.getElementById('imp').onclick=function(){try{const o=JSON.parse(document.getElementById('bk').value);if(o&&o.profs){DB=o;save();toast('Importé');vParent();}}catch(e){toast('Texte invalide');}};
@@ -1529,6 +1608,7 @@ const KEYMAP={a:60,z:62,e:64,r:65,t:67,y:69,u:71,i:72,q:48,s:50,d:52,f:53,g:55,h
 document.addEventListener('keydown',function(e){if(e.repeat||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;const m=KEYMAP[e.key];if(m!=null){ac();noteOn(m,true);}});
 document.addEventListener('keyup',function(e){const m=KEYMAP[e.key];if(m!=null)noteOff(m);});
 if(navigator.requestMIDIAccess)midiConnect(true);
+(DB.profs||[]).forEach(function(p){if(p.av==='🦄'||p.av==='🦖')p.av=p.av==='🦄'?'🐑':'🐢';if(p.code)p.code=p.code.map(function(e){return e==='🦄'?'🐑':e;});if(p.stickers)p.stickers=p.stickers.map(function(e){return e==='🦄'?'🐑':e;});if(p.pet==='🐲'||p.pet==='🦄'||p.pet==='👽'){p.coins=(p.coins||0)+({'🐲':160,'🦄':240,'👽':400})[p.pet];p.pet='🌱';}});save();
 userSongsLoad();
 go(canEnter(P())?'home':'profs');
 </script>
