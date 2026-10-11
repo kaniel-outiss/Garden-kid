@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v2.1 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v2.2 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -226,7 +226,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='2.1';
+const VERSION='2.2';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1561,7 +1561,58 @@ const STORIES=[
   'Kirk est élevé par sa tante, qui économise pour lui payer des leçons de piano dès 4 ans.',
   'À 11 ans, il dirige déjà la chorale des adultes de son église !',
   'Aujourd’hui, il est l’un des musiciens de gospel les plus connus au monde.',
-  '💡 Ce qu’on retient : même jeune, on peut servir et entraîner les autres avec la musique.']}];
+  '💡 Ce qu’on retient : même jeune, on peut servir et entraîner les autres avec la musique.']}
+ ,{id:'pepito',ic:'🧸',t:'Pepito : le piano, son premier jouet',who:'Pepito Arriola (né en 1897, Espagne) · d’après J. F. Cooke, 1913',cost:20,go:'s1',goLb:'Joue la gamme de do',pages:[
+  'Pepito voulait toucher le clavier alors que sa maman le portait encore dans ses bras ! À deux ans et demi, il rejouait à l’oreille ce qu’elle jouait. « Le piano était mon premier et mon meilleur jouet », raconte-t-il.',
+  'Un grand chef d’orchestre, Arthur Nikisch, l’entend à Madrid et conseille de l’emmener étudier en Allemagne. Pepito a 4 ans. Il joue même à Londres dans une salle immense de 8000 places !',
+  'Au début, les gammes l’ennuyaient terriblement… puis il a compris qu’elles font gagner beaucoup de temps. Chaque jour : 15 à 20 minutes de gammes, jamais plus de deux heures de piano, et le reste du temps dehors. Il aime aussi le football, l’aviron, regarder les étoiles au télescope et lire « Les Trois Mousquetaires ».',
+  '💡 Ce qu’on retient : « Si je pense bien la musique dans ma tête, mes doigts trouvent les notes. » Un peu de gammes chaque jour… et plein de vie autour du piano !']}
+ ,{id:'carreno',ic:'🌺',t:'Teresa, la petite pianiste qui sauva les siens',who:'Teresa Carreño (1853, Venezuela) · d’après J. F. Cooke, 1913',cost:20,go:'cl_hymne',goLb:'Joue l’Hymne à la joie',pages:[
+  'Teresa naît à Caracas, au Venezuela. Son premier professeur, c’est son papa. À 7 ans, elle joue déjà une pièce brillante de Mendelssohn !',
+  'Une révolution oblige sa famille à fuir à New York. Là-bas, l’ami qui gardait leur argent meurt : dix-huit personnes se retrouvent sans rien.',
+  'On organise alors un concert… et c’est la toute petite Teresa qui s’avance sur la scène. Elle gagne assez d’argent pour faire vivre tout le monde ! Plus tard, le grand pianiste Rubinstein la présentait comme « sa fille en musique ».',
+  '💡 Ce qu’on retient : ton talent n’est pas seulement pour toi. Il peut servir et aider ceux que tu aimes.']}
+ ,{id:'lhevinne',ic:'👂',t:'Josef et ses trois frères musiciens',who:'Josef Lhévinne (1874, Moscou) · d’après J. F. Cooke, 1913',cost:20,go:'j6',goLb:'Entraîne ton oreille : quel intervalle ?',pages:[
+  'Le papa de Josef joue de tous les instruments… sauf du piano ! Ses quatre fils deviennent musiciens : trois pianistes et un flûtiste.',
+  'Quand Josef a 4 ans, son papa découvre qu’il reconnaît n’importe quelle note rien qu’en l’entendant : c’est l’« oreille absolue ». À 8 ans, il donne un concert et tout le monde est enthousiaste.',
+  'À 12 ans, il entre au conservatoire de Moscou. Un jour, le grand Rubinstein le choisit parmi tous les élèves pour jouer dans un concert qu’il dirige. Josef dira que les conseils de Rubinstein ont beaucoup compté pour lui.',
+  '💡 Ce qu’on retient : dans une famille, chacun peut trouver sa place en musique. Et l’oreille, ça s’entraîne un peu chaque jour !']}
+ ,{id:'hofmann',ic:'⏸',t:'Josef Hofmann et la pause qui fait grandir',who:'Josef Hofmann (1877, Cracovie) · d’après J. F. Cooke, 1913',cost:25,go:'cl_bach05',goLb:'Joue le Menuet en ré mineur de Bach',pages:[
+  'Le papa de Josef est professeur d’harmonie et chef d’orchestre. Il apprend le piano à son fils avec beaucoup de soin.',
+  'Josef joue en public à 6 ans. Avant ses 10 ans, c’est l’enfant prodige le plus célèbre de son temps : il voyage des milliers de kilomètres, jusqu’en Amérique !',
+  'Mais ses parents arrêtent les tournées à temps, pour sa santé et pour ses études. Il travaille deux ans avec le grand Rubinstein, puis remonte sur scène à 17 ans… et devient l’un des plus grands pianistes du monde.',
+  '💡 Ce qu’on retient : faire une pause pour se reposer et apprendre, ce n’est pas perdre du temps. C’est ce qui fait grandir.']}
+ ,{id:'busoni',ic:'🎼',t:'Ferruccio, 8 ans, à Vienne',who:'Ferruccio Busoni (1866, Italie) · d’après J. F. Cooke, 1913',cost:25,go:'cl_bach02',goLb:'Joue le Menuet en sol mineur',pages:[
+  'Ferruccio naît près de Florence, en Italie. Son papa joue de la clarinette, sa maman est une excellente pianiste : ce sont ses deux premiers professeurs.',
+  'Son talent est si grand qu’à 8 ans il donne son premier concert à Vienne, en Autriche !',
+  'Devenu grand, il compose plus de cent œuvres et prépare des éditions de la musique de Bach — de vrais chefs-d’œuvre, dit le livre.',
+  '💡 Ce qu’on retient : papa et maman sont souvent les premiers professeurs. Et Bach est un ami qu’on garde toute sa vie !']}
+ ,{id:'bauer',ic:'🎻',t:'Harold, le violoniste devenu pianiste',who:'Harold Bauer (1875, Londres) · d’après J. F. Cooke, 1913',cost:25,go:'j7',goLb:'Fais un duel avec un frère ou une sœur',pages:[
+  'Harold commence par le violon. À 10 ans, il donne son premier concert de violoniste à Londres ! Le piano, il l’apprend presque tout seul, pour le plaisir.',
+  'Un jour, un ami musicien doit répéter avec le célèbre Paderewski, sur un deuxième piano. L’ami tombe malade… et envoie Harold à sa place. Paderewski le remarque et lui conseille d’aller étudier à Paris.',
+  'À Paris, c’est difficile : personne ne l’engage comme violoniste. Puis un soir, un pianiste célèbre tombe malade et on demande à Harold de le remplacer. Petit à petit, il devient un très grand pianiste.',
+  '💡 Ce qu’on retient : quand on te demande de rendre service, dis oui ! Une petite aide peut ouvrir une grande porte.']}
+ ,{id:'grainger',ic:'⌚',t:'Percy et la montre de Grieg',who:'Percy Grainger (1882, Australie) · d’après J. F. Cooke, 1913',cost:30,go:'rose_chansonbretonne',goLb:'Joue la Chanson bretonne',pages:[
+  'Percy grandit en Australie. Sa maman est son premier professeur. Pour pouvoir partir étudier en Allemagne, il donne des concerts et gagne lui-même l’argent du voyage.',
+  'Depuis tout petit, il adore les pays du Nord. Le grand compositeur norvégien Edvard Grieg l’admire et le choisit pour jouer son concerto dans un grand festival.',
+  'Après la mort de Grieg, sa femme envoie à Percy la montre et la chaîne de Grieg, en souvenir de leur amitié. Percy part ensuite à la recherche des vieilles chansons populaires et les arrange pour le piano.',
+  '💡 Ce qu’on retient : les chansons populaires sont des trésors. Celles de la Méthode Rose aussi !']}
+ ,{id:'samaroff',ic:'👵',t:'Olga, grand-mère, maman… et la grande scène',who:'Olga Samaroff (1882, Texas) · d’après J. F. Cooke, 1913',cost:30,go:'k4',goLb:'Joue « Douce nuit »',pages:[
+  'Olga grandit au Texas. Ses premières leçons, elle les reçoit de sa grand-mère et de sa maman, deux très bonnes musiciennes.',
+  'À 14 ans, elle entre au Conservatoire de Paris : d’après le livre, c’est la première Américaine admise dans ses classes !',
+  'Elle ne pensait pas devenir pianiste de concert. Mais en 1905, elle joue pour la première fois sur scène, au Carnegie Hall de New York, avec un orchestre… et le succès arrive très vite.',
+  '💡 Ce qu’on retient : la musique se transmet de génération en génération. Et il n’est jamais trop tard pour oser monter sur scène !']}
+ ,{id:'schelling',ic:'🌿',t:'Ernest et la leçon du repos',who:'Ernest Schelling (1875, New Jersey) · d’après J. F. Cooke, 1913',cost:30,go:'j8',goLb:'Fais ta série du jour',pages:[
+  'Ernest prend ses premières leçons avec son papa. À 4 ans et demi, il joue déjà sur la scène de l’Académie de musique de Philadelphie !',
+  'À 7 ans, il entre au Conservatoire de Paris. Il enchaîne les professeurs, les concerts et les voyages en France, en Angleterre, en Autriche, en Russie… et l’école passe au second plan.',
+  'À 17 ans, il est tellement fatigué que ses bras tombent malades : il doit arrêter. Une rencontre avec Paderewski change tout : pendant trois ans, Paderewski n’a qu’un seul élève, Ernest. Il repart ensuite en tournée dans le monde entier.',
+  '💡 Ce qu’on retient : trop jouer d’un coup peut faire mal. Un peu chaque jour, avec des pauses — c’est pour ça que Garden Kids partage le temps entre vous !']}
+ ,{id:'fanny',ic:'🌟',t:'Fanny, 10 ans, à Chicago',who:'Fanny Bloomfield-Zeisler (1866) · d’après J. F. Cooke, 1913',cost:25,go:'rose_menuet',goLb:'Joue le « Menuet rose »',pages:[
+  'Fanny naît en Europe, en Silésie. Elle a deux ans quand ses parents partent vivre à Chicago, en Amérique.',
+  'À 10 ans, elle joue dans un concert public à Chicago et impressionne tout le monde. À 12 ans, une grande pianiste lui conseille d’aller étudier à Vienne : elle y travaille cinq ans avec le célèbre professeur Leschetizky.',
+  'Devenue une grande pianiste, elle donne un conseil surprenant : jouer très souvent en concert quand on est tout jeune n’est pas nécessaire pour réussir — cela peut même faire du tort.',
+  '💡 Ce qu’on retient : pas besoin de se presser d’être célèbre. D’abord bien apprendre, tranquillement — la scène viendra en son temps.']}
+];
 const SOUNDS=[['piano','🎹 Piano',0],['orgue','⛪ Orgue',40],['xylo','🎶 Xylophone',60],['flute','🎵 Flûte',80],['cloche','🔔 Cloches',120]];
 const FRAMES=[['','Aucun',0],['laurier','🌿 Laurier',50],['etoiles','⭐ Étoiles',80],['flamme','🔥 Flamme',120],['or','👑 Or',200]];
 const TITLES=[['','Apprenti',0],['Petit musicien','Petit musicien',30],['Psalmiste','Psalmiste 🎶',100],['Maestro','Maestro',150],['Virtuose','Virtuose',250]];
