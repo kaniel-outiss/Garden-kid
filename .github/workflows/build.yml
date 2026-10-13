@@ -21,6 +21,17 @@ jobs:
       - run: npm install
       - run: npx cap add android
       - run: npx cap sync android
+      - name: Clé de signature fixe (mises à jour sans désinstaller)
+        env:
+          GK_KEYSTORE: ${{ secrets.GK_KEYSTORE }}
+        run: |
+          mkdir -p ~/.android
+          if [ -n "$GK_KEYSTORE" ]; then echo "$GK_KEYSTORE" | base64 -d > ~/.android/debug.keystore; else cp keys/garden-kids.keystore ~/.android/debug.keystore; fi
+      - name: Numéro de version croissant
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/; s/versionName \"[^\"]*\"/versionName \"$VER\"/" android/app/build.gradle
+          grep -n "version" android/app/build.gradle
       - name: Compiler
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - name: Renommer
