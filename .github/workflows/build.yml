@@ -26,7 +26,8 @@ jobs:
           GK_KEYSTORE: ${{ secrets.GK_KEYSTORE }}
         run: |
           mkdir -p ~/.android
-          if [ -n "$GK_KEYSTORE" ]; then echo "$GK_KEYSTORE" | base64 -d > ~/.android/debug.keystore; else cp keys/garden-kids.keystore ~/.android/debug.keystore; fi
+          if [ -n "$GK_KEYSTORE" ]; then echo "$GK_KEYSTORE" | base64 -d > android/app/gk.keystore; else cp keys/garden-kids.keystore android/app/gk.keystore; fi
+          printf '\nandroid {\n  signingConfigs { gk { storeFile file("gk.keystore"); storePassword "android"; keyAlias "androiddebugkey"; keyPassword "android" } }\n  buildTypes { debug { signingConfig signingConfigs.gk } }\n}\n' >> android/app/build.gradle
       - name: Numéro de version croissant
         run: |
           VER=$(node -p "require('./package.json').version")
