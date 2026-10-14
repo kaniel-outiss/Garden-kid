@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.5 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.6 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -269,6 +269,8 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .dipt{font:900 44px Georgia,serif;letter-spacing:.2em;color:#a07812}.dips{font-size:14px;color:#7a6a40;margin-bottom:12px}.dipg{font:800 22px Nunito,sans-serif}.dipn{margin-top:14px;font-style:italic}
 .dipname{font:900 40px Nunito,sans-serif;margin:4px 0}.dipst{font-size:34px;margin:8px 0}.dipc{font-style:italic;font-size:18px;margin:10px 0}.dipf{display:flex;justify-content:space-between;margin-top:18px;font-size:15px}.dipsig{font:italic 700 26px 'Brush Script MT','Segoe Script',cursive;color:#1a3a8a}
 @media print{body.printdip>*:not(.dipov){display:none!important}body.printdip .dipov{position:static;background:none}body.printdip .dipov .row{display:none}}
+.duol{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}.duop2{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--bg2);border:2px solid var(--gris2);border-radius:14px;padding:10px;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.duop2 span{font-size:24px}.duop2 small{color:var(--gris)}.d4box{background:#1c2350;border-radius:16px;padding:10px 14px;margin-bottom:12px;text-align:left}.d4{display:flex;align-items:center;gap:10px;margin:6px 0}.d4>div{flex:1}
 </style>
 </head>
 <body>
@@ -289,7 +291,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.5';
+const VERSION='3.6';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1680,6 +1682,64 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ ⛪ L'ÎLE DES CANTIQUES + 👫 À QUATRE MAINS ═══════════
+   Cantiques : ceux déjà dans Garden Kids (Amazing Grace, Douce nuit, Oh when the Saints) + ceux que Papa joue dans
+   l'enregistreur du coin des parents (choisir « île des cantiques ») — aucune mélodie écrite de mémoire.
+   À quatre mains : deux enfants sur le même clavier, l'un joue la main droite, l'autre la main gauche d'une pièce ;
+   chacun a son score, les étoiles sont pour les deux. */
+setTimeout(function(){
+  const pickS=function(id){const R=stepById(id);return R?JSON.parse(JSON.stringify(R.s)):null;};
+  const base=[['c6','⛪ '],['c7','⛪ '],['k4','🕯 '],['k5','🎺 ']].map(function(x){const s=pickS(x[0]);if(!s)return null;s.id='hy_'+x[0];s.lb=x[1]+s.lb;return s;}).filter(Boolean);
+  ISLES.push({id:'cantiques',ic:'⛪',t:'Les cantiques',d:'les chants de l’église — et ceux que papa joue pour toi',col:'#A78BFA',steps:base});
+  const C=CUPS.filter(function(c){return c.id==='fleur';})[0];if(C&&C.isles.indexOf('cantiques')<0)C.isles.splice(C.isles.indexOf('chansons')+1,0,'cantiques');
+  userSongsLoad();if(typeof VIEW!=='undefined'&&VIEW==='home')go('home');
+},0);
+/* l'enregistreur des parents : choisir l'île (comptines ou cantiques) */
+(function(){const _load=userSongsLoad;userSongsLoad=function(){const keep=DB.songs;DB.songs=(keep||[]).filter(function(s){return s.dest!=='cantiques';});_load();DB.songs=keep;
+    const I=ISLES.filter(function(x){return x.id==='cantiques';})[0];if(!I)return;I.steps=I.steps.filter(function(s){return !s.user;});
+    (keep||[]).filter(function(s){return s.dest==='cantiques';}).forEach(function(sg){I.steps.push({id:sg.id,user:true,lb:'🎙 '+sg.lb,les:[['⛪','« '+sg.lb+' » — joué par Papa.'],['🎹',sg.mel.slice(0,10).map(function(x){return frn(x[0]%12);}).join(' ')+(sg.mel.length>10?'…':'')],['⭐','Note à note, puis en rythme.']],drill:{type:'song',mel:sg.mel,ks:sg.ks||0,sig:sg.sig||4,lb:sg.lb,n:2}});});};
+  const _vp=vParent;vParent=function(){_vp.apply(this,arguments);const b=document.getElementById('recSave');if(!b)return;
+    b.insertAdjacentHTML('beforebegin','<select id="recDest" style="font:inherit;padding:10px;border-radius:12px;background:var(--bg);color:var(--blanc);border:2px solid var(--gris2)"><option value="comptines">🧸 île des comptines</option><option value="cantiques">⛪ île des cantiques</option></select>');
+    b.textContent='Ajouter à l’île';const orig=b.onclick;b.onclick=function(){const n=(DB.songs||[]).length,dest=document.getElementById('recDest').value;orig.apply(this,arguments);
+      if((DB.songs||[]).length>n){DB.songs[DB.songs.length-1].dest=dest;save();userSongsLoad();if(dest==='cantiques')toast('⛪ ajouté à l’île des cantiques');}};
+    const t=document.querySelectorAll('.card h2');t.forEach(function(h){if(h.textContent.indexOf('Enregistrer une comptine')>=0)h.textContent='🎙 Enregistrer une comptine ou un cantique';});};
+})();
+/* — à quatre mains — */
+let DUO4=null;
+function duo4Pieces(){const out=[];ISLES.forEach(function(I){I.steps.forEach(function(s){if(s.drill&&s.drill.type==='piece'){try{const c=rsLoad(s.drill.id);if(c&&c.lh&&c.rh)out.push({s:s,I:I});}catch(e){}}});});return out;}
+function vDuet(){const p=P();if(!p){go('profs');return;}const others=DB.profs.filter(function(x){return x.id!==p.id;});
+  const L=duo4Pieces();let partner=others[0]?others[0].id:null,role='rh';
+  const draw=function(){M.innerHTML='<h1>👫 À quatre mains</h1><div class="hint">Deux pianistes, un seul clavier : l’un joue la <b>main droite</b>, l’autre la <b>main gauche</b>. Chacun a son score — les étoiles sont pour les deux !</div>'
+    +(others.length?'<h2>Avec qui ?</h2><div class="row" style="gap:8px;flex-wrap:wrap">'+others.map(function(o){return '<button class="btn '+(o.id===partner?'v':'g')+'" data-pt="'+o.id+'">'+o.av+' '+esc(o.name)+'</button>';}).join('')+'</div>'
+      +'<h2>Qui joue quoi ?</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn '+(role==='rh'?'v':'g')+'" data-rl="rh">'+p.av+' '+esc(p.name)+' : main droite 👉</button><button class="btn '+(role==='lh'?'v':'g')+'" data-rl="lh">'+p.av+' '+esc(p.name)+' : 👈 main gauche</button></div>'
+      +'<h2>La pièce</h2><div class="duol">'+L.map(function(x){const st=Math.max((p.stars||{})[x.s.id]||0,0);return '<button class="duop2" data-dp="'+x.s.id+'"><span>'+x.I.ic+'</span><b>'+esc(x.s.lb)+'</b><small>'+esc(x.I.t)+' '+'⭐'.repeat(st)+'</small></button>';}).join('')+'</div>'
+      :'<div class="card">Il faut au moins deux joueurs : crée un profil pour ton frère ou ta sœur !</div>')+'<div class="row" style="margin-top:12px"><button class="btn g" id="dback">← L’arcade</button></div>';
+    M.querySelectorAll('[data-pt]').forEach(function(b){b.onclick=function(){partner=b.dataset.pt;draw();};});
+    M.querySelectorAll('[data-rl]').forEach(function(b){b.onclick=function(){role=b.dataset.rl;draw();};});
+    M.querySelectorAll('[data-dp]').forEach(function(b){b.onclick=function(){duo4Start(b.dataset.dp,partner,role);};});
+    document.getElementById('dback').onclick=function(){go('arcade');};};
+  draw();}
+function duo4Start(sid,partner,role){const p=P(),q=DB.profs.filter(function(x){return x.id===partner;})[0];const R=stepById(sid),c=rsLoad(R.s.drill.id);
+  let lhMax=0,rhMin=127;c.lh.ev.forEach(function(e){if(!e.rest)e.ns.forEach(function(n){lhMax=Math.max(lhMax,n.m);});});c.rh.ev.forEach(function(e){if(!e.rest)e.ns.forEach(function(n){rhMin=Math.min(rhMin,n.m);});});
+  const split=lhMax<rhMin?Math.ceil((lhMax+rhMin)/2):60;
+  DUO4={sid:sid,split:split,rh:role==='rh'?p:q,lh:role==='rh'?q:p,sc:{rh:{ok:0,bad:0},lh:{ok:0,bad:0}}};
+  stopDrill();DR.pmode={hands:['rh','lh'],timed:false,bpm:(c.R&&c.R.bpm)||66};VIEW='drill';vDrill(sid);
+  setTimeout(function(){banner('👫 '+DUO4.rh.name+' 👉 · 👈 '+DUO4.lh.name,'#A78BFA');say(DUO4.rh.name+' main droite, '+DUO4.lh.name+' main gauche. À vous !',true);},300);}
+(function(){
+  const _pn=pieceNote;pieceNote=function(m){if(DUO4&&DR&&DR.piece&&DR.sid===DUO4.sid&&DR.running){const st=DR.steps[DR.k];const side=m<DUO4.split?'lh':'rh';
+      if(st&&!DR.pmode.timed){if(st.need.indexOf(m)<0)DUO4.sc[side].bad++;else DUO4.sc[side].ok++;}}
+    return _pn.apply(this,arguments);};
+  const _fin=finish;finish=function(){const D=DUO4&&DR&&DR.sid===DUO4.sid?DUO4:null;_fin.apply(this,arguments);if(!D)return;DUO4=null;
+    const p=P(),st=(p.stars||{})[D.sid]||0;[D.rh,D.lh].forEach(function(x){if(x&&x.id!==p.id){x.stars=x.stars||{};x.stars[D.sid]=Math.max(x.stars[D.sid]||0,st);x.coins=(x.coins||0)+3;}});save();
+    const line=function(h,x){const s=D.sc[h],t=s.ok+s.bad,pc=t?Math.round(s.ok/t*100):0;return '<div class="d4"><span style="font-size:34px">'+x.av+'</span><div><b>'+esc(x.name)+'</b> · '+(h==='rh'?'main droite 👉':'👈 main gauche')+'<div class="bar"><i style="width:'+pc+'%"></i></div></div><b>'+pc+' %</b></div>';};
+    setTimeout(function(){const r=M.querySelector('.card.result');if(r)r.insertAdjacentHTML('afterbegin','<div class="d4box"><h2>👫 À quatre mains</h2>'+line('rh',D.rh)+line('lh',D.lh)+'<div class="hint">Les étoiles sont pour les deux !</div></div>');},30);};
+  const _go=go;go=function(v,a){if(v==='duet'){VIEW=v;stopDrill();vDuet();window.scrollTo(0,0);return;}return _go.apply(this,arguments);};
+  const _arc=vArcade;vArcade=function(){_arc.apply(this,arguments);const g=M.querySelector('.arc');if(!g)return;
+    g.insertAdjacentHTML('afterbegin','<div class="ag" data-g4="1" style="--c:#A78BFA"><div class="ai">👫🎹</div><h2>À quatre mains</h2><div class="hint">Avec ton frère ou ta sœur : l’un joue la main droite, l’autre la main gauche !</div><b>👥 2 pianistes</b></div>');
+    const c=g.querySelector('[data-g4]');c.onclick=function(){go('duet');};};
+})();
+
+
 /* ═══════════ 🎓 LES GRADES — 6 leçons + un examen enregistré + le retour de Papa (stickers, mot, diplôme) ═══════════
    Une leçon = une île : elle compte quand au moins 60 % de ses étapes ont une étoile. L'examen s'ouvre quand les 6 leçons
    sont faites : une pièce « fil rouge » (enregistrée note par note), un exercice d'accords ou de lecture, puis la roue des
