@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.2 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.3 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -249,6 +249,14 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .rycell{background:var(--bg2);border:3px solid var(--c);border-radius:18px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;color:inherit;font:inherit}
 .rycell small{color:#9AA3C7;font-size:12px}
 .rycell.btnlike{cursor:pointer}.rycell.btnlike:disabled{opacity:.3}
+.msgov{position:fixed;inset:0;background:rgba(5,8,20,.82);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;animation:msgIn .35s ease-out}
+.msgov.out{opacity:0;transition:opacity .3s}@keyframes msgIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.msgcard{background:linear-gradient(180deg,#2a2160,#1c2350);border:3px solid var(--or);border-radius:28px;padding:22px;max-width:520px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.msgem{font-size:64px;animation:msgBeat 1.2s ease-in-out infinite}@keyframes msgBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.msgfrom{font:900 22px Nunito,sans-serif;color:var(--or);margin:6px 0}.msgtxt{font:800 24px Nunito,sans-serif;line-height:1.35;margin:10px 0 16px}
+.msgrep{font-size:28px;background:var(--bg2);border:2px solid var(--gris2);border-radius:16px;padding:6px 10px;cursor:pointer}.msgrep.on{border-color:var(--or)}
+.inb{display:flex;align-items:center;gap:10px;margin:6px 0}.mrow{display:flex;gap:10px;align-items:flex-start;border-top:1px solid var(--gris2);padding:8px 0}
+.mform select,.mform input[type=datetime-local]{font:inherit;padding:10px;border-radius:12px;background:var(--bg);color:var(--blanc);border:2px solid var(--gris2)}
 </style>
 </head>
 <body>
@@ -269,7 +277,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.2';
+const VERSION='3.3';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1658,6 +1666,99 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ 💌 MESSAGES PERSONNALISÉS — par enfant, texte + voix enregistrée, programmés ou déclenchés ═══════════
+   DB.msgs = [{id,to:'all'|[pid],from,em,text,audio(dataURL|null),trig,at,n,rep,seen:{pid:[{t,r}]},cr}]
+   déclencheurs : open (en arrivant), date (à partir d'un jour et d'une heure), win (3 étoiles), fail (étape ratée → encouragement),
+   day (séance du jour finie), streak (N jours de suite), isle (île terminée), level (niveau d'arcade réussi).
+   répétition : once (une fois) · daily (au plus une fois par jour) · always (à chaque fois). {prenom} = le prénom de l'enfant. */
+const MSG_TRIG={open:'🏠 en arrivant sur l’accueil',date:'📅 à partir d’une date et d’une heure',win:'⭐ après 3 étoiles',fail:'💪 après une étape ratée (encouragement)',day:'🌙 quand la séance du jour est finie',streak:'🔥 après N jours de suite',isle:'🏝 quand une île est terminée',level:'🕹 après un niveau d’arcade réussi'};
+const MSG_REP={once:'une seule fois',daily:'une fois par jour au plus',always:'à chaque fois'};
+const MSG_EM=['💌','❤️','🌟','🏆','🎹','🙏','😄','💪','🎉','🌈','🦁','🕊'];
+const MSG_REPLY=['❤️','👍','😄','🙏','🤗','🎹'];
+let MSGQ=[],MSGON=false;
+function msgFor(p){return (DB.msgs||[]).filter(function(m){return m.to==='all'||(Array.isArray(m.to)&&m.to.indexOf(p.id)>=0);});}
+function msgSeen(m,p){return ((m.seen||{})[p.id]||[]);}
+function msgDue(m,p){const S=msgSeen(m,p);if(m.rep==='once'&&S.length)return false;if(m.rep==='always'&&S.length&&Date.now()-new Date(S[S.length-1].t).getTime()<30*60000)return false;if(m.rep==='daily'&&S.some(function(x){return String(x.t).slice(0,10)===today();}))return false;return true;}
+function msgText(m,p){return String(m.text||'').replace(/\{prenom\}/gi,p.name);}
+/* un événement de jeu → les messages qui l'attendent */
+function msgEvent(ev,ctx){const p=P();if(!p)return;const now=new Date();
+  msgFor(p).forEach(function(m){if(!msgDue(m,p))return;let ok=false;
+    if(m.trig===ev)ok=true;
+    if(ev==='open'&&m.trig==='date'&&m.at&&new Date(m.at)<=now)ok=true;
+    if(ev==='open'&&m.trig==='streak'&&streakOf(p)>=(+m.n||3))ok=true;
+    if(m.trig==='date'&&ev!=='open')ok=false;if(m.trig==='streak'&&ev!=='open')ok=false;
+    if(ok&&MSGQ.indexOf(m.id)<0)MSGQ.push(m.id);});
+  if(MSGQ.length&&!MSGON)setTimeout(msgShow,ev==='open'?500:1600);}
+function msgShow(){const p=P();if(!p||!MSGQ.length){MSGON=false;return;}const id=MSGQ.shift(),m=(DB.msgs||[]).filter(function(x){return x.id===id;})[0];if(!m||!msgDue(m,p)){msgShow();return;}
+  MSGON=true;const ov=document.createElement('div');ov.className='msgov';
+  ov.innerHTML='<div class="msgcard"><div class="msgem">'+(m.em||'💌')+'</div><div class="msgfrom">Un message de '+esc(m.from||'Papa')+'</div><div class="msgtxt">'+esc(msgText(m,p))+'</div>'
+    +(m.audio?'<button class="btn b" id="msgPlay">▶ Écouter la voix de '+esc(m.from||'Papa')+'</button>':'<button class="btn b" id="msgPlay">🔊 Écouter</button>')
+    +'<div class="hint" style="margin-top:12px">Réponds avec un sourire :</div><div class="row" style="justify-content:center;gap:8px;margin-top:6px">'+MSG_REPLY.map(function(r){return '<button class="msgrep" data-r="'+r+'">'+r+'</button>';}).join('')+'</div></div>';
+  document.body.appendChild(ov);if(typeof confetti==='function')confetti(30);
+  let au=null;const speak=function(){try{if(m.audio){if(au){au.pause();}au=new Audio(m.audio);au.play();}else{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('Un message de '+(m.from||'Papa')+'. '+msgText(m,p));u.lang='fr-FR';u.rate=.95;speechSynthesis.speak(u);}}catch(e){}};
+  setTimeout(speak,450);ov.querySelector('#msgPlay').onclick=speak;
+  ov.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){try{if(au)au.pause();speechSynthesis.cancel();}catch(e){}m.seen=m.seen||{};(m.seen[p.id]=m.seen[p.id]||[]).push({t:new Date().toISOString(),r:b.dataset.r});
+    p.inbox=p.inbox||[];if(p.inbox.indexOf(m.id)<0)p.inbox.push(m.id);save();ov.classList.add('out');setTimeout(function(){ov.remove();MSGON=false;msgShow();if(VIEW==='home')go('home');},350);};});}
+/* 📬 boîte aux lettres de l'enfant (accueil) */
+function inboxHTML(p){const L=(p.inbox||[]).map(function(id){return (DB.msgs||[]).filter(function(m){return m.id===id;})[0];}).filter(Boolean);
+  if(!L.length)return '';return '<div class="card"><h2>📬 Mes messages</h2>'+L.slice().reverse().slice(0,6).map(function(m){return '<div class="inb"><span style="font-size:26px">'+(m.em||'💌')+'</span><span style="flex:1"><b>'+esc(m.from||'Papa')+'</b> — '+esc(msgText(m,p))+'</span><button class="btn s b" data-inb="'+m.id+'">'+(m.audio?'▶':'🔊')+'</button></div>';}).join('')+'</div>';}
+document.addEventListener('click',function(e){const b=e.target&&e.target.closest?e.target.closest('[data-inb]'):null;if(!b)return;const p=P(),m=(DB.msgs||[]).filter(function(x){return x.id===b.dataset.inb;})[0];if(!m||!p)return;
+  try{if(m.audio)new Audio(m.audio).play();else{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(msgText(m,p));u.lang='fr-FR';speechSynthesis.speak(u);}}catch(_){}});
+/* — coin des parents : écrire, enregistrer, programmer — */
+const MREC={rec:null,chunks:[],data:null,t0:0,tm:null};
+function msgParentHTML(){const kids=DB.profs;
+  const list=(DB.msgs||[]).slice().reverse().map(function(m){const to=m.to==='all'?'Tous':kids.filter(function(k){return m.to.indexOf(k.id)>=0;}).map(function(k){return k.av+' '+esc(k.name);}).join(', ');
+    const st=kids.filter(function(k){return m.to==='all'||m.to.indexOf(k.id)>=0;}).map(function(k){const S=(m.seen||{})[k.id]||[];return k.av+(S.length?' ✓ '+S[S.length-1].t.slice(5,16).replace('T',' ')+' '+(S[S.length-1].r||''):' ⏳');}).join(' · ');
+    return '<div class="mrow"><span style="font-size:24px">'+(m.em||'💌')+'</span><div style="flex:1"><b>'+to+'</b> · '+esc(MSG_TRIG[m.trig]||m.trig)+(m.trig==='date'&&m.at?' ('+m.at.replace('T',' ')+')':'')+(m.trig==='streak'?' ('+(m.n||3)+' jours)':'')+' · '+MSG_REP[m.rep||'once']+(m.audio?' · 🎙 voix':'')
+      +'<div>« '+esc(m.text)+' » — '+esc(m.from||'Papa')+'</div><div class="hint" style="margin:2px 0 0">'+st+'</div></div><button class="btn s g" data-mtest="'+m.id+'">▶ Tester</button><button class="btn s g" data-mdel="'+m.id+'">🗑</button></div>';}).join('');
+  return '<div class="card"><h2>💌 Messages personnalisés</h2><div class="hint">Un message pour un enfant, plusieurs ou tous : écrit, lu par la voix… ou avec <b>ta</b> voix enregistrée. Il apparaît au bon moment. <b>{prenom}</b> est remplacé par le prénom.</div>'
+    +'<div class="mform"><div class="row" style="gap:6px;flex-wrap:wrap"><span class="hint" style="margin:0">Pour :</span><label class="pill"><input type="checkbox" data-mto="all"> Tous</label>'+kids.map(function(k){return '<label class="pill"><input type="checkbox" data-mto="'+k.id+'"> '+k.av+' '+esc(k.name)+'</label>';}).join('')+'</div>'
+    +'<div class="row" style="gap:6px;margin-top:8px"><input type="text" id="mFrom" value="'+esc(DB.msgFrom||'Papa')+'" style="width:120px" placeholder="De la part de"><input type="text" id="mText" style="flex:1" placeholder="Ex. : Bravo {prenom}, je suis fier de toi ! Ce soir on joue ensemble ?"></div>'
+    +'<div class="row" style="gap:4px;margin-top:6px">'+MSG_EM.map(function(e,i){return '<button class="msgrep'+(i===0?' on':'')+'" data-mem="'+e+'">'+e+'</button>';}).join('')+'</div>'
+    +'<div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap"><select id="mTrig">'+Object.keys(MSG_TRIG).map(function(k){return '<option value="'+k+'">'+MSG_TRIG[k]+'</option>';}).join('')+'</select><input type="datetime-local" id="mAt" style="display:none"><label id="mNl" class="pill" style="display:none">N = <input type="number" id="mN" value="3" min="2" style="width:60px"> jours</label><select id="mRep">'+Object.keys(MSG_REP).map(function(k){return '<option value="'+k+'">'+MSG_REP[k]+'</option>';}).join('')+'</select></div>'
+    +'<div class="row" style="gap:6px;margin-top:8px;align-items:center"><button class="btn s v" id="mRec">● Enregistrer ma voix</button><button class="btn s g" id="mRecStop" disabled>■ Stop</button><button class="btn s g" id="mRecPlay" disabled>▶</button><button class="btn s g" id="mRecDel" disabled>✕</button><span class="pill" id="mRecInfo">pas de voix (la voix de synthèse lira le texte)</span></div>'
+    +'<div class="row" style="margin-top:10px"><button class="btn b" id="mSend">💌 Programmer le message</button></div></div>'
+    +(list?'<h3 style="margin-top:12px">Messages programmés</h3>'+list:'')+'</div>';}
+function msgParentBind(){const $=function(id){return document.getElementById(id);};if(!$('mSend'))return;let em='💌';
+  M.querySelectorAll('[data-mem]').forEach(function(b){b.onclick=function(){em=b.dataset.mem;M.querySelectorAll('[data-mem]').forEach(function(x){x.classList.toggle('on',x===b);});};});
+  const tr=function(){$('mAt').style.display=$('mTrig').value==='date'?'':'none';$('mNl').style.display=$('mTrig').value==='streak'?'':'none';if($('mTrig').value==='fail'||$('mTrig').value==='win')$('mRep').value='daily';};$('mTrig').onchange=tr;
+  const all=M.querySelector('[data-mto="all"]');all.onchange=function(){M.querySelectorAll('[data-mto]').forEach(function(c){if(c!==all)c.checked=false;});};
+  M.querySelectorAll('[data-mto]').forEach(function(c){if(c!==all)c.addEventListener('change',function(){if(c.checked)all.checked=false;});});
+  const info=function(t){$('mRecInfo').textContent=t;};
+  $('mRec').onclick=async function(){try{const st=await navigator.mediaDevices.getUserMedia({audio:true});MREC.chunks=[];const mr=new MediaRecorder(st,MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?{mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:24000}:undefined);MREC.rec=mr;
+      mr.ondataavailable=function(ev){if(ev.data&&ev.data.size)MREC.chunks.push(ev.data);};
+      mr.onstop=function(){st.getTracks().forEach(function(t){t.stop();});clearInterval(MREC.tm);const blob=new Blob(MREC.chunks,{type:mr.mimeType||'audio/webm'});const fr=new FileReader();fr.onload=function(){MREC.data=fr.result;info('🎙 voix enregistrée ('+Math.round((Date.now()-MREC.t0)/1000)+' s · '+Math.round(fr.result.length/1024)+' Ko)');$('mRecPlay').disabled=false;$('mRecDel').disabled=false;};fr.readAsDataURL(blob);$('mRec').disabled=false;$('mRecStop').disabled=true;};
+      mr.start();MREC.t0=Date.now();$('mRec').disabled=true;$('mRecStop').disabled=false;MREC.tm=setInterval(function(){const s=Math.round((Date.now()-MREC.t0)/1000);info('● enregistrement… '+s+' s / 30');if(s>=30)mr.stop();},250);}
+    catch(e){info('micro indisponible : autorise le micro pour Garden Kids');}};
+  $('mRecStop').onclick=function(){if(MREC.rec&&MREC.rec.state==='recording')MREC.rec.stop();};
+  $('mRecPlay').onclick=function(){if(MREC.data)new Audio(MREC.data).play();};
+  $('mRecDel').onclick=function(){MREC.data=null;info('pas de voix (la voix de synthèse lira le texte)');$('mRecPlay').disabled=true;$('mRecDel').disabled=true;};
+  $('mSend').onclick=function(){const text=$('mText').value.trim();if(!text&&!MREC.data){toast('Écris un message ou enregistre ta voix');return;}
+    const to=all.checked?'all':Array.prototype.filter.call(M.querySelectorAll('[data-mto]'),function(c){return c.checked&&c.dataset.mto!=='all';}).map(function(c){return c.dataset.mto;});
+    if(to!=='all'&&!to.length){toast('Choisis au moins un enfant');return;}
+    const trig=$('mTrig').value;if(trig==='date'&&!$('mAt').value){toast('Choisis la date et l’heure');return;}
+    DB.msgFrom=$('mFrom').value.trim()||'Papa';
+    DB.msgs=DB.msgs||[];DB.msgs.push({id:'m'+Date.now().toString(36),to:to,from:DB.msgFrom,em:em,text:text||'🎙',audio:MREC.data||null,trig:trig,at:trig==='date'?$('mAt').value:null,n:+$('mN').value||3,rep:$('mRep').value,seen:{},cr:new Date().toISOString()});
+    try{save();}catch(e){DB.msgs.pop();toast('Mémoire pleine : enregistre une voix plus courte');return;}
+    MREC.data=null;toast('💌 Message programmé');vParent();};
+  M.querySelectorAll('[data-mdel]').forEach(function(b){b.onclick=function(){if(!confirm('Supprimer ce message ?'))return;DB.msgs=(DB.msgs||[]).filter(function(m){return m.id!==b.dataset.mdel;});save();vParent();};});
+  M.querySelectorAll('[data-mtest]').forEach(function(b){b.onclick=function(){const m=(DB.msgs||[]).filter(function(x){return x.id===b.dataset.mtest;})[0];if(!m)return;
+    try{if(m.audio)new Audio(m.audio).play();else{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(msgText(m,{name:(DB.profs[0]||{}).name||''}));u.lang='fr-FR';speechSynthesis.speak(u);}}catch(_){}};});}
+/* — branchements sur le jeu — */
+(function(){
+  const _home=vHome;vHome=function(){_home.apply(this,arguments);const p=P();if(!p)return;const h=document.querySelector('.dash');const ib=inboxHTML(p);if(h&&ib)h.insertAdjacentHTML('afterend',ib);msgEvent('open');};
+  const _fin=finish;finish=function(){const p0=P(),n0=p0&&p0.log?p0.log.length:0,sid=DR.sid;_fin.apply(this,arguments);const p=P();if(!p||!p.log||p.log.length===n0)return;const L=p.log[p.log.length-1];
+    if(L.st===3)msgEvent('win');else if(L.st===0)msgEvent('fail');
+    try{const R=stepById(sid);if(R&&R.I.steps.every(function(s){return (p.stars||{})[s.id]>=1;})&&L.st>=1)msgEvent('isle');}catch(e){}};
+  const _lw=lvWin;lvWin=function(st){_lw.apply(this,arguments);msgEvent('level');if(st===3)msgEvent('win');};
+  const _ll=lvLose;lvLose=function(){_ll.apply(this,arguments);msgEvent('fail');};
+  const _dm=dailyMark;dailyMark=function(){const p=P(),was=p&&p.daily&&p.daily.d===today()?p.daily.plan.every(function(_,i){return p.daily.done[i];}):true;_dm.apply(this,arguments);
+    const now=p&&p.daily&&p.daily.d===today()?p.daily.plan.every(function(_,i){return p.daily.done[i];}):false;if(!was&&now)msgEvent('day');};
+  const _vp=vParent;vParent=function(){_vp.apply(this,arguments);const old=document.getElementById('savemsg');if(!old)return;const card=old.closest('.card');
+    if(card){card.querySelector('h2').textContent='📌 Mot affiché en permanence sur l’accueil';card.insertAdjacentHTML('beforebegin',msgParentHTML());msgParentBind();}};
+})();
+
+
 
 
 

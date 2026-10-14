@@ -21,8 +21,8 @@ jobs:
       - run: npm install
       - run: npx cap add android
       - run: npx cap sync android
-      - name: Permission vibration
-        run: sed -i 's#<application#<uses-permission android:name="android.permission.VIBRATE" />\n    <application#' android/app/src/main/AndroidManifest.xml && grep -n VIBRATE android/app/src/main/AndroidManifest.xml
+      - name: Permissions vibration + micro (messages vocaux)
+        run: sed -i 's#<application#<uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <application#' android/app/src/main/AndroidManifest.xml && grep -n "VIBRATE\|RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
       - name: Clé de signature fixe (mises à jour sans désinstaller)
         env:
           GK_KEYSTORE: ${{ secrets.GK_KEYSTORE }}
