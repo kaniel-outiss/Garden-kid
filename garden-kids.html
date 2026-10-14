@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.1 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.2 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -302,6 +302,16 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 </div>
 <main id="main"></main>
 <div class="toast" id="toast"></div>
+<script>
+/* v4.2 — la voix dans l'APK : la WebView Android n'a pas de synthèse vocale (speechSynthesis absent).
+   On la remplace par la voix native d'Android (plugin TextToSpeech) — tout le code existant (say, messages, coupe) parle à nouveau. */
+(function(){try{const C=window.Capacitor;const T=C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.TextToSpeech;if(!T||window.speechSynthesis)return;
+  window.SpeechSynthesisUtterance=function(t){this.text=String(t||'');this.lang='fr-FR';this.rate=1;this.pitch=1;this.volume=1;this.voice=null;this.onend=null;};
+  const S={speaking:false,pending:false,onvoiceschanged:null,getVoices:function(){return [];},
+    speak:function(u){S.speaking=true;T.speak({text:u.text,lang:u.lang||'fr-FR',rate:Math.max(.5,Math.min(2,u.rate||1)),pitch:u.pitch||1,volume:u.volume==null?1:u.volume,category:'playback'}).then(function(){S.speaking=false;if(u.onend)u.onend();},function(){S.speaking=false;});},
+    cancel:function(){S.speaking=false;try{T.stop();}catch(e){}},pause:function(){},resume:function(){}};
+  window.speechSynthesis=S;window.__nativeTTS=true;}catch(e){}})();
+</script>
 <script>
 /* ═══════════════════════ GARDEN KIDS — apprendre le piano sans papa ═══════════════════════
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
