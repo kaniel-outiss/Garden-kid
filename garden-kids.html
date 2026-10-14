@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.3 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.4 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -257,6 +257,10 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .msgrep{font-size:28px;background:var(--bg2);border:2px solid var(--gris2);border-radius:16px;padding:6px 10px;cursor:pointer}.msgrep.on{border-color:var(--or)}
 .inb{display:flex;align-items:center;gap:10px;margin:6px 0}.mrow{display:flex;gap:10px;align-items:flex-start;border-top:1px solid var(--gris2);padding:8px 0}
 .mform select,.mform input[type=datetime-local]{font:inherit;padding:10px;border-radius:12px;background:var(--bg);color:var(--blanc);border:2px solid var(--gris2)}
+.defi{border-color:#FFC83D}.dfrow{display:flex;align-items:center;gap:12px}.dfic{font-size:44px}
+.dffam{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.dfk{background:var(--bg);border:2px solid var(--gris2);border-radius:999px;padding:5px 12px;font-weight:800}.dfk.me{border-color:var(--or)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:12px 0}.pod{text-align:center;width:110px}.pod .pbar{background:var(--bg2);border:2px solid var(--or);border-radius:12px 12px 0 0;padding:8px 4px;font-weight:900}
+.pod.p1 .pbar{height:110px}.pod.p2 .pbar{height:80px}.pod.p3 .pbar{height:60px}
 </style>
 </head>
 <body>
@@ -277,7 +281,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.3';
+const VERSION='3.4';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1578,11 +1582,11 @@ function ryWood(t,len){const A=ac();if(!A)return;const o=A.createOscillator(),o2
 /* — le jeu — */
 function vRythme(arg){const p=P();if(!p){go('profs');return;}
   const lvN=(typeof arg==='number'||/^\d+$/.test(arg||''))?+arg:null;
-  if(lvN==null&&arg!=='mix'&&arg!=='mine'){ryMenu();return;}
-  const L=lvN?ryLevel(lvN):{n:0,tier:10,k:1,demo:false,words:true,listen:true,bpm:arg==='mine'?66:80,tol:.12,rounds:arg==='mine'?1:3};
+  if(lvN==null&&arg!=='mix'&&arg!=='mine'&&arg!=='defi'){ryMenu();return;}
+  const DF=arg==='defi',L=DF?Object.assign(ryLevel(Math.max(1,(defiRyTier(p)-1)*3+2)),{rounds:2,demo:false,words:true,listen:true}):lvN?ryLevel(lvN):{n:0,tier:10,k:1,demo:false,words:true,listen:true,bpm:arg==='mine'?66:80,tol:.12,rounds:arg==='mine'?1:3};
   if(lvN){LV={g:'rythme',n:lvN};}else LV=null;
-  const st={L:L,round:0,scores:[],words:L.words,bpm:L.bpm,wheel:arg==='mine'?(p.ryMine||ryGen(4)):ryGen(L.tier,lvN&&L.tier<10?L.tier:0),mode:'idle'};
-  M.innerHTML='<h2>🍐 La roue des rythmes'+(lvN?' · niveau '+lvN:(arg==='mix'?' · 🎲 toutes les combinaisons':' · 🛠 ma roue'))+'</h2>'
+  const st={L:L,round:0,scores:[],words:L.words,bpm:L.bpm,wheel:arg==='mine'?(p.ryMine||ryGen(4)):(DF?seeded(dHash(today()+'ry'+L.tier),function(){return ryGen(L.tier,0);}):ryGen(L.tier,lvN&&L.tier<10?L.tier:0)),mode:'idle'};
+  M.innerHTML='<h2>🍐 La roue des rythmes'+(DF?' · ⚡ défi du jour':lvN?' · niveau '+lvN:(arg==='mix'?' · 🎲 toutes les combinaisons':' · 🛠 ma roue'))+'</h2>'
     +'<div class="stage" id="stage"><div class="ghud"><span id="ryr"></span><span id="rys" style="color:#FFC83D"></span></div>'
     +(lvN?'<div class="hint" style="margin:0 0 6px">Palier '+L.tier+' : '+RY_TIER[L.tier]+(L.k===2?' · <b style="color:#FF9F43">DÉFI : les notes seules, sans écoute !</b>':'')+'</div>':'')
     +'<div id="ryw"></div><div class="fb" id="ryfb"></div>'
@@ -1625,9 +1629,10 @@ function vRythme(arg){const p=P();if(!p){go('profs');return;}
     else fb('💪 Encore un effort : '+Math.round(sc*100)+' %'+(bad.length?' · à revoir : '+bad.slice(0,3).join(', '):'')+tip,'bad');
     setTimeout(next,1800);};
   const next=function(){if(!DR.on||DR.game!=='rythme')return;st.mode='idle';busy(false);
-    if(st.round+1<L.rounds){st.round++;st.wheel=arg==='mine'?st.wheel:ryGen(L.tier,lvN&&L.tier<10?L.tier:0);st.res=null;draw();fb(L.demo?'🎧 Nouvelle roue : écoute d’abord…':'Nouvelle roue ! Appuie sur ▶ quand tu es prêt·e.');if(L.demo)setTimeout(function(){listen();},700);return;}
+    if(st.round+1<L.rounds){st.round++;st.wheel=arg==='mine'?st.wheel:(DF?seeded(dHash(today()+'ry'+L.tier+'#'+st.round),function(){return ryGen(L.tier,0);}):ryGen(L.tier,lvN&&L.tier<10?L.tier:0));st.res=null;draw();fb(L.demo?'🎧 Nouvelle roue : écoute d’abord…':'Nouvelle roue ! Appuie sur ▶ quand tu es prêt·e.');if(L.demo)setTimeout(function(){listen();},700);return;}
     const avg=st.scores.reduce(function(a,b){return a+b;},0)/st.scores.length,stars=avg>=.9?3:(avg>=.75?2:(avg>=.55?1:0));
     const p2=P();p2.best=p2.best||{};p2.best.rythme=Math.max(p2.best.rythme||0,lvN||0);save();
+    if(DF){DR.on=false;defiRecord(Math.round(avg*100));fb('⚡ Défi : '+Math.round(avg*100)+' % — '+'⭐'.repeat(stars),'good');setTimeout(function(){go('home');},2600);return;}
     if(lvN){if(stars)lvWin(stars);else lvLose();}
     else{fb('Moyenne : '+Math.round(avg*100)+' % '+'⭐'.repeat(stars)+' · on rejoue ?','good');st.round=0;st.scores=[];if(arg==='mix'){st.wheel=ryGen(10);}st.res=null;draw();}};
   DR.hit=function(){tap();};DR.hit._w=1;
@@ -1666,6 +1671,90 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ ⚡ DÉFI DU JOUR + 🏆 COUPE DE LA SEMAINE (équitable entre grands et petits) ═══════════
+   Défi du jour : le même jeu pour toute la famille (tiré par la date), 3 essais, le meilleur compte. Le score est mesuré
+   PAR RAPPORT À TON PROPRE RECORD (ou, pour la roue des rythmes, à ton palier) : Raphaëlle peut battre Alyson.
+   Coupe de la semaine : étoiles gagnées ×2 + jours joués ×5 + points des défis. Lundi : podium de la semaine passée,
+   trophée au vainqueur et récompense choisie par les parents. Objectif famille : toutes les étoiles de la semaine ensemble. */
+const DEFI_T=[
+  {k:'rythme',ic:'🍐',t:'La roue des rythmes',d:'2 roues à taper en rythme',u:'%'},
+  {k:'rush',ic:'⚡',t:'Note Rush',d:'bats ton record de points',u:'pts',floor:10},
+  {k:'ballon',ic:'🎈',t:'Pop les ballons',d:'bats ton record de points',u:'pts',floor:10},
+  {k:'run',ic:'🏃',t:'La course du temple',d:'cours plus loin que ton record',u:'m',floor:300},
+  {k:'tetra',ic:'🧱',t:'Blocs musicaux',d:'fais plus de lignes que ton record',u:'lignes',floor:4}];
+let DEFI=null;
+function dHash(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%1000003;return h;}
+function defiToday(){return DEFI_T[dHash(today()+'defi')%DEFI_T.length];}
+function defiOf(p){const d=today();if(!p.defi||p.defi.d!==d){const T=defiToday();p.defi={d:d,k:T.k,tries:0,best:null,pct:0,base:T.k==='rythme'?null:Math.max(T.floor||1,(p.best||{})[T.k]||0)};}return p.defi;}
+function defiPts(pct){return Math.round(Math.min(150,pct||0)/10);}
+/* hasard « graine » : la même roue des rythmes pour tous ce jour-là */
+function seeded(seed,fn){const R=Math.random;let x=seed%2147483647||1;Math.random=function(){x=x*16807%2147483647;return (x-1)/2147483646;};try{return fn();}finally{Math.random=R;}}
+function defiRyTier(p){const S=(p.lv&&p.lv.rythme)||{};let n=1;for(let i=1;i<=30;i++)if(S[i])n=i;return Math.min(10,Math.ceil(n/3));}
+function defiRecord(score){const p=P();if(!p||!DEFI)return;const D=defiOf(p),T=DEFI_T.filter(function(x){return x.k===D.k;})[0];
+  const pct=D.k==='rythme'?score:Math.round(score/Math.max(1,D.base)*100);D.tries++;if(D.best==null||score>D.best)D.best=score;if(pct>D.pct)D.pct=pct;
+  const wk=cupWeek();if(p.cupw&&p.cupw.w!==wk){p.cuph=p.cuph||{};p.cuph[p.cupw.w]=p.cupw;}const w=(p.cupw&&p.cupw.w===wk)?p.cupw:(p.cupw={w:wk,defi:{}});w.defi[today()]=defiPts(D.pct);save();DEFI=null;
+  setTimeout(function(){banner('⚡ Défi : '+pct+' %'+(D.k==='rythme'?'':' de ton record')+' · '+(3-D.tries>0?(3-D.tries)+' essai'+(3-D.tries>1?'s':'')+' restant'+(3-D.tries>1?'s':''):'défi terminé'),'#FFC83D');if(pct>=100&&typeof confetti==='function')confetti(60);},700);}
+function defiStart(){const p=P();if(!p)return;const D=defiOf(p);if(D.tries>=3){toast('Tu as déjà fait tes 3 essais aujourd’hui !');return;}
+  DEFI={k:D.k,last:null,seen:false};LV=null;
+  if(D.k==='rythme')go('rythme','defi');else if(D.k==='rush')go('game','rush');else if(D.k==='ballon')go('game','ballon');else if(D.k==='run')go('run','notes');else go('tetra');
+  setTimeout(function(){banner('⚡ DÉFI DU JOUR — essai '+(D.tries+1)+'/3','#FFC83D');},400);}
+/* on suit la partie en cours pour récupérer le score à la fin, quel que soit le jeu */
+setInterval(function(){if(!DEFI||DEFI.k==='rythme')return;const g={rush:'rush',ballon:'ballon',run:'run',tetra:'tetra'}[DEFI.k];
+  const v=DR?(DEFI.k==='run'?DR.dist:(DEFI.k==='tetra'?DR.lines:DR.score)):null;
+  if(DR&&DR.game===g&&DR.on){DEFI.seen=true;if(v!=null)DEFI.last=Math.round(v);return;}
+  if(DEFI.seen){defiRecord(DEFI.last||0);}
+  else if(VIEW!=='game'&&VIEW!=='run'&&VIEW!=='tetra'&&DEFI.t0&&Date.now()-DEFI.t0>4000)DEFI=null;
+  if(DEFI&&!DEFI.t0)DEFI.t0=Date.now();},250);
+/* — la coupe de la semaine — */
+function cupWeekOf(d){const x=new Date(d+'T12:00:00');const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);return x.toISOString().slice(0,10);} /* lundi de la semaine */
+function cupWeek(){return cupWeekOf(today());}
+function cupDays(w){const o=[];const x=new Date(w+'T12:00:00');for(let i=0;i<7;i++){o.push(x.toISOString().slice(0,10));x.setDate(x.getDate()+1);}return o;}
+function cupScore(p,w){const days=cupDays(w);let st=0,dp=0,df=0;
+  days.forEach(function(d){const s=(p.stat||{})[d];if(s)st+=s.st||0;if((p.pdays||[]).indexOf(d)>=0)dp++;});
+  const c=p.cupw&&p.cupw.w===w?p.cupw:((p.cuph||{})[w]||null);if(c)Object.keys(c.defi||{}).forEach(function(d){df+=c.defi[d];});
+  return {st:st,dp:dp,df:df,tot:st*2+dp*5+df};}
+function cupRank(w){return DB.profs.map(function(p){return {p:p,s:cupScore(p,w)};}).sort(function(a,b){return b.s.tot-a.s.tot;});}
+function famStars(w){return DB.profs.reduce(function(t,p){return t+cupScore(p,w).st;},0);}
+/* l'accueil : défi du jour + coupe (remplace l'ancienne ligue à l'XP, qui avantageait les grands) */
+function defiHTML(p){const D=defiOf(p),T=DEFI_T.filter(function(x){return x.k===D.k;})[0];
+  const fam=DB.profs.map(function(q){const Q=q.defi&&q.defi.d===today()?q.defi:null;return {q:q,pct:Q?Q.pct:null};}).sort(function(a,b){return (b.pct||-1)-(a.pct||-1);});
+  return '<div class="card defi"><h2>⚡ Défi du jour <span class="hint">le même pour toute la famille</span></h2><div class="dfrow"><span class="dfic">'+T.ic+'</span><div style="flex:1"><b>'+T.t+'</b><div class="hint" style="margin:0">'+T.d+(D.k==='rythme'?' (à ton niveau)':(' · ton record : '+D.base+' '+T.u))+'</div></div>'
+    +(D.tries<3?'<button class="btn v" id="dfgo">'+(D.tries?'🔁 Essai '+(D.tries+1)+'/3':'▶ Relever le défi')+'</button>':'<span class="pill">✅ 3 essais faits</span>')+'</div>'
+    +'<div class="dffam">'+fam.map(function(r,i){return '<span class="dfk'+(r.q.id===p.id?' me':'')+'">'+(r.pct!=null?(['🥇','🥈','🥉'][i]||''):'⏳')+' '+r.q.av+' '+esc(r.q.name)+(r.pct!=null?' <b>'+r.pct+' %</b>':'')+'</span>';}).join('')+'</div></div>';}
+function cupHTML(){if(DB.profs.length<2)return '';const w=cupWeek(),R=cupRank(w),fs=famStars(w),goal=DB.famGoal||40;
+  return '<div class="card cupw"><h2>🏆 La coupe de la semaine</h2>'+(DB.weekPrize?'<div class="hint">🎁 Le vainqueur gagne : <b style="color:var(--or)">'+esc(DB.weekPrize)+'</b></div>':'')
+    +R.map(function(r,i){return '<div class="lrow'+(r.p.id===DB.cur?' me':'')+'"><span class="lr">'+(['🥇','🥈','🥉'][i]||(i+1))+'</span><span>'+r.p.av+' '+esc(r.p.name)+(r.p.trophies&&r.p.trophies.length?' <small>'+'🏆'.repeat(Math.min(5,r.p.trophies.length))+'</small>':'')+'</span><b>'+r.s.tot+' pts</b><small class="hint" style="margin:0 0 0 6px;white-space:nowrap">⭐'+r.s.st+' · 📅'+r.s.dp+' j · ⚡'+r.s.df+'</small></div>';}).join('')
+    +'<div style="margin-top:10px"><b>🤝 Objectif famille</b> : '+fs+' / '+goal+' étoiles ensemble'+(DB.famPrize?' → <b style="color:var(--vert)">'+esc(DB.famPrize)+'</b>':'')+'<div class="bar"><i style="width:'+Math.min(100,Math.round(fs/goal*100))+'%"></i></div>'+(fs>=goal?'<div style="color:var(--vert);font-weight:900">🎉 Objectif atteint, bravo la famille !</div>':'')+'</div></div>';}
+/* lundi : la cérémonie de la semaine passée (une fois par semaine et par appareil) */
+function cupCeremony(){const w=cupWeek();if(DB.cupLast===w)return;const x=new Date(w+'T12:00:00');x.setDate(x.getDate()-7);const pw=x.toISOString().slice(0,10);
+  const R=cupRank(pw);DB.cupLast=w;
+  /* archive les points de défi de la semaine passée */
+  DB.profs.forEach(function(p){if(p.cupw&&p.cupw.w===pw){p.cuph=p.cuph||{};p.cuph[pw]=p.cupw;}});
+  if(!R.length||R[0].s.tot<=0){save();return;}
+  const win=R[0].p;win.trophies=win.trophies||[];if(win.trophies.indexOf(pw)<0)win.trophies.push(pw);save();
+  const ov=document.createElement('div');ov.className='msgov';const top=R.slice(0,3);
+  ov.innerHTML='<div class="msgcard"><div class="msgem">🏆</div><div class="msgfrom">La coupe de la semaine passée</div><div class="podium">'
+    +[1,0,2].filter(function(i){return top[i];}).map(function(i){return '<div class="pod p'+(i+1)+'"><div style="font-size:40px">'+top[i].p.av+'</div><b>'+esc(top[i].p.name)+'</b><div class="pbar">'+(['🥇','🥈','🥉'][i])+'<br>'+top[i].s.tot+' pts</div></div>';}).join('')
+    +'</div><div class="msgtxt">Bravo '+esc(win.name)+' !'+(DB.weekPrize?'<br><span style="font-size:18px">🎁 '+esc(DB.weekPrize)+'</span>':'')+'</div><div class="hint">Et bravo à tous : '+R.map(function(r){return r.p.av+' '+r.s.st+'⭐';}).join(' · ')+'</div><button class="btn v" id="cupok" style="margin-top:12px">🎉 Nouvelle semaine !</button></div>';
+  document.body.appendChild(ov);if(typeof confetti==='function')confetti(120);try{play([72,76,79,84,88,91,96],1.2,null,.16);}catch(e){}
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('La coupe de la semaine est pour '+win.name+' ! Bravo à tous !');u.lang='fr-FR';speechSynthesis.speak(u);}catch(e){}
+  ov.querySelector('#cupok').onclick=function(){ov.remove();};}
+/* — branchements — */
+(function(){
+  leagueHTML=function(){return cupHTML();};
+  const _h=vHome;vHome=function(){_h.apply(this,arguments);const p=P();if(!p)return;const anchor=document.querySelector('.card.mq');const html=defiHTML(p);
+    if(anchor)anchor.insertAdjacentHTML('beforebegin',html);else{const d=document.querySelector('.dash');if(d)d.insertAdjacentHTML('afterend',html);}
+    const b=document.getElementById('dfgo');if(b)b.onclick=defiStart;setTimeout(cupCeremony,300);};
+  const _vp=vParent;vParent=function(){_vp.apply(this,arguments);const sv=document.getElementById('savepin');if(!sv)return;const card=sv.closest('.card');if(!card)return;
+    card.insertAdjacentHTML('beforebegin','<div class="card"><h2>🏆 Coupe de la semaine & objectif famille</h2><div class="hint">Points de la coupe : étoiles gagnées ×2 + jours joués ×5 + défis du jour (mesurés par rapport au record de chacun, pour que les petits aient leur chance).</div>'
+      +'<div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap"><input type="text" id="cpPrize" style="flex:1;min-width:220px" placeholder="Récompense du vainqueur (ex. : choisit le dessert de dimanche)" value="'+esc(DB.weekPrize||'')+'"></div>'
+      +'<div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap"><label class="pill">🤝 Objectif famille <input type="number" id="cpGoal" min="5" step="5" value="'+(DB.famGoal||40)+'" style="width:70px"> étoiles</label><input type="text" id="cpFam" style="flex:1;min-width:220px" placeholder="Récompense de la famille (ex. : sortie au parc samedi)" value="'+esc(DB.famPrize||'')+'"></div>'
+      +'<div class="row" style="margin-top:10px"><button class="btn s b" id="cpSave">Enregistrer</button></div>'
+      +'<div style="margin-top:10px">'+cupRank(cupWeek()).map(function(r){return '<div class="lrow"><span>'+r.p.av+' '+esc(r.p.name)+'</span><b>'+r.s.tot+' pts</b><small class="hint" style="margin:0 0 0 6px">⭐'+r.s.st+' · 📅'+r.s.dp+' j · ⚡'+r.s.df+' · 🏆'+((r.p.trophies||[]).length)+'</small></div>';}).join('')+'</div></div>');
+    document.getElementById('cpSave').onclick=function(){DB.weekPrize=document.getElementById('cpPrize').value.trim();DB.famGoal=Math.max(5,+document.getElementById('cpGoal').value||40);DB.famPrize=document.getElementById('cpFam').value.trim();save();toast('Enregistré');};};
+})();
+
+
 /* ═══════════ 💌 MESSAGES PERSONNALISÉS — par enfant, texte + voix enregistrée, programmés ou déclenchés ═══════════
    DB.msgs = [{id,to:'all'|[pid],from,em,text,audio(dataURL|null),trig,at,n,rep,seen:{pid:[{t,r}]},cr}]
    déclencheurs : open (en arrivant), date (à partir d'un jour et d'une heure), win (3 étoiles), fail (étape ratée → encouragement),
