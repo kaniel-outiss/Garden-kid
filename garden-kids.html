@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.1 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.2 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -240,6 +240,15 @@ input[type=text],input[type=password]{font:inherit;font-size:22px;padding:12px 1
 table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--gris2)}th{color:var(--gris);font-weight:700}
 .msg{background:rgba(255,200,61,.12);border:2px solid var(--or);border-radius:18px;padding:14px 18px;font-size:22px;font-weight:800}
 @media(max-width:700px){h1{font-size:28px}.lesson .txt{font-size:23px}.stage .q{font-size:34px}}
+.rywheel{width:min(92vw,420px);height:auto;display:block;margin:4px auto}
+.rypad{display:block;margin:10px auto 0;width:min(92vw,420px);padding:18px 10px;border:0;border-radius:22px;background:linear-gradient(180deg,#7BC86C,#3E9B4F);color:#0b2310;font:900 26px Nunito,sans-serif;box-shadow:0 6px 0 #2a6b36;touch-action:manipulation;user-select:none}
+.rypad small{font-size:14px;font-weight:800;opacity:.8}
+.rypad.hit{animation:rypop .16s ease-out}
+@keyframes rypop{0%{transform:scale(.95);box-shadow:0 2px 0 #2a6b36}100%{transform:scale(1)}}
+.rycells{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;margin-top:8px}
+.rycell{background:var(--bg2);border:3px solid var(--c);border-radius:18px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;color:inherit;font:inherit}
+.rycell small{color:#9AA3C7;font-size:12px}
+.rycell.btnlike{cursor:pointer}.rycell.btnlike:disabled{opacity:.3}
 </style>
 </head>
 <body>
@@ -260,7 +269,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.1';
+const VERSION='3.2';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -726,7 +735,7 @@ function stepById(id){if(id==='__rev'||id==='__gren')return {I:{id:'home',ic:'�
 const M=document.getElementById('main');
 let VIEW='profs';
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(function(){e.style.display='none';},2200);}
-function go(v,a){VIEW=v;stopDrill();({who:vWho,famplan:vFamPlan,relay:vRelay,dayover:vDayOver,join:vJoin,bilan:vBilan,grenier:vGrenier,story:vStory,profs:vWho,home:vHome,isle:vIsle,lesson:vLesson,drill:vDrill,parent:vParent,newprof:vNewProf,code:vCode,setcode:vSetCode,shop:vShop,arcade:vArcade,game:vGame,tiles:vTilesPick,run:vRun,sos:vSos,mission:vMission,garden:vGarden,cata:vCata,tetra:vTetra,maze:vMaze,duo:vDuo,kart:vKart,levels:vLevels})[v](a);window.scrollTo(0,0);}
+function go(v,a){VIEW=v;stopDrill();({who:vWho,famplan:vFamPlan,relay:vRelay,dayover:vDayOver,join:vJoin,bilan:vBilan,grenier:vGrenier,story:vStory,profs:vWho,home:vHome,isle:vIsle,lesson:vLesson,drill:vDrill,parent:vParent,newprof:vNewProf,code:vCode,setcode:vSetCode,shop:vShop,arcade:vArcade,game:vGame,tiles:vTilesPick,run:vRun,sos:vSos,mission:vMission,garden:vGarden,cata:vCata,tetra:vTetra,maze:vMaze,rythme:vRythme,duo:vDuo,kart:vKart,levels:vLevels})[v](a);window.scrollTo(0,0);}
 function starsOf(p,id){const n=(p.stars||{})[id]||0;return '⭐'.repeat(n)+'☆'.repeat(3-n);}
 function isleProg(p,I){let t=0;I.steps.forEach(function(s){t+=Math.min(3,(p.stars||{})[s.id]||0);});return t/(I.steps.length*3);}
 function suggested(p){for(const I of ISLES)for(const s of I.steps)if(!((p.stars||{})[s.id]>=1))return {I:I,s:s};return null;}
@@ -1482,6 +1491,175 @@ function vLevels(g){const p=P();if(!p){go('profs');return;}LV=null;const D=LVDEF
     +'<div class="row" style="justify-content:center;margin-top:12px">'+(free?'<button class="btn b" id="lfree">🎮 Partie libre (record)</button>':'')+'<button class="btn g" id="larc">← L’arcade</button></div>';
   M.querySelectorAll('[data-ln]').forEach(function(b){b.onclick=function(){lvStart(g,+b.dataset.ln);};});const fr=document.getElementById('lfree');if(fr)fr.onclick=function(){LV=null;D.play(1);};document.getElementById('larc').onclick=function(){go('arcade');};
   const c=M.querySelector('.lvb.cur');if(c&&c.scrollIntoView)setTimeout(function(){c.scrollIntoView({block:'center',behavior:'smooth'});},60);}
+/* ═══════════ 🍐 LA ROUE DES RYTHMES — chaque temps a son fruit ; 2 mesures de 4 temps sur une roue qui tourne ═══════════
+   On écoute la roue (selon le niveau), 4 clics de décompte, puis on frappe le rythme sur N’IMPORTE QUELLE touche (ou le gros
+   bouton, ou la barre d’espace). 30 niveaux en 10 paliers (un fruit nouveau par palier) ; dans chaque palier :
+   1) on écoute d’abord, avec les mots  2) les mots, on écoute si on veut  3) DÉFI : les notes seules, sans écoute.
+   🎲 « Toutes les combinaisons » tire au sort parmi tous les fruits ; 🛠 « Ma roue » : l’enfant compose sa propre roue. */
+const RY_CELLS=[
+  {id:'poire',e:'🍐',w:'poire',s:['poire'],d:[1],b:1,t:1,c:'#7BC86C'},
+  {id:'chut',e:'🤫',w:'chut',s:['chut'],d:[-1],b:1,t:1,c:'#5B6390'},
+  {id:'kiwi',e:'🥝',w:'ki-wi',s:['ki','wi'],d:[.5,.5],b:1,t:2,c:'#9ACD32'},
+  {id:'fraise',e:'🍓',w:'frai-aise',s:['fraaai-se'],d:[2],b:2,t:3,c:'#FF6B6B'},
+  {id:'clem',e:'🍊',w:'clé-men-ti-ne',s:['clé','men','ti','ne'],d:[.25,.25,.25,.25],b:1,t:4,c:'#FF9F43'},
+  {id:'abricot',e:'🍑',w:'a-bri-cot',s:['a','bri','cot'],d:[.25,.25,.5],b:1,t:5,c:'#FFB37A'},
+  {id:'pasteque',e:'🍉',w:'pas-tè-que',s:['pas','tè','que'],d:[.5,.25,.25],b:1,t:5,c:'#FF6FB5'},
+  {id:'ananas',e:'🍍',w:'a-na-nas',s:['a','na','nas'],d:[1/3,1/3,1/3],b:1,t:6,c:'#FFC83D',tri:1},
+  {id:'kichut',e:'🥝',w:'ki (chut)',s:['ki','(chut)'],d:[.5,-.5],b:1,t:7,c:'#6FBF73'},
+  {id:'chutwi',e:'🤫',w:'(chut) wi',s:['(chut)','wi'],d:[-.5,.5],b:1,t:7,c:'#4E9A8A'},
+  {id:'citron',e:'🍋',w:'ci-i-tron',s:['ciii','tron'],d:[1.5,.5],b:2,t:8,c:'#F5E04A'},
+  {id:'mangue',e:'🥭',w:'man-gue',s:['maan','gue'],d:[.75,.25],b:1,t:8,c:'#FFA726'},
+  {id:'banane',e:'🍌',w:'ba-naa-ne',s:['ba','naaa','ne'],d:[.5,1,.5],b:2,t:9,c:'#FFE066'},
+  {id:'melon',e:'🍈',w:'meee-lon',s:['meeee-lon'],d:[4],b:4,t:9,c:'#B5E48C'}];
+const RY_BY={};RY_CELLS.forEach(function(c){RY_BY[c.id]=c;});
+const RY_TIER=['','poire et chut','le kiwi','la fraise (2 temps)','la clémentine (4 sons)','abricot et pastèque','l’ananas (triolet)','les contretemps','citron et mangue (pointés)','banane (syncope) et melon (4 temps)','le grand mélange'];
+function ryLevel(n){const tier=Math.min(10,Math.ceil(n/3)),k=(n-1)%3;
+  return {n:n,tier:tier,k:k,demo:k===0,words:k<2,listen:k<2,bpm:Math.min(104,58+tier*3+k*5),tol:Math.max(.085,.15-tier*.006-k*.01),rounds:3};}
+/* tirage d’une roue de 8 temps (2 mesures) ; un fruit ne déborde pas de la mesure ; le dernier fruit débloqué est présent */
+function ryGen(maxTier,focus){const pool=RY_CELLS.filter(function(c){return c.t<=maxTier;});
+  for(let tries=0;tries<200;tries++){const out=[];let pos=0;
+    while(pos<8){const room=4-pos%4;const cand=pool.filter(function(c){return c.b<=room&&!(pos===0&&c.d[0]<0);});
+      const wts=cand.map(function(c){return (focus&&c.t===focus?3:1)*(c.id==='chut'?.6:1)*(c.b===4?.5:1);});let r=Math.random()*wts.reduce(function(a,b){return a+b;},0),pickC=cand[0];
+      for(let i=0;i<cand.length;i++){r-=wts[i];if(r<=0){pickC=cand[i];break;}}
+      out.push({id:pickC.id,at:pos});pos+=pickC.b;}
+    if(!focus||out.some(function(x){return RY_BY[x.id].t===focus;}))if(out.filter(function(x){return x.id==='chut';}).length<3)return out;}
+  return [{id:'poire',at:0},{id:'poire',at:1},{id:'poire',at:2},{id:'poire',at:3},{id:'poire',at:4},{id:'poire',at:5},{id:'poire',at:6},{id:'chut',at:7}];}
+function ryOnsets(wheel){const o=[];wheel.forEach(function(x,ci){const c=RY_BY[x.id];let t=x.at;c.d.forEach(function(d){if(d>0)o.push({t:t,ci:ci});t+=Math.abs(d);});});return o;}
+/* — dessin d’une cellule rythmique (têtes, hampes, ligatures, triolet, silences) — */
+function ryNota(c,w,col){col=col||'#F4F6FF';const n=c.d.length;let s='';const xs=c.d.map(function(_,i){return n===1?0:-w/2+w*(i+.5)/n;});
+  const isN=function(i){return c.d[i]>0;},ad=function(i){return Math.abs(c.d[i]);};
+  c.d.forEach(function(d,i){const x=xs[i],a=Math.abs(d);
+    if(d<0){if(a>=1)s+='<path d="M'+(x-2)+',-14 l5,6 l-5,5 l5,6 q-6,-2 -4,5" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-linecap="round"/>';
+      else s+='<circle cx="'+(x-2)+'" cy="-6" r="2.4" fill="'+col+'"/><path d="M'+(x-2)+',-5 q4,1 6,-2 l-5,16" fill="none" stroke="'+col+'" stroke-width="2"/>';return;}
+    s+='<ellipse cx="'+x+'" cy="8" rx="5.4" ry="4" transform="rotate(-20 '+x+' 8)" fill="'+(a>=2?'none':col)+'" stroke="'+col+'" stroke-width="'+(a>=2?2:0)+'"/>';
+    if(a<4)s+='<line x1="'+(x+4.8)+'" y1="7" x2="'+(x+4.8)+'" y2="-18" stroke="'+col+'" stroke-width="1.8"/>';
+    if(Math.abs(a-1.5)<.01||Math.abs(a-.75)<.01||Math.abs(a-3)<.01)s+='<circle cx="'+(x+9.5)+'" cy="8" r="1.8" fill="'+col+'"/>';});
+  /* ligatures : notes brèves (< 1 temps) consécutives */
+  const br=[];c.d.forEach(function(d,i){if(d>0&&d<1-.01)br.push(i);});
+  const runs=[];br.forEach(function(i){const r=runs[runs.length-1];if(r&&r[r.length-1]===i-1)r.push(i);else runs.push([i]);});
+  runs.forEach(function(r){if(r.length===1){const x=xs[r[0]]+4.8;s+='<path d="M'+x+',-18 q8,5 6,14" fill="none" stroke="'+col+'" stroke-width="2.2"/>';if(ad(r[0])<=.26)s+='<path d="M'+x+',-12 q8,5 6,14" fill="none" stroke="'+col+'" stroke-width="2.2"/>';return;}
+    s+='<rect x="'+(xs[r[0]]+4)+'" y="-19.5" width="'+(xs[r[r.length-1]]-xs[r[0]]+1.6)+'" height="3.4" fill="'+col+'"/>';
+    for(let j=0;j<r.length;j++){const i=r[j];if(ad(i)>.26)continue;const pr=j>0&&ad(r[j-1])<=.26,nx=j<r.length-1&&ad(r[j+1])<=.26;
+      if(nx){s+='<rect x="'+(xs[i]+4)+'" y="-14" width="'+(xs[r[j+1]]-xs[i]+1.6)+'" height="3.2" fill="'+col+'"/>';}
+      else if(!pr){const dir=j<r.length-1?1:-1;s+='<rect x="'+(dir>0?xs[i]+4:xs[i]-3)+'" y="-14" width="8" height="3.2" fill="'+col+'"/>';}}
+    if(c.tri)s+='<text x="'+((xs[r[0]]+xs[r[r.length-1]])/2+4.8)+'" y="-24" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="11" fill="#FFC83D">3</text>';});
+  return s;}
+/* — la roue — */
+function ryWheel(st){const S=400,C=200,R=192,r0=46;const P=function(a,rr){const t=(a-90)*Math.PI/180;return [C+Math.cos(t)*rr,C+Math.sin(t)*rr];};
+  let s='<circle cx="'+C+'" cy="'+C+'" r="'+(R+6)+'" fill="#12173a"/>';
+  st.wheel.forEach(function(x,ci){const c=RY_BY[x.id],a0=x.at*45,a1=(x.at+c.b)*45,large=c.b>=4?1:0;
+    const p0=P(a0,R),p1=P(a1-.001,R),q0=P(a0,r0),q1=P(a1-.001,r0);
+    const res=st.res?st.res[ci]:null,cur=st.cur===ci,nxt=st.cur!=null&&st.cur+1===ci;
+    const fill=res===true?'#1f4d36':(res===false?'#5a1f2a':(cur?'#3b3410':'#1c2350'));
+    s+='<path d="M'+q0+' L'+p0+' A'+R+','+R+' 0 '+large+' 1 '+p1+' L'+q1+' A'+r0+','+r0+' 0 '+large+' 0 '+q0+'Z" fill="'+fill+'" stroke="'+(cur?'#FFC83D':(nxt?'#58A6FF':'#2c356b'))+'" stroke-width="'+(cur?4:(nxt?3:2))+'"'+(nxt?' stroke-dasharray="6 5"':'')+'/>';
+    const am=(a0+a1)/2,pe=P(am,78),pn=P(am,150),pw=P(am,114);
+    s+='<rect x="'+(pe[0]-14)+'" y="'+(pe[1]-14)+'" width="28" height="28" rx="14" fill="'+c.c+'" opacity=".22"/><text x="'+pe[0]+'" y="'+(pe[1]+8)+'" text-anchor="middle" font-size="22">'+c.e+'</text>';
+    s+='<g transform="translate('+pn[0]+','+(pn[1]+4)+')">'+ryNota(c,Math.min(84,26*c.d.length+(c.b>1?30:0)),res===false?'#FF8A8A':'#F4F6FF')+'</g>';
+    if(st.words)s+='<text x="'+pw[0]+'" y="'+(pw[1]+5)+'" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="'+(c.w.length>9?11:13)+'" fill="'+(cur?'#FFC83D':'#c9d0ee')+'">'+c.w+'</text>';});
+  for(let k=0;k<8;k++){const p=P(k*45,R+1),q=P(k*45,r0);s+='<line x1="'+q[0]+'" y1="'+q[1]+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="'+(k%4===0?'#FFC83D':'#0b0f25')+'" stroke-width="'+(k%4===0?3:1.5)+'" opacity=".8"/>';}
+  /* aiguille */
+  if(st.beat!=null){const n=P(st.beat*45,R+4);s+='<line x1="'+C+'" y1="'+C+'" x2="'+n[0]+'" y2="'+n[1]+'" stroke="#FFC83D" stroke-width="4" stroke-linecap="round"/><circle cx="'+n[0]+'" cy="'+n[1]+'" r="7" fill="#FFC83D"/>';}
+  s+='<circle cx="'+C+'" cy="'+C+'" r="'+(r0-4)+'" fill="#0f1328" stroke="#FFC83D" stroke-width="3"/>'
+    +'<text x="'+C+'" y="'+(C-4)+'" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="'+(st.big?40:18)+'" fill="#FFC83D">'+(st.mid||('♩='+st.bpm))+'</text>'
+    +'<text x="'+C+'" y="'+(C+18)+'" text-anchor="middle" font-family="Nunito,Arial" font-weight="800" font-size="11" fill="#c9d0ee">'+(st.sub||'')+'</text>';
+  return '<svg viewBox="0 0 400 400" class="rywheel">'+s+'</svg>';}
+/* — sons — */
+function ryClick(t,acc){const A=ac();if(!A)return;const o=A.createOscillator(),g=A.createGain();o.type='square';o.frequency.value=acc?1760:1180;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(acc?.12:.06,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.04);o.connect(g);g.connect(A.destination);o.start(t);o.stop(t+.05);}
+function ryWood(t,len){const A=ac();if(!A)return;const o=A.createOscillator(),o2=A.createOscillator(),g=A.createGain();o.type='triangle';o.frequency.value=660;o2.type='sine';o2.frequency.value=1320;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.004);g.gain.exponentialRampToValueAtTime(.08,t+.07);g.gain.exponentialRampToValueAtTime(.0001,t+Math.min(.9,Math.max(.12,len*.85)));o.connect(g);o2.connect(g);g.connect(A.destination);o.start(t);o2.start(t);o.stop(t+1);o2.stop(t+1);}
+/* — le jeu — */
+function vRythme(arg){const p=P();if(!p){go('profs');return;}
+  const lvN=(typeof arg==='number'||/^\d+$/.test(arg||''))?+arg:null;
+  if(lvN==null&&arg!=='mix'&&arg!=='mine'){ryMenu();return;}
+  const L=lvN?ryLevel(lvN):{n:0,tier:10,k:1,demo:false,words:true,listen:true,bpm:arg==='mine'?66:80,tol:.12,rounds:arg==='mine'?1:3};
+  if(lvN){LV={g:'rythme',n:lvN};}else LV=null;
+  const st={L:L,round:0,scores:[],words:L.words,bpm:L.bpm,wheel:arg==='mine'?(p.ryMine||ryGen(4)):ryGen(L.tier,lvN&&L.tier<10?L.tier:0),mode:'idle'};
+  M.innerHTML='<h2>🍐 La roue des rythmes'+(lvN?' · niveau '+lvN:(arg==='mix'?' · 🎲 toutes les combinaisons':' · 🛠 ma roue'))+'</h2>'
+    +'<div class="stage" id="stage"><div class="ghud"><span id="ryr"></span><span id="rys" style="color:#FFC83D"></span></div>'
+    +(lvN?'<div class="hint" style="margin:0 0 6px">Palier '+L.tier+' : '+RY_TIER[L.tier]+(L.k===2?' · <b style="color:#FF9F43">DÉFI : les notes seules, sans écoute !</b>':'')+'</div>':'')
+    +'<div id="ryw"></div><div class="fb" id="ryfb"></div>'
+    +'<button class="rypad" id="rypad">👏 TAPE ICI<br><small>ou n’importe quelle touche du piano</small></button>'
+    +'<div class="row" style="justify-content:center;margin-top:10px;gap:8px">'+(L.listen?'<button class="btn b" id="ryl">🎧 Écouter</button>':'')+'<button class="btn v" id="ryg">▶ À moi !</button>'
+    +(lvN?'':'<button class="btn g" id="ryt">🐢 / 🐇 ♩='+st.bpm+'</button>')+'<button class="btn s g" id="quit">Arrêter</button></div></div>';
+  DR={on:true,game:'rythme',sid:'arcade',qs:[],res:[],hits:[],st:st};
+  const draw=function(){document.getElementById('ryw').innerHTML=ryWheel(st);document.getElementById('ryr').textContent=(L.rounds>1?'Roue '+(st.round+1)+'/'+L.rounds:'');
+    document.getElementById('rys').textContent=st.scores.length?'⭐ '+Math.round(st.scores.reduce(function(a,b){return a+b;},0)/st.scores.length*100)+' %':'';};
+  const fb=function(t,c){const e=document.getElementById('ryfb');if(e){e.className='fb'+(c?' '+c:'');e.innerHTML=t;}};
+  const spb=function(){return 60/st.bpm;};
+  let raf=null;
+  const anim=function(t0,until,onEnd){const A=ac();const step=function(){if(!DR.on||DR.game!=='rythme'||!document.getElementById('ryw')){return;}
+      const b=(A.currentTime-t0)/spb();
+      if(b<0){st.beat=null;st.big=true;st.mid=String(Math.min(4,Math.ceil(-b)));st.sub=st.mode==='play'?'prépare-toi…':'écoute…';st.cur=null;}
+      else{st.big=false;st.mid=null;st.sub=st.mode==='play'?'à toi !':'écoute…';st.beat=Math.min(8,b);let ci=null;st.wheel.forEach(function(x,i){if(b>=x.at&&b<x.at+RY_BY[x.id].b)ci=i;});st.cur=ci;}
+      draw();if(b>=until){st.beat=null;st.cur=null;st.mid=null;st.big=false;st.sub='';draw();onEnd();return;}raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);};
+  const busy=function(on){['ryl','ryg','ryt'].forEach(function(id){const b=document.getElementById(id);if(b)b.disabled=on;});};
+  const listen=function(after){const A=ac();if(!A)return;busy(true);st.mode='demo';st.res=null;const t0=A.currentTime+.25+4*spb();
+    for(let k=0;k<4;k++)ryClick(t0-(4-k)*spb(),k===0);for(let k=0;k<8;k++)ryClick(t0+k*spb(),k%4===0);
+    st.wheel.forEach(function(x){const c=RY_BY[x.id];let t=x.at;c.d.forEach(function(d){if(d>0)ryWood(t0+t*spb(),d*spb());t+=Math.abs(d);});});
+    fb('🎧 Écoute la roue…');anim(t0,8.05,function(){busy(false);st.mode='idle';fb(after?'':'À toi ! Appuie sur ▶');if(after)after();});};
+  const go2=function(){const A=ac();if(!A)return;busy(true);st.mode='play';st.res=null;DR.hits=[];const t0=A.currentTime+.25+4*spb();st.t0=t0;
+    for(let k=0;k<4;k++)ryClick(t0-(4-k)*spb(),k===0);for(let k=0;k<8;k++)ryClick(t0+k*spb(),k%4===0);
+    fb('1, 2, 3, 4… et tape le rythme !');anim(t0,8+.6,judge);};
+  const tap=function(){if(!DR.on||st.mode!=='play')return;const A=ac();const lat=(A.outputLatency||A.baseLatency||0);const b=(A.currentTime-lat-st.t0)/spb();
+    if(b<-.6||b>8.6)return;DR.hits.push(b);const pad=document.getElementById('rypad');if(pad){pad.classList.remove('hit');void pad.offsetWidth;pad.classList.add('hit');}try{if(navigator.vibrate&&DB.vib!==false)navigator.vibrate(8);}catch(e){}};
+  const judge=function(){st.mode='wait';const ons=ryOnsets(st.wheel),tolB=L.tol/spb(),used={};let ok=0,offs=[];
+    const cellOk=st.wheel.map(function(){return true;});
+    ons.forEach(function(o){let bi=-1,bd=9;DR.hits.forEach(function(h,i){if(used[i])return;const d=Math.abs(h-o.t);if(d<bd){bd=d;bi=i;}});
+      if(bi>=0&&bd<=tolB){used[bi]=1;ok++;offs.push(DR.hits[bi]-o.t);}else cellOk[o.ci]=false;});
+    const extra=DR.hits.filter(function(_,i){return !used[i];});
+    extra.forEach(function(h){let ci=null;st.wheel.forEach(function(x,i){if(h>=x.at-.25&&h<x.at+RY_BY[x.id].b-.25)ci=i;});if(ci!=null)cellOk[ci]=false;});
+    const sc=Math.max(0,ok/Math.max(1,ons.length+extra.length*.5));st.res=cellOk;st.scores.push(sc);draw();
+    const avg=offs.length?offs.reduce(function(a,b){return a+b;},0)/offs.length*spb():0;
+    const tip=sc<.9&&Math.abs(avg)>.04?(avg>0?' Tu es un peu <b>en retard</b> : écoute bien le clic.':' Tu es un peu <b>en avance</b> : pas si vite !'):'';
+    const bad=st.wheel.filter(function(_,i){return !cellOk[i];}).map(function(x){return RY_BY[x.id].e+' '+RY_BY[x.id].w;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+    if(sc>=.9){fb('🌟 PARFAIT ! '+Math.round(sc*100)+' %','good');play([72,76,79,84],.5,null,.12);if(typeof confetti==='function')confetti(25);}
+    else if(sc>=.6)fb('👍 Bien ! '+Math.round(sc*100)+' %'+(bad.length?' · à revoir : '+bad.slice(0,3).join(', '):'')+tip,'good');
+    else fb('💪 Encore un effort : '+Math.round(sc*100)+' %'+(bad.length?' · à revoir : '+bad.slice(0,3).join(', '):'')+tip,'bad');
+    setTimeout(next,1800);};
+  const next=function(){if(!DR.on||DR.game!=='rythme')return;st.mode='idle';busy(false);
+    if(st.round+1<L.rounds){st.round++;st.wheel=arg==='mine'?st.wheel:ryGen(L.tier,lvN&&L.tier<10?L.tier:0);st.res=null;draw();fb(L.demo?'🎧 Nouvelle roue : écoute d’abord…':'Nouvelle roue ! Appuie sur ▶ quand tu es prêt·e.');if(L.demo)setTimeout(function(){listen();},700);return;}
+    const avg=st.scores.reduce(function(a,b){return a+b;},0)/st.scores.length,stars=avg>=.9?3:(avg>=.75?2:(avg>=.55?1:0));
+    const p2=P();p2.best=p2.best||{};p2.best.rythme=Math.max(p2.best.rythme||0,lvN||0);save();
+    if(lvN){if(stars)lvWin(stars);else lvLose();}
+    else{fb('Moyenne : '+Math.round(avg*100)+' % '+'⭐'.repeat(stars)+' · on rejoue ?','good');st.round=0;st.scores=[];if(arg==='mix'){st.wheel=ryGen(10);}st.res=null;draw();}};
+  DR.hit=function(){tap();};DR.hit._w=1;
+  const pad=document.getElementById('rypad');pad.addEventListener('pointerdown',function(e){e.preventDefault();tap();});
+  const key=function(e){if(e.code==='Space'||e.key===' '){e.preventDefault();tap();}};document.addEventListener('keydown',key);
+  const off=function(){DR.on=false;cancelAnimationFrame(raf);document.removeEventListener('keydown',key);};
+  if(document.getElementById('ryl'))document.getElementById('ryl').onclick=function(){listen();};
+  document.getElementById('ryg').onclick=go2;
+  const tb=document.getElementById('ryt');if(tb)tb.onclick=function(){const T=[56,66,76,88,100];st.bpm=T[(T.indexOf(st.bpm)+1)%T.length]||66;tb.textContent='🐢 / 🐇 ♩='+st.bpm;draw();};
+  document.getElementById('quit').onclick=function(){off();go(lvN?'levels':'rythme',lvN?'rythme':undefined);};
+  const obs=setInterval(function(){if(!document.getElementById('ryw')){off();clearInterval(obs);}},500);
+  draw();
+  if(L.demo){fb('🎧 Écoute d’abord la roue…');setTimeout(function(){listen();},600);}
+  else fb(L.k===2?'🔥 DÉFI : lis les notes, puis appuie sur ▶ !':'Lis les fruits, puis appuie sur ▶ — '+(L.listen?'ou 🎧 pour écouter.':''));}
+/* — menu : niveaux, toutes les combinaisons, ma roue, et l’imagier des fruits — */
+function ryMenu(){const p=P();LV=null;const S=(p.lv&&p.lv.rythme)||{};let tot=0;for(let i=1;i<=30;i++)tot+=S[i]||0;
+  const card=function(c){return '<div class="rycell" style="--c:'+c.c+'"><div style="font-size:30px">'+c.e+'</div><svg viewBox="-45 -32 90 50" width="90" height="50">'+ryNota(c,Math.min(64,22*c.d.length+(c.b>1?24:0)))+'</svg><b>'+c.w+'</b><small>'+(c.b>1?c.b+' temps':'1 temps')+' · palier '+c.t+'</small><button class="btn s b" data-ryp="'+c.id+'">🔊</button></div>';};
+  M.innerHTML='<h1>🍐 La roue des rythmes</h1><div class="hint">Chaque temps a son fruit. Écoute la roue, puis tape le rythme sur n’importe quelle touche !</div>'
+    +'<div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0"><button class="btn v" id="rylv">⭐ Les 30 niveaux · '+tot+'/90</button><button class="btn b" id="rymix">🎲 Toutes les combinaisons</button><button class="btn" id="rymine" style="background:#FF9F43">🛠 Ma roue</button></div>'
+    +'<h2>🧺 Les fruits du rythme</h2><div class="rycells">'+RY_CELLS.map(card).join('')+'</div>'
+    +'<div class="row" style="margin-top:12px"><button class="btn g" id="back">← L’arcade</button></div>';
+  document.getElementById('rylv').onclick=function(){go('levels','rythme');};document.getElementById('rymix').onclick=function(){go('rythme','mix');};
+  document.getElementById('rymine').onclick=ryCompose;document.getElementById('back').onclick=function(){go('arcade');};
+  M.querySelectorAll('[data-ryp]').forEach(function(b){b.onclick=function(){const c=RY_BY[b.dataset.ryp],A=ac();if(!A)return;const sp=60/72,t0=A.currentTime+.1;let t=0;for(let r=0;r<2;r++){c.d.forEach(function(d){if(d>0)ryWood(t0+t*sp,d*sp);t+=Math.abs(d);});}for(let k=0;k<c.b*2;k++)ryClick(t0+k*sp,k===0);say(c.w.replace(/-/g,''),true);};});}
+function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire',at:1},{id:'kiwi',at:2},{id:'poire',at:3},{id:'poire',at:4},{id:'poire',at:5},{id:'kiwi',at:6},{id:'chut',at:7}]).map(function(x){return {id:x.id,at:x.at};});let sel=0;
+  const fill=function(){/* recolle les cases vides avec des « chut » */const occ=[];W.forEach(function(x){for(let k=0;k<RY_BY[x.id].b;k++)occ[x.at+k]=1;});for(let i=0;i<8;i++)if(!occ[i])W.push({id:'chut',at:i});W.sort(function(a,b){return a.at-b.at;});};
+  const render=function(){fill();const st={wheel:W,words:true,bpm:66,sub:'case '+(sel+1),mid:'🛠',cur:W.findIndex(function(x){return x.at===sel;})};
+    M.innerHTML='<h2>🛠 Ma roue</h2><div class="hint">Touche une case de la roue, puis choisis son fruit. Un fruit de 2 temps prend 2 cases (il ne déborde pas de la mesure).</div><div id="ryw">'+ryWheel(st)+'</div>'
+      +'<div class="rycells">'+RY_CELLS.map(function(c){const room=4-sel%4;return '<button class="rycell btnlike" data-pc="'+c.id+'" style="--c:'+c.c+'"'+(c.b>room?' disabled':'')+'><div style="font-size:26px">'+c.e+'</div><b>'+c.w+'</b></button>';}).join('')+'</div>'
+      +'<div class="row" style="justify-content:center;gap:8px;margin-top:10px"><button class="btn v" id="ryplay">▶ Jouer ma roue</button><button class="btn b" id="ryrand">🎲 Au hasard</button><button class="btn g" id="back">← Retour</button></div>';
+    const svg=M.querySelector('.rywheel');svg.style.cursor='pointer';svg.addEventListener('click',function(e){const r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*400-200,y=(e.clientY-r.top)/r.height*400-200;if(Math.hypot(x,y)<46)return;let a=Math.atan2(y,x)*180/Math.PI+90;if(a<0)a+=360;sel=Math.floor(a/45)%8;
+      const own=W.filter(function(z){return z.at<=sel&&sel<z.at+RY_BY[z.id].b;})[0];if(own)sel=own.at;render();});
+    M.querySelectorAll('[data-pc]').forEach(function(b){b.onclick=function(){const c=RY_BY[b.dataset.pc];W=W.filter(function(z){const zb=RY_BY[z.id].b;return z.at+zb<=sel||z.at>=sel+c.b;});W.push({id:c.id,at:sel});const A=ac();if(A){let t=0;c.d.forEach(function(d){if(d>0)ryWood(A.currentTime+.05+t*.7,d*.7);t+=Math.abs(d);});}sel=Math.min(7,sel+c.b);render();};});
+    document.getElementById('ryplay').onclick=function(){fill();const p2=P();p2.ryMine=W;save();go('rythme','mine');};
+    document.getElementById('ryrand').onclick=function(){W=ryGen(10);render();};
+    document.getElementById('back').onclick=function(){go('rythme');};};
+  render();}
+LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+
+
 
 /* ═══════════ 🎵 musique de fond des jeux (batterie + basse + accords, dans la tonalité de do) · ✨ effets à chaque réussite (particules, vibration, tremblement, messages) ═══════════ */
 const BG={on:false};
@@ -1500,7 +1678,7 @@ function bgSched(){const A=ac();if(!A||!BG.on)return;const e8=60/BG.bpm/2;
     if(s===0)[0,mi?3:4,7].forEach(function(iv){bgTone(A,t,60+r+iv-(r>=7?12:0),'sine',.045,e8*7.5,.08);});
     BG.t+=e8;BG.step++;}}
 function bgBtn(){let b=document.getElementById('bgmb');if(!b){b=document.createElement('button');b.id='bgmb';b.title='Musique';b.onclick=function(){DB.bgm=DB.bgm===false?true:false;save();if(DB.bgm===false)bgStop();bgBtn();};document.body.appendChild(b);}
-  const inGame=!!(DR&&DR.game&&DR.on);b.style.display=inGame?'':'none';b.textContent=DB.bgm===false?'🔇':'🎵';}
+  const inGame=!!(DR&&DR.game&&DR.on&&DR.game!=='rythme');b.style.display=inGame?'':'none';b.textContent=DB.bgm===false?'🔇':'🎵';}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')bgStop();});
 /* — effets — */
 const JMSG={3:'BIEN !',5:'SUPER !',10:'GÉNIAL !',15:'INCROYABLE !',20:'LÉGENDAIRE !',30:'DIVIN !'};
@@ -1514,7 +1692,7 @@ function jSnap(){return {c:DR.combo||0,s:DR.score||0,l:DR.lines||0,co:DR.coins||
 function jWrap(){const f=DR.hit,me=DR;const w=function(m){const a=jSnap();f(m);if(DR!==me)return;const b=jSnap();
     const ok=b.c>a.c||b.s>a.s||b.l>a.l||b.co>a.co||b.cw>a.cw||b.i>a.i||b.cr<a.cr||b.lf<a.lf||b.v>a.v+3||b.sq>a.sq||b.pt>a.pt||b.px!==a.px||b.py!==a.py;
     const bad=!ok&&((a.c>0&&b.c===0)||b.v<a.v-3||(b.sh!=null&&b.sh<a.sh));if(ok)juiceOk(m,b.c);else if(bad)juiceBad();};w._w=1;DR.hit=w;}
-setInterval(function(){try{const g=!!(DR&&DR.game&&DR.on);const want=g&&DR.game!=='duo'&&!(DR.game==='mission'&&DR.k==='bateau')&&document.visibilityState!=='hidden';
+setInterval(function(){try{const g=!!(DR&&DR.game&&DR.on);const want=g&&DR.game!=='duo'&&DR.game!=='rythme'&&!(DR.game==='mission'&&DR.k==='bateau')&&document.visibilityState!=='hidden';
   if(want&&!BG.on)bgStart();else if(!want&&BG.on)bgStop();if(g&&DR.hit&&!DR.hit._w)jWrap();bgBtn();}catch(e){}},200);
 
 /* ═══════════ 🧱 Blocs musicaux · 🟡 Le labyrinthe · 🎵 Duel de mémoire · 🏎 Le grand prix (fantôme) ═══════════ */
@@ -1860,10 +2038,10 @@ function worldHTML(p){let sug=suggested(p);const curIsle=sug?sug.I.id:null;let g
       +'<div class="wi" style="--x:0%"><div class="wnode cupn'+(cs.gold?' gold':(cs.done?' done':''))+'" style="--c:#FFC83D;--p:'+Math.round(cs.one/Math.max(1,cs.n)*360)+'deg"><span>🏆</span></div><div class="wlb">'+C.t+'</div></div></div></div>';}).join('');}
 /* ── 🕹 arcade : Note Rush (notes qui tombent) et Pop les ballons ── */
 function vArcade(){const p=P();if(!p){go('profs');return;}if(arcadeLocked(p)){M.innerHTML='<div class="card relay"><div class="rbat">🕹🔒</div><h1>L’arcade t’attend !</h1><div class="hint" style="font-size:20px">Elle s’ouvre quand ta séance du jour est finie. Allez, on y va ?</div><div class="row" style="justify-content:center;margin-top:14px"><button class="btn v" id="dg">🧭 Ma séance</button><button class="btn g" id="bk">← Retour</button></div></div>';document.getElementById('dg').onclick=function(){dailyGo(p);};document.getElementById('bk').onclick=function(){go('home');};return;}const B=p.best||{};
-  M.innerHTML='<h1>🕹 L’arcade</h1><div class="arc"><div class="ag" data-g="sos" style="--c:#FF6B6B"><div class="ai">🚨🚒</div><h2>Les Secouristes</h2><div class="hint">L’alarme sonne ! Choisis le bon héros et sauve le village en musique.</div><b>🏢 QG : '+(p.hq||0)+' étage'+((p.hq||0)>1?'s':'')+'</b></div><div class="ag" data-g="kart" style="--c:#FF6B6B"><div class="ai">🏎️👻</div><h2>Le grand prix</h2><div class="hint">Chaque bonne note = TURBO ! Bats le fantôme du record de la famille.</div><b>🏆 '+(DB.kart?esc(DB.kart.name)+' · '+DB.kart.time.toFixed(1)+' s':'Pas encore de record')+'</b></div><div class="ag" data-g="duo" style="--c:#A78BFA"><div class="ai">🎵⚔️</div><h2>Duel de mémoire</h2><div class="hint">À deux : rejoue la chaîne de notes et ajoutes-en une. Qui tiendra le plus longtemps ?</div><b>👥 2 joueurs</b></div><div class="ag" data-g="maze" style="--c:#FFC83D"><div class="ai">🟡🐝</div><h2>Le labyrinthe</h2><div class="hint">do ⬅ ré ⬆ mi ⬇ fa ➡ : mange les cerises, évite les abeilles !</div><b>🏆 Niveau '+(B.maze||0)+'</b></div><div class="ag" data-g="tetra" style="--c:#58A6FF"><div class="ai">🧱🎹</div><h2>Blocs musicaux</h2><div class="hint">do ⬅ ré 🔄 mi ➡ fa ⬇ : complète des lignes avec tes 4 doigts !</div><b>🏆 Record : '+(B.tetra||0)+' lignes</b></div><div class="ag" data-g="garden" style="--c:#3ECF8E"><div class="ai">🌻🐌</div><h2>Défends ton potager</h2><div class="hint">Les escargots gourmands avancent ! Chaque ligne a sa note : le tournesol lance une graine.</div><b>🏆 Record : '+Math.max(B.gardenmd||0,B.gardenmg||0,B.gardennoires||0)+'</b></div><div class="ag" data-g="cata" style="--c:#A0522D"><div class="ai">🎯📦</div><h2>La catapulte</h2><div class="hint">Fais tomber la tour de caisses note après note pour attraper le trésor 💎.</div><b>🏆 Niveau '+((B.cata||0)+1)+'</b></div><div class="ag" data-g="run" style="--c:#FFC83D"><div class="ai">🏃🪨</div><h2>La course du temple</h2><div class="hint">Cours, saute les obstacles en jouant leur note, garde le rocher loin derrière !</div><b>🏆 Record : '+(B.run||0)+' m</b></div><div class="ag" data-g="rush" style="--c:#58A6FF"><div class="ai">🎹⚡</div><h2>Note Rush</h2><div class="hint">Les notes tombent : joue-les quand elles touchent la ligne ! Ça accélère…</div><b>🏆 Record : '+(B.rush||0)+'</b></div>'
+  M.innerHTML='<h1>🕹 L’arcade</h1><div class="arc"><div class="ag" data-g="rythme" style="--c:#7BC86C"><div class="ai">🍐🥝</div><h2>La roue des rythmes</h2><div class="hint">Chaque temps a son fruit : écoute la roue, puis tape le rythme ! Compose aussi ta propre roue.</div><b>⭐ '+(function(){const S=(p.lv&&p.lv.rythme)||{};let t=0;for(const k in S)t+=S[k]||0;return t;})()+'/90</b></div><div class="ag" data-g="sos" style="--c:#FF6B6B"><div class="ai">🚨🚒</div><h2>Les Secouristes</h2><div class="hint">L’alarme sonne ! Choisis le bon héros et sauve le village en musique.</div><b>🏢 QG : '+(p.hq||0)+' étage'+((p.hq||0)>1?'s':'')+'</b></div><div class="ag" data-g="kart" style="--c:#FF6B6B"><div class="ai">🏎️👻</div><h2>Le grand prix</h2><div class="hint">Chaque bonne note = TURBO ! Bats le fantôme du record de la famille.</div><b>🏆 '+(DB.kart?esc(DB.kart.name)+' · '+DB.kart.time.toFixed(1)+' s':'Pas encore de record')+'</b></div><div class="ag" data-g="duo" style="--c:#A78BFA"><div class="ai">🎵⚔️</div><h2>Duel de mémoire</h2><div class="hint">À deux : rejoue la chaîne de notes et ajoutes-en une. Qui tiendra le plus longtemps ?</div><b>👥 2 joueurs</b></div><div class="ag" data-g="maze" style="--c:#FFC83D"><div class="ai">🟡🐝</div><h2>Le labyrinthe</h2><div class="hint">do ⬅ ré ⬆ mi ⬇ fa ➡ : mange les cerises, évite les abeilles !</div><b>🏆 Niveau '+(B.maze||0)+'</b></div><div class="ag" data-g="tetra" style="--c:#58A6FF"><div class="ai">🧱🎹</div><h2>Blocs musicaux</h2><div class="hint">do ⬅ ré 🔄 mi ➡ fa ⬇ : complète des lignes avec tes 4 doigts !</div><b>🏆 Record : '+(B.tetra||0)+' lignes</b></div><div class="ag" data-g="garden" style="--c:#3ECF8E"><div class="ai">🌻🐌</div><h2>Défends ton potager</h2><div class="hint">Les escargots gourmands avancent ! Chaque ligne a sa note : le tournesol lance une graine.</div><b>🏆 Record : '+Math.max(B.gardenmd||0,B.gardenmg||0,B.gardennoires||0)+'</b></div><div class="ag" data-g="cata" style="--c:#A0522D"><div class="ai">🎯📦</div><h2>La catapulte</h2><div class="hint">Fais tomber la tour de caisses note après note pour attraper le trésor 💎.</div><b>🏆 Niveau '+((B.cata||0)+1)+'</b></div><div class="ag" data-g="run" style="--c:#FFC83D"><div class="ai">🏃🪨</div><h2>La course du temple</h2><div class="hint">Cours, saute les obstacles en jouant leur note, garde le rocher loin derrière !</div><b>🏆 Record : '+(B.run||0)+' m</b></div><div class="ag" data-g="rush" style="--c:#58A6FF"><div class="ai">🎹⚡</div><h2>Note Rush</h2><div class="hint">Les notes tombent : joue-les quand elles touchent la ligne ! Ça accélère…</div><b>🏆 Record : '+(B.rush||0)+'</b></div>'
     +'<div class="ag" data-g="ballon" style="--c:#FF6FB5"><div class="ai">🎈🎈</div><h2>Pop les ballons</h2><div class="hint">Chaque ballon porte une note : joue-la pour le faire éclater avant qu’il s’envole !</div><b>🏆 Record : '+(B.ballon||0)+'</b></div>'
     +'<div class="ag" data-g="rushpro" style="--c:#A78BFA"><div class="ai">🎹🔥</div><h2>Note Rush PRO</h2><div class="hint">Avec les touches noires, et sans le nom des notes !</div><b>🏆 Record : '+(B.rushpro||0)+'</b></div><div class="ag" data-g="rushlh" style="--c:#8B5CF6"><div class="ai">👈⚡</div><h2>Note Rush main gauche</h2><div class="hint">Les notes graves tombent : la main gauche joue !</div><b>🏆 Record : '+(B.rushlh||0)+'</b></div><div class="ag" data-g="ballon2" style="--c:#FF9F43"><div class="ai">🎈🎯</div><h2>Ballons à la bonne octave</h2><div class="hint">do3, do4… joue la note dans la BONNE octave (les « do » sont écrits sur le clavier).</div><b>🏆 Record : '+(B.ballon2||0)+'</b></div><div class="ag" data-g="ballacc" style="--c:#3ECF8E"><div class="ai">🎈🎶</div><h2>Ballons-accords</h2><div class="hint">Chaque ballon porte un accord (Do, Fa, Sol, La m…) : joue les 3 notes ensemble pour le faire éclater !</div><b>🏆 Record : '+(B.ballacc||0)+'</b></div><div class="ag" data-g="tiles" style="--c:#FF9F43"><div class="ai">🌠🎼</div><h2>Tuiles musicales</h2><div class="hint">Les notes d’un vrai morceau tombent sur le clavier : Bach, Beethoven, la Méthode Rose…</div><b>'+Object.keys(p.stars||{}).filter(function(k){return /^(cl_|rose_|cz_|cd_|rc_|pa_|rd_)/.test(k);}).length+' morceaux joués</b></div></div><div class="row" style="margin-top:12px"><button class="btn g" id="back">← Retour</button></div>';
-  M.querySelectorAll('[data-g]').forEach(function(e){e.onclick=function(){const g=e.dataset.g;if(g==='tiles')go('tiles');else if(['sos','duo','run','garden'].indexOf(g)>=0)go(g);else if(LVDEF[g])go('levels',g);else go('game',g);};});document.getElementById('back').onclick=function(){go('home');};}
+  M.querySelectorAll('[data-g]').forEach(function(e){e.onclick=function(){const g=e.dataset.g;if(g==='tiles')go('tiles');else if(['sos','duo','run','garden','rythme'].indexOf(g)>=0)go(g);else if(LVDEF[g])go('levels',g);else go('game',g);};});document.getElementById('back').onclick=function(){go('home');};}
 function vGame(kind){const p=P();if(!p){go('profs');return;}const pro=kind==='rushpro',b2=kind==='ballon2',acc=kind==='ballacc',lhm=kind==='rushlh',bal=kind==='ballon'||b2||acc;
   const lo=(lhm||b2||acc)?48:60,hi=lhm?60:72;KB={lo:lo,hi:hi};const NOTES=pro?[60,61,62,63,64,65,66,67,68,69,70,71,72]:(lhm?[48,50,52,53,55,57,59,60]:(b2?[48,50,52,53,55,57,59,60,62,64,65,67,69,71,72]:[60,62,64,65,67,69,71,72]));const ACC=[[0,'maj'],[5,'maj'],[7,'maj'],[9,'min'],[2,'min'],[4,'min']];
   M.innerHTML='<h2>'+({ballon:'🎈 Pop les ballons',ballon2:'🎈🎯 Ballons à la bonne octave',ballacc:'🎈🎶 Ballons-accords',rushpro:'🎹🔥 Note Rush PRO',rushlh:'👈⚡ Note Rush main gauche'}[kind]||'🎹⚡ Note Rush')+'</h2><div class="stage" id="stage"><div class="mascw"><span id="masc">'+petOf()+'</span><span id="mascb"></span></div><div id="combo" class="combo"></div><div class="ghud"><span id="gsc">0</span><span id="glv">❤️❤️❤️</span></div><div class="gfield'+(bal?' sky':'')+'" id="gf"><div class="gline"></div></div><div class="kbw"><div class="kb" id="kb"></div></div><div class="row" style="justify-content:center;margin-top:8px"><button class="btn s g" id="quit">Arrêter</button></div></div>';
