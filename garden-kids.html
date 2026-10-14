@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.6 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.7 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -271,6 +271,8 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 @media print{body.printdip>*:not(.dipov){display:none!important}body.printdip .dipov{position:static;background:none}body.printdip .dipov .row{display:none}}
 .duol{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}.duop2{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--bg2);border:2px solid var(--gris2);border-radius:14px;padding:10px;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .duop2 span{font-size:24px}.duop2 small{color:var(--gris)}.d4box{background:#1c2350;border-radius:16px;padding:10px 14px;margin-bottom:12px;text-align:left}.d4{display:flex;align-items:center;gap:10px;margin:6px 0}.d4>div{flex:1}
+.kcircw{text-align:center;margin:6px auto}.kcirc{width:min(80vw,300px);height:auto}
+@keyframes lvBreathe{0%,100%{opacity:.2}50%{opacity:1}}@keyframes lvBlink{0%,100%{opacity:1}50%{opacity:.2}}.lv-wait{animation:lvBreathe 1.4s ease-in-out infinite}.lv-bad{animation:lvBlink .5s linear infinite}
 </style>
 </head>
 <body>
@@ -291,7 +293,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.6';
+const VERSION='3.7';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1682,6 +1684,82 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ 📖 AIDES DE LECTURE (pièces) + ⭕ CERCLE DES FORMES (accords) — Garden Kids ═══════════
+   Aides, réglables par enfant (p.aid) depuis l'écran de la pièce :
+   🔤 le nom dans la note (« auto » : s'efface avec les étoiles de la pièce) · 🧭 les notes repères (sol, fa, do du milieu)
+   🔢 compter les temps sous la portée (le temps en cours en or) · 🔦 la fenêtre de lecture (le passé s'éteint, la mesure en
+   cours s'éclaire, la suivante est teintée). Cercle : les 12 notes en rond, l'accord dessine une forme ; vert = juste,
+   rouge qui clignote = fausse note avec une flèche vers la bonne, anneau doré = la note qui manque. */
+function kAid(){const p=P(),a=(p&&p.aid)||{};let nm=0;
+  if(a.name==='on')nm=1;else if(a.name!=='off'){const st=p&&DR&&DR.sid?((p.stars||{})[DR.sid]||0):0;nm=st===0?1:(st===1?.55:0);}
+  return {name:nm,land:a.land!==0,count:a.count!==0,win:a.win!==0,circ:a.circ!==0};}
+function kAidSet(k,v){const p=P();if(!p)return;p.aid=p.aid||{};p.aid[k]=v;save();}
+const FRN7=['do','ré','mi','fa','sol','la','si'];
+/* cercle des formes, version enfants */
+function kCircSVG(target,held,root){const S=300,c=150,R=104,NAMES=['do','do♯','ré','mi♭','mi','fa','fa♯','sol','la♭','la','si♭','si'];
+  const P2=function(pc,r){const a=(-90+pc*30)*Math.PI/180;return [c+Math.cos(a)*(r||R),c+Math.sin(a)*(r||R)];};
+  const T=target.slice().sort(function(a,b){return a-b;}),H=held.map(function(m){return ((m%12)+12)%12;}).filter(function(p,i,a){return a.indexOf(p)===i;});
+  const got=T.filter(function(p){return H.indexOf(p)>=0;}),bad=H.filter(function(p){return T.indexOf(p)<0;}),full=got.length===T.length&&!bad.length;
+  let s='<circle cx="'+c+'" cy="'+c+'" r="'+R+'" fill="none" stroke="#2c356b" stroke-width="3"/>';
+  for(let pc=0;pc<12;pc++){const q=P2(pc),t=P2(pc,R+28),on=T.indexOf(pc)>=0;s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4" fill="#3A4477"/><text x="'+t[0]+'" y="'+(t[1]+6)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="'+(on?17:13)+'" fill="'+(on?'#F4F6FF':'#5B6390')+'">'+NAMES[pc]+'</text>';}
+  const pts=T.map(function(p){return P2(p).join(',');}).join(' ');
+  s+=(T.length>2?'<polygon':'<polyline')+' points="'+pts+'" fill="'+(full?'#3ECF8E':'#FFC83D')+'" fill-opacity="'+(full?.3:.1)+'" stroke="'+(full?'#3ECF8E':'#FFC83D')+'" stroke-width="'+(full?5:3)+'" stroke-linejoin="round"/>';
+  T.forEach(function(p){const q=P2(p),ok=H.indexOf(p)>=0,isR=p===root;
+    if(!ok)s+='<circle class="lv-wait" cx="'+q[0]+'" cy="'+q[1]+'" r="22" fill="none" stroke="#FFC83D" stroke-width="4" stroke-dasharray="6 5"/>';
+    s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="17" fill="'+(ok?'#3ECF8E':(isR?'#FF6B6B':'#F4F6FF'))+'" opacity="'+(ok?1:.6)+'" stroke="#12162B" stroke-width="2"/>'+(isR?'<text x="'+q[0]+'" y="'+(q[1]+5)+'" text-anchor="middle" font-size="13" font-weight="900" fill="#12162B">★</text>':'');});
+  bad.forEach(function(p){const q=P2(p);let best=null,bd=99;T.forEach(function(t){let d=((t-p)%12+12)%12;if(d>6)d-=12;const pen=H.indexOf(t)>=0?.5:0;if(Math.abs(d)+pen<bd){bd=Math.abs(d)+pen;best={t:t,d:d};}});
+    s+='<circle class="lv-bad" cx="'+q[0]+'" cy="'+q[1]+'" r="18" fill="#FF5A6A"/><text x="'+q[0]+'" y="'+(q[1]+6)+'" text-anchor="middle" font-size="17" font-weight="900" fill="#fff">✕</text>';
+    if(best){const a=P2(p,R*.74),b=P2(best.t,R*.74),ma=(-90+(p+best.d/2)*30)*Math.PI/180,m=[c+Math.cos(ma)*R*.52,c+Math.sin(ma)*R*.52];
+      s+='<path d="M'+a[0]+','+a[1]+' Q'+m[0]+','+m[1]+' '+b[0]+','+b[1]+'" fill="none" stroke="#FF9F43" stroke-width="4" stroke-dasharray="6 5"/><text x="'+m[0]+'" y="'+(m[1]+5)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-size="15" font-weight="900" fill="#FF9F43">'+(best.d>0?'→':'←')+'</text>';}});
+  const shape={2:'un trait',3:'un triangle',4:'un carré… presque',5:'une étoile à 5 pointes'}[T.length]||'une forme';
+  s+='<text x="'+c+'" y="'+(c-4)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-size="26" font-weight="900" fill="'+(full?'#3ECF8E':'#FFC83D')+'">'+got.length+'/'+T.length+'</text><text x="'+c+'" y="'+(c+18)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" font-weight="800" fill="#9AA3C7">'+(full?'Bravo !':shape)+'</text>';
+  return '<svg viewBox="0 0 '+S+' '+S+'" class="kcirc">'+s+'</svg>';}
+let KC_I=null;
+function kCircRender(){const q=DR&&DR.on&&!DR.game&&!DR.piece&&DR.qs?DR.qs[DR.i]:null,ok=q&&q.pcs&&q.pcs.length>=2&&kAid().circ;let el=document.getElementById('kcirc');
+  if(!ok){if(el)el.remove();return;}
+  if(!el){const anchor=document.getElementById('q');if(!anchor)return;el=document.createElement('div');el.id='kcirc';el.className='kcircw';anchor.insertAdjacentElement('afterend',el);}
+  el.innerHTML=kCircSVG(q.pcs,Array.from(held),q.r)+'<div class="hint" style="margin:0;font-size:13px">⭐ = la note qui donne son nom à l’accord · les accords majeurs ont tous la même forme, elle tourne ! <button class="btn s g" id="kcoff" style="padding:2px 8px">masquer</button></div>';
+  const b=document.getElementById('kcoff');if(b)b.onclick=function(){kAidSet('circ',0);kCircRender();};}
+setInterval(function(){try{const k=DR&&DR.on?DR.i:null;if(k!==KC_I){KC_I=k;kCircRender();}}catch(e){}},200);
+(function(){const _on=noteOn,_off=noteOff;noteOn=function(){const r=_on.apply(this,arguments);try{kCircRender();}catch(e){}return r;};noteOff=function(){const r=_off.apply(this,arguments);try{kCircRender();}catch(e){}return r;};})();
+/* — les aides de lecture dans la portée des pièces — */
+(function(){const _ps=pieceSVG;pieceSVG=function(c,hands,curT,nb,opt){const html=_ps.apply(this,arguments);const A=kAid();if(!A.name&&!A.land&&!A.count&&!A.win)return html;
+    try{return kAidDecorate(html,c,hands,curT,nb,A);}catch(e){return html;}};})();
+/* on relit les positions dans le SVG produit : têtes (ellipse), lignes de portée, barres de mesure */
+function kAidDecorate(html,c,hands,curT,nb,A){const m=/viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(html);if(!m)return html;const W=+m[1],H=+m[2],sp=10;
+  const lines=[];html.replace(/<line x1="([\d.]+)" x2="([\d.]+)" y1="([\d.]+)" y2="\3" stroke="#B8C0DA" stroke-width="1"\/>/g,function(_,a,b,y){if(+b-+a>W*.5)lines.push(+y);return _;});
+  if(lines.length<10)return html;lines.sort(function(a,b){return a-b;});const tT=lines.slice(0,5),tB=lines.slice(5,10);
+  let pre='',post='';
+  const bars=[];html.replace(/<line x1="([\d.]+)" x2="\1" y1="([\d.]+)" y2="([\d.]+)" stroke="#B8C0DA" stroke-width="(?:1\.2|2|3)"\/>/g,function(_,x){bars.push(+x);return _;});bars.sort(function(a,b){return a-b;});
+  /* positions des têtes jouées / courantes (couleurs posées par pieceSVG) */
+  const heads=[];html.replace(/<ellipse cx="([\d.]+)" cy="([\d.]+)" rx="[\d.]+" ry="[\d.]+" transform="[^"]*" fill="([^"]+)"(?: stroke="([^"]+)")?/g,function(_,x,y,f,st){heads.push({x:+x,y:+y,col:f==='none'?st:f,hol:f==='none'});return _;});
+  const curX=(heads.filter(function(h){return h.col==='#FFC83D';})[0]||{}).x;
+  /* 🔦 fenêtre de lecture */
+  if(A.win&&curX!=null&&bars.length>=1){const segs=[];for(let i=0;i<bars.length-1;i++)segs.push([bars[i],bars[i+1]]);let ci=segs.findIndex(function(s){return curX>=s[0]&&curX<s[1];});
+    if(ci>=0){const y0=tT[0]-sp*2.4,y1=tB[4]+sp*2.4;pre+='<rect x="'+segs[ci][0]+'" y="'+y0+'" width="'+(segs[ci][1]-segs[ci][0])+'" height="'+(y1-y0)+'" rx="8" fill="#FFC83D" fill-opacity=".08" stroke="#FFC83D" stroke-opacity=".35"/>';
+      if(segs[ci+1])pre+='<rect x="'+segs[ci+1][0]+'" y="'+y0+'" width="'+(segs[ci+1][1]-segs[ci+1][0])+'" height="'+(y1-y0)+'" rx="8" fill="#58A6FF" fill-opacity=".06"/>';
+      post+='<rect x="'+bars[0]+'" y="'+y0+'" width="'+Math.max(0,curX-sp*1.4-bars[0])+'" height="'+(y1-y0)+'" fill="#0b0f25" fill-opacity=".45"/>';}}
+  /* 🧭 notes repères : la ligne du sol (clé de sol), la ligne du fa (clé de fa), le do du milieu */
+  if(A.land){const gy=tT[3],fy=tB[1],x0=bars[0]||0;
+    pre+='<line x1="'+x0+'" x2="'+(W-4)+'" y1="'+gy+'" y2="'+gy+'" stroke="#3ECF8E" stroke-width="2.6" stroke-opacity=".55"/><line x1="'+x0+'" x2="'+(W-4)+'" y1="'+fy+'" y2="'+fy+'" stroke="#58A6FF" stroke-width="2.6" stroke-opacity=".55"/>';
+    post+='<text x="'+(x0-2)+'" y="'+(gy+4)+'" text-anchor="end" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#3ECF8E">sol</text><text x="'+(x0-2)+'" y="'+(fy+4)+'" text-anchor="end" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#58A6FF">fa</text>';
+    const cT=tT[4]+sp,cB=tB[0]-sp;post+='<text x="'+(x0-2)+'" y="'+(cT+4)+'" text-anchor="end" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#FF6FB5">do</text><text x="'+(x0-2)+'" y="'+(cB+4)+'" text-anchor="end" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#FF6FB5">do</text>';}
+  /* 🔤 le nom dans la note */
+  if(A.name>0){heads.forEach(function(h){const top=h.y<(tT[4]+tB[0])/2;const L=top?tT:tB;const bottom=L[4],st=Math.round((bottom-h.y)/(sp/2))+(top?30:18);const nm=FRN7[((st%7)+7)%7];
+      post+='<ellipse cx="'+h.x+'" cy="'+h.y+'" rx="'+(sp*.95)+'" ry="'+(sp*.66)+'" fill="'+(h.hol?'#12162B':h.col)+'" stroke="'+h.col+'" stroke-width="1.5" opacity="'+A.name+'"/><text x="'+h.x+'" y="'+(h.y+sp*.32)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="'+(sp*.82)+'" fill="'+(h.hol?h.col:'#12162B')+'" opacity="'+A.name+'">'+nm+'</text>';});}
+  /* 🔢 compter les temps */
+  if(A.count&&bars.length>=2){const mt=rsMeter(c.R),nbt=+mt[0]||4,y=tB[4]+sp*3.4;for(let i=0;i<bars.length-1;i++){const x0=bars[i]+sp*1.2,x1=bars[i+1]-sp*.6;for(let k=0;k<nbt;k++){const x=x0+(x1-x0)*(k+.15)/nbt;
+      const isCur=curX!=null&&curX>=x0&&curX<x1&&Math.floor((curX-x0)/((x1-x0)/nbt))===k;post+='<text x="'+x+'" y="'+y+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="'+(isCur?15:12)+'" fill="'+(isCur?'#FFC83D':'#7A85A8')+'">'+(k+1)+'</text>';}}}
+  const H2=A.count?Math.max(H,tB[4]+sp*4.6):H;
+  return html.replace(/viewBox="0 0 ([\d.]+) ([\d.]+)"/,'viewBox="-26 0 '+(W+26)+' '+H2+'"').replace(/(<svg[^>]*>)/,'$1'+pre).replace('</svg>',post+'</svg>');}
+/* — les boutons des aides sur l'écran de la pièce — */
+(function(){const _vp=vPiece;vPiece=function(sid){_vp.apply(this,arguments);const b=document.getElementById('bpm');if(!b)return;const row=b.parentNode;const A=kAid(),p=P(),a=(p&&p.aid)||{};
+  const nm=a.name||'auto';row.insertAdjacentHTML('afterend','<div class="row kaids" style="justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn s '+(nm==='off'?'g':'v')+'" data-ka="name">🔤 Noms : '+({auto:'auto',on:'oui',off:'non'}[nm])+'</button><button class="btn s '+(A.land?'v':'g')+'" data-ka="land">🧭 Repères</button><button class="btn s '+(A.count?'v':'g')+'" data-ka="count">🔢 Temps</button><button class="btn s '+(A.win?'v':'g')+'" data-ka="win">🔦 Fenêtre</button></div>');
+  M.querySelectorAll('[data-ka]').forEach(function(x){x.onclick=function(){const k=x.dataset.ka,p2=P();p2.aid=p2.aid||{};if(k==='name')p2.aid.name={auto:'on',on:'off',off:'auto'}[p2.aid.name||'auto'];else p2.aid[k]=p2.aid[k]===0?1:0;save();
+    const ka=kAid();M.querySelectorAll('[data-ka]').forEach(function(y){const kk=y.dataset.ka;if(kk==='name'){const v=p2.aid.name||'auto';y.textContent='🔤 Noms : '+({auto:'auto',on:'oui',off:'non'}[v]);y.className='btn s '+(v==='off'?'g':'v');}else y.className='btn s '+(ka[kk]?'v':'g');});
+    try{pieceShow();}catch(e){}};});};})();
+
+
 /* ═══════════ ⛪ L'ÎLE DES CANTIQUES + 👫 À QUATRE MAINS ═══════════
    Cantiques : ceux déjà dans Garden Kids (Amazing Grace, Douce nuit, Oh when the Saints) + ceux que Papa joue dans
    l'enregistreur du coin des parents (choisir « île des cantiques ») — aucune mélodie écrite de mémoire.
