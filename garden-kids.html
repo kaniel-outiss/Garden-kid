@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.0 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.1 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -280,6 +280,10 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .gopt.ok{border-color:var(--vert);background:#1f4d36}.gopt.bad{border-color:#FF5A6A;background:#5a1f2a}
 .pwb{position:absolute;top:-10px;right:-10px;font-size:20px;filter:drop-shadow(0 0 4px #fff)}.pw-gold{box-shadow:0 0 18px #FFC83D}.pw-ice{box-shadow:0 0 18px #58A6FF}.pw-heart{box-shadow:0 0 18px #FF6FB5}
 .gfield.frozen{box-shadow:inset 0 0 40px #58A6FF;filter:saturate(.7) hue-rotate(15deg)}
+.prof.dragging{opacity:.35}.prof.ghost{position:fixed;z-index:999;pointer-events:none;opacity:.95;transform:scale(1.06);box-shadow:0 12px 30px #000a}
+.kb .pulse{animation:kpulse .55s ease-in-out 4}@keyframes kpulse{50%{transform:translateY(4px);filter:brightness(1.5)}}
+.eye{position:fixed;z-index:60;background:#fff;color:#10142a;border-radius:22px;padding:8px 14px;display:flex;align-items:center;gap:8px;font-weight:900;font-size:22px;box-shadow:0 8px 24px #0008;animation:eyein .35s ease-out}.eye span{font-size:30px}.eye b{color:#c0392b}
+.eye.gone{animation:eyeout .5s forwards}.eye.caught{animation:eyecaught .6s forwards}@keyframes eyein{from{transform:scale(.3);opacity:0}}@keyframes eyeout{to{transform:translateY(20px);opacity:0}}@keyframes eyecaught{to{transform:scale(1.8);opacity:0}}
 </style>
 </head>
 <body>
@@ -1691,6 +1695,87 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ 🧒 v4.1 — ORDRE DES ENFANTS · DEMI-TONS · OCTAVE · CINQ DOIGTS · LES YEUX SUR L'ÉCRAN ═══════════ */
+/* — 1. profils : glisser-déposer pour changer l'ordre (maintien 300 ms, puis on glisse) — */
+(function(){let drag=null,timer=null,ghost=null,moved=false,grid=null;
+  const cards=function(){return Array.from(grid.querySelectorAll('.prof[data-p]'));};
+  const place=function(e){if(!ghost)return;ghost.style.left=(e.clientX-ghost.offsetWidth/2)+'px';ghost.style.top=(e.clientY-ghost.offsetHeight/2)+'px';};
+  const over=function(e){const els=document.elementsFromPoint(e.clientX,e.clientY);for(let i=0;i<els.length;i++){const c=els[i].closest&&els[i].closest('.prof[data-p]');if(c&&c!==drag&&c!==ghost)return c;}return null;};
+  document.addEventListener('pointerdown',function(e){const c=e.target.closest&&e.target.closest('.profs .prof[data-p]');if(!c||DB.profs.length<2)return;grid=c.parentNode;moved=false;clearTimeout(timer);
+    timer=setTimeout(function(){drag=c;c.classList.add('dragging');ghost=c.cloneNode(true);ghost.className='prof ghost';document.body.appendChild(ghost);ghost.style.width=c.getBoundingClientRect().width+'px';place(e);try{navigator.vibrate&&navigator.vibrate(20);}catch(x){}grid.style.touchAction='none';},300);});
+  window.addEventListener('pointermove',function(e){if(!drag){if(timer&&(Math.abs(e.movementX)+Math.abs(e.movementY))>6){clearTimeout(timer);timer=null;}return;}e.preventDefault();moved=true;place(e);const t=over(e);if(!t)return;const a=cards();if(a.indexOf(t)<a.indexOf(drag))grid.insertBefore(drag,t);else grid.insertBefore(drag,t.nextSibling);},{passive:false});
+  const end=function(){clearTimeout(timer);timer=null;if(!drag)return;const order=cards().map(function(c){return c.dataset.p;});DB.profs.sort(function(a,b){return order.indexOf(a.id)-order.indexOf(b.id);});save();drag.classList.remove('dragging');if(ghost)ghost.remove();ghost=null;const d=drag;drag=null;grid.style.touchAction='';if(moved){d.dataset.skip='1';setTimeout(function(){delete d.dataset.skip;},400);toast('✅ Ordre enregistré');}};
+  window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
+  document.addEventListener('click',function(e){const c=e.target.closest&&e.target.closest('.prof[data-p]');if(c&&c.dataset.skip){e.stopPropagation();e.preventDefault();}},true);
+  /* petit rappel sous la grille, à chaque affichage */
+  new MutationObserver(function(){const g=M.querySelector('.profs');if(!g||DB.profs.length<2||g.nextElementSibling&&g.nextElementSibling.classList.contains('dndhint'))return;g.insertAdjacentHTML('afterend','<div class="hint dndhint" style="text-align:center;margin-top:6px">✋ Garde le doigt sur un joueur puis glisse-le pour changer l’ordre</div>');}).observe(M,{childList:true});})();
+
+/* — 2 & 3. quand une note est fausse : demi-ton voisin et mauvaise octave, dits ET montrés — */
+const ATT={semi:{},oct:{}};
+function attHint(m,w){if(w==null)return null;const d=w-m;
+  if(d!==0&&w%12===m%12){const n=Math.round(Math.abs(d)/12);return {k:'oct',big:(d>0?'⬆ plus HAUT':'⬇ plus BAS'),t:'C’est bien '+frn(w%12)+', mais pas au bon étage : '+(d>0?'joue la même note plus haut →':'← joue la même note plus bas')+(n>1?' ('+n+' octaves)':''),col:'#4F9EFF'};}
+  if(Math.abs(d)===1){const bk=[1,3,6,8,10].indexOf(w%12)>=0;return {k:'semi',big:(d>0?'→ juste à côté':'← juste à côté'),t:'Tout près ! Il faut '+frn(w%12)+' : la touche '+(bk?'NOIRE':'BLANCHE')+' juste '+(d>0?'à droite':'à gauche')+' de '+frn(m%12),col:'#FF9F43'};}
+  return null;}
+function attShow(h,m,w,sid){const fb=document.getElementById('fb');if(fb){fb.className='fb bad';fb.textContent='✕ '+h.t;}banner(h.big,h.col);say(h.t);
+  const p=P();if(p&&sid){const key=h.k==='semi'?'semiErr':'octErr';p[key]=p[key]||{};p[key][sid]=(p[key][sid]||0)+1;}
+  KBMAP={};KBMAP[m]='bad';KBMAP[w]='want';kbPaint('kb',KBMAP);kbCenter('kb',Math.min(m,w),Math.max(m,w));
+  const el=document.querySelector('#kb [data-n="'+w+'"]');if(el){el.classList.add('pulse');setTimeout(function(){el.classList.remove('pulse');},2200);}}
+(function(){const _fail=fail;fail=function(m,want){_fail.apply(this,arguments);const q=DR.qs&&DR.qs[DR.i];if(q&&q.from!=null)return;/* les drills de marches ont déjà leur message */
+    const w=want&&want[0];const h=attHint(m,w);if(h)attShow(h,m,w,DR.sid);};
+  const _pn=pieceNote;pieceNote=function(m){const st=DR.piece&&DR.running&&!DR.pmode.timed?DR.steps[DR.k]:null;const before=st?DR.errAt[DR.k]:null;
+    const r=_pn.apply(this,arguments);
+    if(st&&st.need.indexOf(m)<0){const w=st.need.filter(function(x){return !DR.fresh.has(x);})[0];const h=attHint(m,w);if(h)attShow(h,m,w,DR.sid);}
+    return r;};})();
+
+/* — 4. cinq doigts : en mode pièce, deux notes voisines de la même main doivent s'enchaîner liées (le doigt suivant presse avant que le précédent lâche).
+      Un seul doigt ne peut pas faire ça : après 4 enchaînements détachés d'affilée, Garden le dit. — */
+const REL={};const _rel=onRelease;onRelease=function(m){REL[m]=Date.now();return _rel.apply(this,arguments);};
+const FING={run:0,det:0,leg:0,warned:0};
+(function(){const _pn2=pieceNote;pieceNote=function(m){const k0=DR.piece&&DR.running&&!DR.pmode.timed?DR.k:-1;const r=_pn2.apply(this,arguments);
+    if(k0<0||DR.k!==k0+1||k0===0)return r;/* une étape vient d'être validée */
+    const st=DR.steps[k0],pv=DR.steps[k0-1];if(!st||!pv||!st.hd||!pv.hd)return r;const hand=st.hd[m];if(!hand)return r;
+    const prevSame=pv.need.filter(function(x){return pv.hd[x]===hand;});if(!prevSame.length)return r;
+    const near=prevSame.some(function(x){return Math.abs(x-m)<=7;});if(!near)return r;/* un saut : on ne juge pas */
+    const now=Date.now();const gap=Math.min.apply(null,prevSame.map(function(x){return held.has(x)?0:(REL[x]?now-REL[x]:9999);}));
+    if(gap<=160){FING.leg++;FING.run=0;}else{FING.det++;FING.run++;
+      if(FING.run>=4&&now-FING.warned>12000){FING.warned=now;FING.run=0;banner('🖐 Tous les doigts !','#A78BFA');const fb=document.getElementById('fb');if(fb){fb.className='fb bad';fb.textContent='🖐 On dirait un seul doigt… Garde les doigts posés sur les touches et enchaîne sans trou.';}say('Tous les doigts ! Garde les doigts posés sur les touches.');}}
+    return r;};
+  const _ps=pieceStart;pieceStart=function(){FING.run=0;FING.det=0;FING.leg=0;return _ps.apply(this,arguments);};
+  const _fin=finish;finish=function(){const tot=FING.leg+FING.det,wasPiece=!!DR.piece;_fin.apply(this,arguments);if(!wasPiece||tot<6)return;const pc=Math.round(FING.leg/tot*100);
+    setTimeout(function(){const r=M.querySelector('.card.result');if(!r)return;r.insertAdjacentHTML('beforeend','<div class="hint" style="margin-top:8px">🖐 Notes bien liées : <b style="color:'+(pc>=70?'var(--vert)':'#FF9F43')+'">'+pc+' %</b>'+(pc<70?' — joue avec tous les doigts, sans trou entre les notes':' — belle main !')+'</div>');
+      const p=P();if(p){p.legato=p.legato||[];p.legato.push([Date.now(),pc]);if(p.legato.length>30)p.legato.shift();save();}},40);};})();
+
+/* — 5. 👀 les yeux sur l'écran : pendant une pièce, un lutin apparaît sur l'écran et demande une note (n'importe quelle octave).
+      Qui regarde l'écran l'attrape (+2 pièces) ; qui regarde ses mains le rate. Réglage par enfant dans le coin des parents. — */
+const EYE={on:false,act:null,got:0,miss:0,n:0,tm:null,next:0};
+function eyeOn(){const p=P();return !!(p&&p.eyes);}
+function eyeSpawn(){if(!DR.piece||!DR.running||EYE.act)return;const st=DR.steps[DR.k],nx=DR.steps[DR.k+1];const used={};[st,nx].forEach(function(s){if(s)s.need.forEach(function(x){used[x%12]=1;});});
+  const cands=[0,2,4,5,7,9,11].filter(function(pc){return !used[pc];});if(!cands.length)return;const pc=cands[Math.floor(Math.random()*cands.length)];
+  const L=fxLayer();const e=document.createElement('div');e.className='eye';e.innerHTML='<span>👀</span><b>'+frn(pc).toUpperCase()+' !</b>';const corners=[[8,110],[null,110],[8,null],[null,null]];const c=corners[Math.floor(Math.random()*4)];
+  e.style.left=c[0]!=null?c[0]+'px':'';e.style.right=c[0]==null?'8px':'';e.style.top=c[1]!=null?c[1]+'px':'';e.style.bottom=c[1]==null?'120px':'';L.appendChild(e);
+  EYE.act={pc:pc,el:e};EYE.n++;say('Regarde ! Joue '+frn(pc));
+  EYE.tm=setTimeout(function(){if(!EYE.act)return;EYE.miss++;e.classList.add('gone');setTimeout(function(){e.remove();},500);EYE.act=null;},3500);}
+function eyeCatch(){const a=EYE.act;if(!a)return;clearTimeout(EYE.tm);EYE.act=null;EYE.got++;a.el.classList.add('caught');setTimeout(function(){a.el.remove();},600);emoPop('👀✨');const p=P();if(p){p.coins=(p.coins||0)+2;DR.coinsWon=(DR.coinsWon||0)+2;whoUpdate();}}
+(function(){const _on=onNote;onNote=function(m){if(EYE.act&&m%12===EYE.act.pc){eyeCatch();return;}return _on.apply(this,arguments);};
+  const _pn3=pieceNote;pieceNote=function(m){const k0=DR.k;const r=_pn3.apply(this,arguments);
+    if(eyeOn()&&DR.piece&&DR.running&&!DR.pmode.timed&&DR.k===k0+1&&!EYE.act){if(--EYE.next<=0){EYE.next=5+Math.floor(Math.random()*4);setTimeout(eyeSpawn,250);}}return r;};
+  const _ps2=pieceStart;pieceStart=function(){EYE.got=0;EYE.miss=0;EYE.n=0;EYE.next=4;EYE.act=null;clearTimeout(EYE.tm);return _ps2.apply(this,arguments);};
+  const _stop=pieceStop;pieceStop=function(){if(EYE.act){clearTimeout(EYE.tm);EYE.act.el.remove();EYE.act=null;}return _stop.apply(this,arguments);};
+  const _fin2=finish;finish=function(){const n=EYE.n,got=EYE.got,wasPiece=!!DR.piece;_fin2.apply(this,arguments);if(!wasPiece||!n)return;
+    setTimeout(function(){const r=M.querySelector('.card.result');if(r)r.insertAdjacentHTML('beforeend','<div class="hint" style="margin-top:6px">👀 Lutins attrapés : <b style="color:'+(got===n?'var(--vert)':'#FF9F43')+'">'+got+' / '+n+'</b>'+(got<n?' — les yeux sur l’écran, pas sur tes mains !':' — bravo, tu regardes bien l’écran !')+'</div>');},50);};})();
+
+/* — coin des parents : réglage 👀 par enfant + où sont les erreurs de demi-tons / d'octave — */
+(function(){const _vp=vParent;vParent=function(){_vp.apply(this,arguments);if(DB.pin&&!DR.parentOk)return;
+  const top=function(o){return Object.keys(o||{}).map(function(k){const R=stepById(k);return {n:o[k],lb:R?R.I.ic+' '+R.s.lb:k};}).sort(function(a,b){return b.n-a.n;}).slice(0,3);};
+  const box=document.createElement('div');box.className='card';
+  box.innerHTML='<h2>🧒 Aides pour chaque enfant</h2>'+DB.profs.map(function(p){const se=top(p.semiErr),oe=top(p.octErr),lg=(p.legato||[]).slice(-5);const lpc=lg.length?Math.round(lg.reduce(function(a,x){return a+x[1];},0)/lg.length):null;
+    return '<div class="hint" style="margin:10px 0 4px"><b style="color:var(--blanc);font-size:16px">'+p.av+' '+esc(p.name)+'</b></div>'
+      +'<label class="pill"><input type="checkbox" data-eyes="'+p.id+'" '+(p.eyes?'checked':'')+'> 👀 Lutins « les yeux sur l’écran » pendant les pièces</label>'
+      +'<div class="hint" style="margin-top:6px">🪜 Demi-tons ratés : '+(se.length?se.map(function(x){return esc(x.lb)+' ('+x.n+')';}).join(' · '):'aucun')+'</div>'
+      +'<div class="hint">🏢 Mauvais étage (octave) : '+(oe.length?oe.map(function(x){return esc(x.lb)+' ('+x.n+')';}).join(' · '):'aucun')+'</div>'
+      +'<div class="hint">🖐 Notes liées (5 dernières pièces) : '+(lpc==null?'pas encore mesuré':lpc+' %'+(lpc<70?' — joue probablement avec un seul doigt':''))+'</div>';}).join('');
+  M.appendChild(box);box.querySelectorAll('[data-eyes]').forEach(function(c){c.onchange=function(){const p=DB.profs.filter(function(x){return x.id===c.dataset.eyes;})[0];if(p){p.eyes=c.checked;save();toast(c.checked?'👀 Lutins activés pour '+p.name:'Lutins désactivés');}};});};})();
+
 /* ═══════════ 🎙 MON STUDIO · 🎪 LE CONCERT DU DIMANCHE · 🎵 DEVINE LA CHANSON ═══════════
    Studio : j'enregistre ce que je joue (MIDI ou clavier), je réécoute, je garde, j'envoie à Papa.
    Concert : chaque enfant choisit une pièce qu'il connaît ; on annonce, il joue, on applaudit — tout est enregistré.
