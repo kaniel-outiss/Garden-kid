@@ -220,9 +220,12 @@ input[type=text],input[type=password]{font:inherit;font-size:22px;padding:12px 1
 .kb .bad{background:linear-gradient(180deg,#f79a9a,var(--rouge))!important;border-color:#a82525!important}
 .kb .bad::after{content:'✕';position:absolute;left:0;right:0;bottom:3px;text-align:center;font-weight:900;font-size:12px;color:#fff}
 /* drill */
-.stage{position:relative;background:var(--bg2);border:3px solid var(--gris2);border-radius:28px;padding:22px;text-align:center;transition:box-shadow .2s,border-color .2s}
-.stage.ok{border-color:var(--vert);box-shadow:0 0 0 8px rgba(62,207,142,.35),0 0 60px rgba(62,207,142,.4)}
-.stage.ko{border-color:var(--rouge);box-shadow:0 0 0 8px rgba(255,90,106,.3),0 0 60px rgba(255,90,106,.35)}
+.stage{position:relative;background:var(--bg2);border:3px solid var(--gris2);border-radius:28px;padding:22px;text-align:center}
+/* v4.1 — le cadre vert/rouge est un calque à part (opacité seule) : plus de cadre à moitié dessiné sur tablette */
+.stage::after{content:'';position:absolute;inset:-3px;border-radius:28px;border:4px solid var(--vert);box-shadow:0 0 0 8px rgba(62,207,142,.35),0 0 60px rgba(62,207,142,.4);opacity:0;pointer-events:none;transform:translateZ(0);transition:opacity .15s}
+.stage.ok::after{opacity:1}.stage.ko::after{opacity:1;border-color:var(--rouge);box-shadow:0 0 0 8px rgba(255,90,106,.35),0 0 60px rgba(255,90,106,.4)}
+
+
 .stage .q{font-size:44px;font-weight:900;min-height:60px}
 .stage .q small{font-size:22px;color:var(--gris);font-weight:700}
 .stage .fb{font-size:22px;font-weight:800;min-height:30px;margin-top:6px}
