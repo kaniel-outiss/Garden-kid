@@ -280,7 +280,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .gopt.ok{border-color:var(--vert);background:#1f4d36}.gopt.bad{border-color:#FF5A6A;background:#5a1f2a}
 .pwb{position:absolute;top:-10px;right:-10px;font-size:20px;filter:drop-shadow(0 0 4px #fff)}.pw-gold{box-shadow:0 0 18px #FFC83D}.pw-ice{box-shadow:0 0 18px #58A6FF}.pw-heart{box-shadow:0 0 18px #FF6FB5}
 .gfield.frozen{box-shadow:inset 0 0 40px #58A6FF;filter:saturate(.7) hue-rotate(15deg)}
-.prof.dragging{opacity:.35}.prof.ghost{position:fixed;z-index:999;pointer-events:none;opacity:.95;transform:scale(1.06);box-shadow:0 12px 30px #000a}
+.prof.dragging,.frow.dragging{opacity:.35}.prof.ghost,.frow.ghost{position:fixed;z-index:999;pointer-events:none;opacity:.95;transform:scale(1.06);box-shadow:0 12px 30px #000a}
 .kb .pulse{animation:kpulse .55s ease-in-out 4}@keyframes kpulse{50%{transform:translateY(4px);filter:brightness(1.5)}}
 .eye{position:fixed;z-index:60;background:#fff;color:#10142a;border-radius:22px;padding:8px 14px;display:flex;align-items:center;gap:8px;font-weight:900;font-size:22px;box-shadow:0 8px 24px #0008;animation:eyein .35s ease-out}.eye span{font-size:30px}.eye b{color:#c0392b}
 .eye.gone{animation:eyeout .5s forwards}.eye.caught{animation:eyecaught .6s forwards}@keyframes eyein{from{transform:scale(.3);opacity:0}}@keyframes eyeout{to{transform:translateY(20px);opacity:0}}@keyframes eyecaught{to{transform:scale(1.8);opacity:0}}
@@ -1697,18 +1697,29 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
 /* ═══════════ 🧒 v4.1 — ORDRE DES ENFANTS · DEMI-TONS · OCTAVE · CINQ DOIGTS · LES YEUX SUR L'ÉCRAN ═══════════ */
 /* — 1. profils : glisser-déposer pour changer l'ordre (maintien 300 ms, puis on glisse) — */
-(function(){let drag=null,timer=null,ghost=null,moved=false,grid=null;
-  const cards=function(){return Array.from(grid.querySelectorAll('.prof[data-p]'));};
+/* glisser-déposer générique (maintien 300 ms puis on glisse) : la grille « Qui est là ? » et la liste « Le tour de piano » */
+const DND={sels:[['.profs','.prof[data-p]',function(order){DB.profs.sort(function(a,b){return order.indexOf(a.id)-order.indexOf(b.id);});save();toast('✅ Ordre enregistré');}],
+                 ['.famc','.frow[data-id]',function(order){if(!FAM)return;FAM.ids=order.slice();vFamPlan(FAM.ids[0]);toast('✅ Nouvel ordre : '+order.map(function(id){const p=DB.profs.filter(function(x){return x.id===id;})[0];return p?p.name:'';}).join(' → '));}]]};
+(function(){let drag=null,timer=null,ghost=null,moved=false,grid=null,cfg=null;
+  const items=function(){return Array.from(grid.querySelectorAll(cfg[1]));};const idOf=function(c){return c.dataset.p||c.dataset.id;};
   const place=function(e){if(!ghost)return;ghost.style.left=(e.clientX-ghost.offsetWidth/2)+'px';ghost.style.top=(e.clientY-ghost.offsetHeight/2)+'px';};
-  const over=function(e){const els=document.elementsFromPoint(e.clientX,e.clientY);for(let i=0;i<els.length;i++){const c=els[i].closest&&els[i].closest('.prof[data-p]');if(c&&c!==drag&&c!==ghost)return c;}return null;};
-  document.addEventListener('pointerdown',function(e){const c=e.target.closest&&e.target.closest('.profs .prof[data-p]');if(!c||DB.profs.length<2)return;grid=c.parentNode;moved=false;clearTimeout(timer);
-    timer=setTimeout(function(){drag=c;c.classList.add('dragging');ghost=c.cloneNode(true);ghost.className='prof ghost';document.body.appendChild(ghost);ghost.style.width=c.getBoundingClientRect().width+'px';place(e);try{navigator.vibrate&&navigator.vibrate(20);}catch(x){}grid.style.touchAction='none';},300);});
-  window.addEventListener('pointermove',function(e){if(!drag){if(timer&&(Math.abs(e.movementX)+Math.abs(e.movementY))>6){clearTimeout(timer);timer=null;}return;}e.preventDefault();moved=true;place(e);const t=over(e);if(!t)return;const a=cards();if(a.indexOf(t)<a.indexOf(drag))grid.insertBefore(drag,t);else grid.insertBefore(drag,t.nextSibling);},{passive:false});
-  const end=function(){clearTimeout(timer);timer=null;if(!drag)return;const order=cards().map(function(c){return c.dataset.p;});DB.profs.sort(function(a,b){return order.indexOf(a.id)-order.indexOf(b.id);});save();drag.classList.remove('dragging');if(ghost)ghost.remove();ghost=null;const d=drag;drag=null;grid.style.touchAction='';if(moved){d.dataset.skip='1';setTimeout(function(){delete d.dataset.skip;},400);toast('✅ Ordre enregistré');}};
+  const over=function(e){const els=document.elementsFromPoint(e.clientX,e.clientY);for(let i=0;i<els.length;i++){const c=els[i].closest&&els[i].closest(cfg[1]);if(c&&c!==drag&&c!==ghost&&grid.contains(c))return c;}return null;};
+  document.addEventListener('pointerdown',function(e){if(!e.target.closest)return;cfg=null;for(let i=0;i<DND.sels.length;i++){const g=e.target.closest(DND.sels[i][0]);if(g){const c=e.target.closest(DND.sels[i][1]);if(c&&g.querySelectorAll(DND.sels[i][1]).length>1){cfg=DND.sels[i];grid=g;drag=null;moved=false;clearTimeout(timer);
+      timer=setTimeout(function(){drag=c;c.classList.add('dragging');ghost=c.cloneNode(true);ghost.className=c.className.replace('dragging','')+' ghost';document.body.appendChild(ghost);ghost.style.width=c.getBoundingClientRect().width+'px';place(e);try{navigator.vibrate&&navigator.vibrate(20);}catch(x){}grid.style.touchAction='none';},300);}break;}}});
+  window.addEventListener('pointermove',function(e){if(!drag){if(timer&&(Math.abs(e.movementX)+Math.abs(e.movementY))>6){clearTimeout(timer);timer=null;}return;}e.preventDefault();moved=true;place(e);const t=over(e);if(!t)return;const a=items();if(a.indexOf(t)<a.indexOf(drag))grid.insertBefore(drag,t);else grid.insertBefore(drag,t.nextSibling);},{passive:false});
+  const end=function(){clearTimeout(timer);timer=null;if(!drag)return;const order=items().map(idOf);drag.classList.remove('dragging');if(ghost)ghost.remove();ghost=null;const d=drag;drag=null;grid.style.touchAction='';
+    if(moved){d.dataset.skip='1';setTimeout(function(){delete d.dataset.skip;},400);cfg[2](order);}};
   window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
-  document.addEventListener('click',function(e){const c=e.target.closest&&e.target.closest('.prof[data-p]');if(c&&c.dataset.skip){e.stopPropagation();e.preventDefault();}},true);
-  /* petit rappel sous la grille, à chaque affichage */
-  new MutationObserver(function(){const g=M.querySelector('.profs');if(!g||DB.profs.length<2||g.nextElementSibling&&g.nextElementSibling.classList.contains('dndhint'))return;g.insertAdjacentHTML('afterend','<div class="hint dndhint" style="text-align:center;margin-top:6px">✋ Garde le doigt sur un joueur puis glisse-le pour changer l’ordre</div>');}).observe(M,{childList:true});})();
+  document.addEventListener('click',function(e){const c=e.target.closest&&e.target.closest('[data-skip]');if(c){e.stopPropagation();e.preventDefault();}},true);
+  new MutationObserver(function(){const g=M.querySelector('.profs');if(!g||DB.profs.length<2||g.nextElementSibling&&g.nextElementSibling.classList.contains('dndhint'))return;g.insertAdjacentHTML('afterend','<div class="hint dndhint" style="text-align:center;margin-top:6px">✋ Touchez vos animaux <b>dans l’ordre où vous voulez jouer</b> — ou gardez le doigt sur un joueur et glissez-le</div>');}).observe(M,{childList:true});})();
+/* le tour de piano : dans l'ordre de sélection (puis glisser-déposer), plus « le moins joué d'abord » */
+famNext=function(exclude){if(!FAM)return null;const ok=function(id){const p=DB.profs.filter(function(x){return x.id===id;})[0];return p&&todaySec(p)<famCfg(p).day*60+(p.extra&&p.extra.d===today()?p.extra.s:0)?p:null;};
+  const ids=FAM.ids,n=ids.length,start=exclude?ids.indexOf(exclude)+1:0;for(let k=0;k<n;k++){const id=ids[(start+k)%n];if(id===exclude)continue;const p=ok(id);if(p)return p;}return null;};
+vFamPlan=function(firstId){if(!FAM)return;const i0=Math.max(0,FAM.ids.indexOf(firstId));const L=FAM.ids.slice(i0).concat(FAM.ids.slice(0,i0)).map(function(id){return DB.profs.filter(function(p){return p.id===id;})[0];}).filter(Boolean);const P1=L[0];
+  M.innerHTML='<div class="card famc"><h1>🎹 Le tour de piano</h1><div class="hint">Dans l’ordre où vous avez touché vos animaux. Pour changer : gardez le doigt sur un nom et glissez-le.</div>'+L.map(function(p,i){return '<div class="frow'+(i===0?' first':'')+'" data-id="'+p.id+'"><b>'+(i+1)+'</b><span class="av2">'+avHTML(p)+'</span><span>'+esc(p.name)+'</span><span class="hint">'+fmtMin(turnLen(p))+' · semaine '+fmtMin(weekSec(p))+' / '+fmtMin(famCfg(p).week*60)+'</span></div>';}).join('')
+    +'<div class="row" style="justify-content:center;margin-top:14px"><button class="btn v" id="go">'+P1.av+' '+esc(P1.name)+', c’est à toi !</button><button class="btn g" id="back">Retour</button></div></div>';
+  FAM.ids=L.map(function(p){return p.id;});
+  document.getElementById('go').onclick=function(){enterProfile(P1);};document.getElementById('back').onclick=function(){FAM=null;go('profs');};};
 
 /* — 2 & 3. quand une note est fausse : demi-ton voisin et mauvaise octave, dits ET montrés — */
 const ATT={semi:{},oct:{}};
