@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.2 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.3 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -287,6 +287,8 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .kb .pulse{animation:kpulse .55s ease-in-out 4}@keyframes kpulse{50%{transform:translateY(4px);filter:brightness(1.5)}}
 .eye{position:fixed;z-index:60;background:#fff;color:#10142a;border-radius:22px;padding:8px 14px;display:flex;align-items:center;gap:8px;font-weight:900;font-size:22px;box-shadow:0 8px 24px #0008;animation:eyein .35s ease-out}.eye span{font-size:30px}.eye b{color:#c0392b}
 .eye.gone{animation:eyeout .5s forwards}.eye.caught{animation:eyecaught .6s forwards}@keyframes eyein{from{transform:scale(.3);opacity:0}}@keyframes eyeout{to{transform:translateY(20px);opacity:0}}@keyframes eyecaught{to{transform:scale(1.8);opacity:0}}
+.rybar{display:flex;align-items:stretch;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}.rybar .btn{margin:0;align-self:center}
+.rybar .rypad{flex:1 1 260px;max-width:420px;margin:0!important;padding:12px 16px!important;font-size:26px!important;min-height:0!important;display:flex;flex-direction:column;align-items:center;justify-content:center}.rybar .rypad small{font-size:13px;font-weight:600}
 </style>
 </head>
 <body>
@@ -1626,9 +1628,9 @@ function vRythme(arg){const p=P();if(!p){go('profs');return;}
     +'<div class="stage" id="stage"><div class="ghud"><span id="ryr"></span><span id="rys" style="color:#FFC83D"></span></div>'
     +(lvN?'<div class="hint" style="margin:0 0 6px">Palier '+L.tier+' : '+RY_TIER[L.tier]+(L.k===2?' · <b style="color:#FF9F43">DÉFI : les notes seules, sans écoute !</b>':'')+'</div>':'')
     +'<div id="ryw"></div><div class="fb" id="ryfb"></div>'
-    +'<button class="rypad" id="rypad">👏 TAPE ICI<br><small>ou n’importe quelle touche du piano</small></button>'
-    +'<div class="row" style="justify-content:center;margin-top:10px;gap:8px">'+(L.listen?'<button class="btn b" id="ryl">🎧 Écouter</button>':'')+'<button class="btn v" id="ryg">▶ À moi !</button>'
-    +(lvN?'':'<button class="btn g" id="ryt">🐢 / 🐇 ♩='+st.bpm+'</button>')+'<button class="btn s g" id="quit">Arrêter</button></div></div>';
+    +'<div class="rybar">'+(L.listen?'<button class="btn b" id="ryl">🎧 Écouter</button>':'')+'<button class="btn v" id="ryg">▶ À moi !</button>'
+    +'<button class="rypad" id="rypad">👏 TAPE ICI<small>ou une touche du piano</small></button>'
+    +(lvN?'':'<button class="btn g" id="ryt">🐢/🐇 ♩='+st.bpm+'</button>')+'<button class="btn s g" id="quit">Arrêter</button></div></div>';
   DR={on:true,game:'rythme',sid:'arcade',qs:[],res:[],hits:[],st:st};
   const draw=function(){document.getElementById('ryw').innerHTML=ryWheel(st);document.getElementById('ryr').textContent=(L.rounds>1?'Roue '+(st.round+1)+'/'+L.rounds:'');
     document.getElementById('rys').textContent=st.scores.length?'⭐ '+Math.round(st.scores.reduce(function(a,b){return a+b;},0)/st.scores.length*100)+' %':'';};
@@ -2710,7 +2712,7 @@ function vGame(kind){const p=P();if(!p){go('profs');return;}const pro=kind==='ru
     e.innerHTML=bal?'<span>'+(acc?cap(frn(ch[0]))+(ch[1]==='min'?' m':''):(b2?frn(m%12)+(Math.floor(m/12)-2):frn(m%12)))+'</span>':(pro?'':'<span>'+frn(m%12)+'</span>');if(bal)e.style.background='hsl('+Math.floor(Math.random()*360)+',80%,62%)';
     const x=bal?(20+Math.random()*(gf.clientWidth-60)):keyX(m);e.style.left=(x-(bal?22:12))+'px';const o={acc:acc?CHQ(ch[1]).map(function(iv){return (ch[0]+iv)%12;}):null,m:m,e:e,y:bal?H:-30,x:x};if(DR.score>=3&&Math.random()<.07){const pw=pick(DR.lives<3?['gold','ice','heart']:['gold','ice']);o.pw=pw;e.classList.add('pw-'+pw);e.insertAdjacentHTML('beforeend','<b class="pwb">'+({gold:'⭐',ice:'❄️',heart:'❤️'}[pw])+'</b>');}gf.appendChild(e);DR.objs.push(o);};
   const loop=function(now){if(!DR.on||DR.game!==kind)return;const dt=Math.min(.05,(now-DR.last)/1000);DR.last=now;const el=(now-DR.t0)/1000;
-    const speed=((bal?55:90)+(LVg(kind)?LV.n*4:0)+DR.score*(bal?2.2:3.2))*((DR.iceUntil||0)>now?.45:1),gap=Math.max(bal?.75:.45,(bal?1.8:1.3)-DR.score*.025)*(acc?1.8:1);DR.spawnT-=dt;if(DR.spawnT<=0){spawn();DR.spawnT=gap;}
+    const speed=(bal?((55)+(LVg(kind)?LV.n*4:0)+DR.score*2.2):Math.min(210,58+(LVg(kind)?LV.n*2.5:0)+DR.score*1.5))*((DR.iceUntil||0)>now?.45:1),gap=Math.max(bal?.75:.7,(bal?1.8:1.7)-DR.score*(bal?.025:.015))*(acc?1.8:1);/* v4.3 : Note Rush plus lent (départ 58 px/s au lieu de 90, accélération deux fois plus douce, plafond 210) */DR.spawnT-=dt;if(DR.spawnT<=0){spawn();DR.spawnT=gap;}
     DR.objs.slice().forEach(function(o){o.y+=(bal?-1:1)*speed*dt;o.e.style.top=o.y+'px';if((!bal&&o.y>lineY+28)||(bal&&o.y<-50)){o.e.remove();DR.objs.splice(DR.objs.indexOf(o),1);DR.lives--;DR.combo=0;comboShow();mascot(false,0);play([50],.2);document.getElementById('glv').textContent='❤️'.repeat(Math.max(0,DR.lives))+'🖤'.repeat(3-Math.max(0,DR.lives));if(DR.lives<=0)gameOver();}});
     requestAnimationFrame(loop);};
   DR.hit=function(m){if(!DR.on)return;let best=null;DR.objs.forEach(function(o){const okNote=acc?o.acc.every(function(pc){return pc===m%12||Array.from(held).some(function(h){return h%12===pc;});}):(b2?o.m===m:(bal?(o.m%12===m%12):(o.m===m)));if(!okNote)return;const d=bal?-o.y:Math.abs(o.y-lineY);if(!bal&&d>60)return;if(!best||d<(bal?-best.y:Math.abs(best.y-lineY)))best=o;});
