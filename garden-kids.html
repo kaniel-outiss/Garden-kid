@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.4 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.5 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -261,6 +261,14 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .dffam{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.dfk{background:var(--bg);border:2px solid var(--gris2);border-radius:999px;padding:5px 12px;font-weight:800}.dfk.me{border-color:var(--or)}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:12px 0}.pod{text-align:center;width:110px}.pod .pbar{background:var(--bg2);border:2px solid var(--or);border-radius:12px 12px 0 0;padding:8px 4px;font-weight:900}
 .pod.p1 .pbar{height:110px}.pod.p2 .pbar{height:80px}.pod.p3 .pbar{height:60px}
+.ghead{background:linear-gradient(90deg,#7B61FF,#A78BFA);border-radius:12px;padding:8px 14px;font:900 18px Nunito,sans-serif;color:#fff}
+.gcard.lock{opacity:.55}.gl{list-style:none;padding:0;margin:8px 0}.gl li{padding:6px 10px;border-radius:10px;margin:3px 0;background:var(--bg);cursor:pointer;font-weight:800}.gl li.ok{color:var(--vert)}.gl li.gx{cursor:default;color:var(--or)}.gl small{color:var(--gris)}
+.gexl{text-align:left;font-size:18px;font-weight:800;line-height:1.8}.gfb{margin-top:8px;background:#1c2350;border-radius:12px;padding:8px 12px;font-weight:800}
+.gnow{cursor:pointer;border-color:#7B61FF}.gpe{border-top:1px solid var(--gris2);padding:10px 0}.groll{width:100%;height:auto;margin-top:6px}
+.dipl{background:#fffaf0;border-radius:18px;padding:14px;color:#2a1d00}.dipb{border:4px double #c8a02a;border-radius:12px;padding:22px;text-align:center;font-family:Georgia,serif}
+.dipt{font:900 44px Georgia,serif;letter-spacing:.2em;color:#a07812}.dips{font-size:14px;color:#7a6a40;margin-bottom:12px}.dipg{font:800 22px Nunito,sans-serif}.dipn{margin-top:14px;font-style:italic}
+.dipname{font:900 40px Nunito,sans-serif;margin:4px 0}.dipst{font-size:34px;margin:8px 0}.dipc{font-style:italic;font-size:18px;margin:10px 0}.dipf{display:flex;justify-content:space-between;margin-top:18px;font-size:15px}.dipsig{font:italic 700 26px 'Brush Script MT','Segoe Script',cursive;color:#1a3a8a}
+@media print{body.printdip>*:not(.dipov){display:none!important}body.printdip .dipov{position:static;background:none}body.printdip .dipov .row{display:none}}
 </style>
 </head>
 <body>
@@ -281,7 +289,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.4';
+const VERSION='3.5';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1582,11 +1590,11 @@ function ryWood(t,len){const A=ac();if(!A)return;const o=A.createOscillator(),o2
 /* — le jeu — */
 function vRythme(arg){const p=P();if(!p){go('profs');return;}
   const lvN=(typeof arg==='number'||/^\d+$/.test(arg||''))?+arg:null;
-  if(lvN==null&&arg!=='mix'&&arg!=='mine'&&arg!=='defi'){ryMenu();return;}
-  const DF=arg==='defi',L=DF?Object.assign(ryLevel(Math.max(1,(defiRyTier(p)-1)*3+2)),{rounds:2,demo:false,words:true,listen:true}):lvN?ryLevel(lvN):{n:0,tier:10,k:1,demo:false,words:true,listen:true,bpm:arg==='mine'?66:80,tol:.12,rounds:arg==='mine'?1:3};
+  if(lvN==null&&arg!=='mix'&&arg!=='mine'&&arg!=='defi'&&arg!=='exam'){ryMenu();return;}
+  const DF=arg==='defi'||arg==='exam',L=DF?Object.assign(ryLevel(Math.max(1,((arg==='exam'&&EXAM&&EXAM.cur&&EXAM.cur.tier?EXAM.cur.tier:defiRyTier(p))-1)*3+2)),{rounds:2,demo:false,words:true,listen:true}):lvN?ryLevel(lvN):{n:0,tier:10,k:1,demo:false,words:true,listen:true,bpm:arg==='mine'?66:80,tol:.12,rounds:arg==='mine'?1:3};
   if(lvN){LV={g:'rythme',n:lvN};}else LV=null;
   const st={L:L,round:0,scores:[],words:L.words,bpm:L.bpm,wheel:arg==='mine'?(p.ryMine||ryGen(4)):(DF?seeded(dHash(today()+'ry'+L.tier),function(){return ryGen(L.tier,0);}):ryGen(L.tier,lvN&&L.tier<10?L.tier:0)),mode:'idle'};
-  M.innerHTML='<h2>🍐 La roue des rythmes'+(DF?' · ⚡ défi du jour':lvN?' · niveau '+lvN:(arg==='mix'?' · 🎲 toutes les combinaisons':' · 🛠 ma roue'))+'</h2>'
+  M.innerHTML='<h2>🍐 La roue des rythmes'+(arg==='exam'?' · 🏁 examen':DF?' · ⚡ défi du jour':lvN?' · niveau '+lvN:(arg==='mix'?' · 🎲 toutes les combinaisons':' · 🛠 ma roue'))+'</h2>'
     +'<div class="stage" id="stage"><div class="ghud"><span id="ryr"></span><span id="rys" style="color:#FFC83D"></span></div>'
     +(lvN?'<div class="hint" style="margin:0 0 6px">Palier '+L.tier+' : '+RY_TIER[L.tier]+(L.k===2?' · <b style="color:#FF9F43">DÉFI : les notes seules, sans écoute !</b>':'')+'</div>':'')
     +'<div id="ryw"></div><div class="fb" id="ryfb"></div>'
@@ -1632,6 +1640,7 @@ function vRythme(arg){const p=P();if(!p){go('profs');return;}
     if(st.round+1<L.rounds){st.round++;st.wheel=arg==='mine'?st.wheel:(DF?seeded(dHash(today()+'ry'+L.tier+'#'+st.round),function(){return ryGen(L.tier,0);}):ryGen(L.tier,lvN&&L.tier<10?L.tier:0));st.res=null;draw();fb(L.demo?'🎧 Nouvelle roue : écoute d’abord…':'Nouvelle roue ! Appuie sur ▶ quand tu es prêt·e.');if(L.demo)setTimeout(function(){listen();},700);return;}
     const avg=st.scores.reduce(function(a,b){return a+b;},0)/st.scores.length,stars=avg>=.9?3:(avg>=.75?2:(avg>=.55?1:0));
     const p2=P();p2.best=p2.best||{};p2.best.rythme=Math.max(p2.best.rythme||0,lvN||0);save();
+    if(DF&&arg==='exam'){DR.on=false;fb('🏁 Épreuve finie : '+Math.round(avg*100)+' %','good');examPartDone({pct:Math.round(avg*100),st:stars});return;}
     if(DF){DR.on=false;defiRecord(Math.round(avg*100));fb('⚡ Défi : '+Math.round(avg*100)+' % — '+'⭐'.repeat(stars),'good');setTimeout(function(){go('home');},2600);return;}
     if(lvN){if(stars)lvWin(stars);else lvLose();}
     else{fb('Moyenne : '+Math.round(avg*100)+' % '+'⭐'.repeat(stars)+' · on rejoue ?','good');st.round=0;st.scores=[];if(arg==='mix'){st.wheel=ryGen(10);}st.res=null;draw();}};
@@ -1671,6 +1680,112 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ 🎓 LES GRADES — 6 leçons + un examen enregistré + le retour de Papa (stickers, mot, diplôme) ═══════════
+   Une leçon = une île : elle compte quand au moins 60 % de ses étapes ont une étoile. L'examen s'ouvre quand les 6 leçons
+   sont faites : une pièce « fil rouge » (enregistrée note par note), un exercice d'accords ou de lecture, puis la roue des
+   rythmes. L'enregistrement part dans le coin des parents : réécoute, stickers, mot, et « Valider » → le diplôme. */
+const GRADES=[
+  {n:1,ic:'🌱',t:'Les fondations',isles:['notes','tons','portee','comptines','rose1','solf'],exam:[{k:'piece',sid:'rose_valserose'},{k:'step',sid:'p1'},{k:'rythme',tier:1}]},
+  {n:2,ic:'🎶',t:'Mes premiers accords',isles:['rose2','gammes','interv','build','amis','chansons'],exam:[{k:'piece',sid:'c2'},{k:'step',sid:'a1'},{k:'rythme',tier:2}]},
+  {n:3,ic:'🎨',t:'Le petit musicien',isles:['impro','jeux','rose3','grands','recre','cz1'],exam:[{k:'piece',sid:'cl_hymne'},{k:'step',sid:'b1'},{k:'rythme',tier:4}]},
+  {n:4,ic:'🏗',t:'L’harmonie',isles:['renv','formes','archi','chiffres','penta','gospel'],exam:[{k:'piece',sid:'rose_demande'},{k:'step',sid:'g1'},{k:'rythme',tier:5}]},
+  {n:5,ic:'🎻',t:'Le classique',isles:['rose4','bach1','cinqd','cz2','cz3','cz4'],exam:[{k:'piece',sid:'cl_bach01'},{k:'step',sid:'rt1'},{k:'rythme',tier:6}]},
+  {n:6,ic:'🌈',t:'Les couleurs',isles:['etages','liens','modes','harmo','rose5','bach2'],exam:[{k:'piece',sid:'cl_bach04'},{k:'step',sid:'et1'},{k:'rythme',tier:8}]},
+  {n:7,ic:'👑',t:'Le virtuose',isles:['echauf','cz5','cz6','rose6','cz7','voicing'],exam:[{k:'piece',sid:'rose_carnavalvenise'},{k:'step',sid:'vo1'},{k:'rythme',tier:10}]}];
+const G_STICK=['🌟','🎹','💪','🦁','🏆','❤️','👏','🎉','🧠','🕊','🌈','🚀'];
+function gIsleDone(p,id){const I=ISLES.filter(function(x){return x.id===id;})[0];if(!I)return true;const n=I.steps.length,got=I.steps.filter(function(s){return ((p.stars||{})[s.id]||0)>=1;}).length;return got>=Math.ceil(n*.6);}
+function gIslePct(p,id){const I=ISLES.filter(function(x){return x.id===id;})[0];if(!I)return 1;return I.steps.filter(function(s){return ((p.stars||{})[s.id]||0)>=1;}).length/Math.max(1,Math.ceil(I.steps.length*.6));}
+function gState(p,G){const gr=(p.grades||{})[G.n],ex=(p.exams||{})[G.n];const lessons=G.isles.filter(function(id){return gIsleDone(p,id);}).length;
+  return {lessons:lessons,open:lessons>=G.isles.length,ex:ex,ok:!!(gr&&gr.ok),gr:gr};}
+function gCurrent(p){for(let i=0;i<GRADES.length;i++){if(!gState(p,GRADES[i]).ok)return GRADES[i];}return null;}
+/* — l'examen — */
+let EXAM=null;
+function examStart(n){const p=P(),G=GRADES.filter(function(x){return x.n===n;})[0];if(!p||!G)return;
+  EXAM={n:n,i:-1,parts:[],rec:[],t0:0,start:Date.now()};
+  M.innerHTML='<div class="card result"><div class="big">'+G.ic+'</div><h1>Examen du grade '+n+'</h1><div class="hint" style="font-size:20px">'+G.t+' — 3 épreuves. Papa va écouter ton enregistrement : prends ton temps, respire, et joue comme pour un concert !</div>'
+    +'<ol class="gexl">'+G.exam.map(function(x){return '<li>'+gPartLb(x)+'</li>';}).join('')+'</ol><div class="row" style="justify-content:center;margin-top:14px"><button class="btn v" id="exgo">🎬 Je commence</button><button class="btn g" id="exno">Pas maintenant</button></div></div>';
+  say('Examen du grade '+n+'. Trois épreuves. Papa va écouter ton enregistrement.',true);
+  document.getElementById('exgo').onclick=examNext;document.getElementById('exno').onclick=function(){EXAM=null;go('grades');};}
+function gPartLb(x){if(x.k==='rythme')return '🍐 La roue des rythmes (2 roues)';const R=stepById(x.sid);return (x.k==='piece'?'🎼 Pièce enregistrée : ':'🎹 Exercice : ')+(R?R.s.lb:x.sid);}
+function examNext(){if(!EXAM)return;EXAM.i++;const G=GRADES.filter(function(x){return x.n===EXAM.n;})[0],part=G.exam[EXAM.i];
+  if(!part){examEnd();return;}
+  M.innerHTML='<div class="card result"><div class="big">'+(EXAM.i+1)+'/'+G.exam.length+'</div><h1>'+gPartLb(part)+'</h1>'+(part.k==='piece'?'<div class="hint" style="font-size:18px">🔴 Cette épreuve est enregistrée pour Papa.</div>':'')+'<div class="row" style="justify-content:center;margin-top:14px"><button class="btn v" id="expart">▶ C’est parti</button></div></div>';
+  document.getElementById('expart').onclick=function(){EXAM.cur=part;if(part.k==='piece'){EXAM.rec=[];EXAM.t0=performance.now();EXAM.recOn=true;}
+    if(part.k==='rythme')go('rythme','exam');else go('drill',part.sid);};}
+function examPartDone(res){if(!EXAM||!EXAM.cur)return;EXAM.recOn=false;EXAM.parts.push(Object.assign({k:EXAM.cur.k,sid:EXAM.cur.sid||null},res));EXAM.cur=null;
+  setTimeout(function(){if(EXAM)examNext();},1800);}
+function examEnd(){const p=P();if(!p||!EXAM)return;const G=GRADES.filter(function(x){return x.n===EXAM.n;})[0];
+  const pct=Math.round(EXAM.parts.reduce(function(t,x){return t+(x.pct||0);},0)/Math.max(1,EXAM.parts.length));
+  p.exams=p.exams||{};p.exams[G.n]={d:new Date().toISOString(),dur:Math.round((Date.now()-EXAM.start)/1000),parts:EXAM.parts,rec:EXAM.rec.slice(0,4000),pct:pct,st:'pending'};save();EXAM=null;
+  confetti(80);play([72,76,79,84,88,91,96],1.2,null,.16);
+  M.innerHTML='<div class="card result"><div class="big">📨</div><h1>Bravo '+esc(p.name)+' !</h1><div class="hint" style="font-size:20px">Ton examen du grade '+G.n+' est envoyé à Papa. Il va l’écouter et t’envoyer ses stickers… et peut-être ton diplôme !</div><div class="st">'+pct+' % de réussite</div><div class="row" style="justify-content:center;margin-top:14px"><button class="btn v" id="exhome">🏠 Accueil</button></div></div>';
+  say('Bravo '+p.name+' ! Ton examen est envoyé à Papa.',true);document.getElementById('exhome').onclick=function(){go('home');};}
+/* l'enregistrement : toutes les notes jouées pendant la pièce (MIDI ou clavier à l'écran) */
+(function(){const _on=noteOn,_off=noteOff;
+  noteOn=function(m){if(EXAM&&EXAM.recOn)EXAM.rec.push([Math.round(performance.now()-EXAM.t0),m,1]);return _on.apply(this,arguments);};
+  noteOff=function(m){if(EXAM&&EXAM.recOn)EXAM.rec.push([Math.round(performance.now()-EXAM.t0),m,0]);return _off.apply(this,arguments);};})();
+/* — la page des grades — */
+function vGrades(){const p=P();if(!p){go('profs');return;}
+  M.innerHTML='<h1>🎓 Mes grades</h1><div class="hint">6 leçons, puis un examen que Papa écoute. À chaque grade réussi : ton diplôme !</div>'+GRADES.map(function(G){const S=gState(p,G);const prevOk=G.n===1||gState(p,GRADES[G.n-2]).ok;
+    const head='<div class="ghead" style="'+(S.ok?'background:linear-gradient(90deg,#3E9B4F,#7BC86C)':'')+'">'+G.ic+' GRADE '+G.n+' — '+G.t+(S.ok?' ✓':'')+'</div>';
+    if(!prevOk&&!S.ok)return '<div class="card gcard lock">'+head+'<div class="hint">🔒 Réussis d’abord le grade '+(G.n-1)+'</div></div>';
+    return '<div class="card gcard">'+head+'<ol class="gl">'+G.isles.map(function(id){const I=ISLES.filter(function(x){return x.id===id;})[0];if(!I)return '';const d=gIsleDone(p,id);return '<li class="'+(d?'ok':'')+'" data-gi="'+id+'">'+(d?'✔':'▶')+' '+I.ic+' '+I.t+(d?'':' <small>'+Math.min(99,Math.round(gIslePct(p,id)*100))+' %</small>')+'</li>';}).join('')
+      +'<li class="gx">🏁 Examen : '+G.exam.map(gPartLb).join(' + ')+'</li></ol>'
+      +(S.ok?'<button class="btn v" data-gdip="'+G.n+'">🎓 Voir mon diplôme</button>':(S.ex&&S.ex.st==='pending'?'<div class="pill">📨 Envoyé à Papa — en attente de son retour</div>':(S.open?'<button class="btn v" data-gex="'+G.n+'">🏁 Passer l’examen'+(S.ex&&S.ex.st==='redo'?' (à nouveau)':'')+'</button>':'<div class="hint">Encore '+(G.isles.length-S.lessons)+' leçon'+(G.isles.length-S.lessons>1?'s':'')+' avant l’examen</div>')))
+      +(S.ex&&S.ex.st==='redo'&&S.ex.fb?'<div class="gfb">💬 Papa : « '+esc(S.ex.fb.c||'')+' » '+(S.ex.fb.s||[]).join('')+'</div>':'')+'</div>';}).join('')
+    +'<div class="row"><button class="btn g" id="gback">← Accueil</button></div>';
+  M.querySelectorAll('[data-gi]').forEach(function(e){e.onclick=function(){go('isle',e.dataset.gi);};});
+  M.querySelectorAll('[data-gex]').forEach(function(b){b.onclick=function(){examStart(+b.dataset.gex);};});
+  M.querySelectorAll('[data-gdip]').forEach(function(b){b.onclick=function(){diplomaShow(p,+b.dataset.gdip);};});
+  document.getElementById('gback').onclick=function(){go('home');};}
+/* — le diplôme — */
+function diplomaHTML(p,n){const G=GRADES.filter(function(x){return x.n===n;})[0],gr=(p.grades||{})[n];if(!G||!gr)return '';
+  const d=new Date(gr.d);const ds=d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  return '<div class="dipl"><div class="dipb"><div class="dipt">DIPLÔME</div><div class="dips">Garden Kids · École de piano de la maison</div><div class="dipg">'+G.ic+' Grade '+n+' — '+G.t+'</div>'
+    +'<div class="dipn">décerné à</div><div class="dipname">'+p.av+' '+esc(p.name)+'</div><div class="dipst">'+(gr.s||[]).join(' ')+'</div>'
+    +(gr.c?'<div class="dipc">« '+esc(gr.c)+' »</div>':'')+'<div class="dipf"><span>le '+ds+'</span><span class="dipsig">'+esc(gr.by||'Papa')+'</span></div></div></div>';}
+function diplomaShow(p,n){const ov=document.createElement('div');ov.className='msgov dipov';ov.innerHTML='<div style="max-width:640px;width:100%">'+diplomaHTML(p,n)+'<div class="row" style="justify-content:center;margin-top:12px"><button class="btn b" id="dpr">🖨 Imprimer</button><button class="btn g" id="dcl">Fermer</button></div></div>';
+  document.body.appendChild(ov);ov.querySelector('#dcl').onclick=function(){ov.remove();};ov.querySelector('#dpr').onclick=function(){document.body.classList.add('printdip');window.print();setTimeout(function(){document.body.classList.remove('printdip');},500);};}
+/* — coin des parents : écouter l'examen, stickers, mot, valider ou « à retravailler » — */
+let GPLAY=[];
+function gPlayback(rec){GPLAY.forEach(clearTimeout);GPLAY=[];const ons={};rec.forEach(function(e){if(e[2])ons[e[1]]=e[0];else if(ons[e[1]]!=null){const t=ons[e[1]],dur=Math.max(.15,(e[0]-t)/1000);GPLAY.push(setTimeout(function(){play([e[1]],dur);},t));delete ons[e[1]];}});
+  Object.keys(ons).forEach(function(m){GPLAY.push(setTimeout(function(){play([+m],.5);},ons[m]));});}
+function gRoll(rec){if(!rec||!rec.length)return '<div class="hint">(aucune note enregistrée)</div>';const ons={},bars=[];rec.forEach(function(e){if(e[2])ons[e[1]]=e[0];else if(ons[e[1]]!=null){bars.push([ons[e[1]],e[0],e[1]]);delete ons[e[1]];}});
+  const T=Math.max.apply(null,rec.map(function(e){return e[0];}))||1,ms=bars.map(function(b){return b[2];}),lo=Math.min.apply(null,ms.concat([60]))-1,hi=Math.max.apply(null,ms.concat([72]))+1,W=600,H=120;
+  return '<svg viewBox="0 0 '+W+' '+H+'" class="groll"><rect width="'+W+'" height="'+H+'" rx="8" fill="#0f1328"/>'+bars.map(function(b){const x=b[0]/T*(W-10)+5,w=Math.max(2,(b[1]-b[0])/T*(W-10)),y=H-6-(b[2]-lo)/(hi-lo)*(H-12);return '<rect x="'+x+'" y="'+(y-2)+'" width="'+w+'" height="4" rx="2" fill="'+([1,3,6,8,10].indexOf(b[2]%12)>=0?'#A78BFA':'#3ECF8E')+'"/>';}).join('')+'</svg>';}
+function gParentHTML(){let h='';DB.profs.forEach(function(p){Object.keys(p.exams||{}).forEach(function(n){const ex=p.exams[n];if(ex.st!=='pending')return;const G=GRADES.filter(function(x){return x.n===+n;})[0];
+    h+='<div class="gpe"><b>'+p.av+' '+esc(p.name)+' · Examen du grade '+n+' — '+G.t+'</b><div class="hint" style="margin:2px 0">'+ex.d.slice(0,16).replace('T',' ')+' · '+Math.floor(ex.dur/60)+' min '+(ex.dur%60)+' · <b style="color:var(--vert)">'+ex.pct+' % de réussite</b></div>'
+      +'<div class="hint" style="margin:2px 0">'+ex.parts.map(function(x){return (x.k==='rythme'?'🍐 rythme':(x.k==='piece'?'🎼 ':'🎹 ')+((stepById(x.sid)||{s:{lb:x.sid}}).s.lb))+' : '+(x.pct!=null?x.pct+' %':'')+(x.st!=null?' '+'⭐'.repeat(x.st):'');}).join(' · ')+'</div>'
+      +gRoll(ex.rec)+'<div class="row" style="margin-top:6px"><button class="btn s b" data-gpl="'+p.id+'|'+n+'">▶ Écouter la pièce</button><button class="btn s g" data-gst="1">■</button></div>'
+      +'<div class="row" style="gap:4px;margin-top:6px">'+G_STICK.map(function(s){return '<button class="msgrep" data-gsk="'+p.id+'|'+n+'|'+s+'">'+s+'</button>';}).join('')+'</div>'
+      +'<input type="text" id="gc_'+p.id+'_'+n+'" placeholder="Ton mot (ex. : Bravo ma chérie, la main gauche est très régulière !)" style="width:100%;margin-top:6px">'
+      +'<div class="row" style="margin-top:8px"><button class="btn s v" data-gok="'+p.id+'|'+n+'">🎓 Valider le grade (diplôme)</button><button class="btn s g" data-gredo="'+p.id+'|'+n+'">🔁 À retravailler</button></div></div>';});});
+  return '<div class="card"><h2>🎓 Examens à écouter</h2>'+(h||'<div class="hint">Aucun examen en attente. Quand un enfant passe l’examen d’un grade, son enregistrement arrive ici.</div>')+'</div>';}
+function gParentBind(){const sel={};const find=function(k){const a=k.split('|');const p=DB.profs.filter(function(x){return x.id===a[0];})[0];return {p:p,n:+a[1],s:a[2]};};
+  M.querySelectorAll('[data-gpl]').forEach(function(b){b.onclick=function(){const f=find(b.dataset.gpl);gPlayback(f.p.exams[f.n].rec||[]);};});
+  M.querySelectorAll('[data-gst]').forEach(function(b){b.onclick=function(){GPLAY.forEach(clearTimeout);GPLAY=[];};});
+  M.querySelectorAll('[data-gsk]').forEach(function(b){b.onclick=function(){const f=find(b.dataset.gsk),k=f.p.id+'|'+f.n;sel[k]=sel[k]||[];const i=sel[k].indexOf(f.s);if(i>=0)sel[k].splice(i,1);else if(sel[k].length<4)sel[k].push(f.s);b.classList.toggle('on',sel[k].indexOf(f.s)>=0);};});
+  const fb=function(k,ok){const f=find(k),key=f.p.id+'|'+f.n,ex=f.p.exams[f.n],c=(document.getElementById('gc_'+f.p.id+'_'+f.n)||{}).value||'';
+    ex.fb={s:sel[key]||[],c:c.trim(),d:new Date().toISOString()};
+    if(ok){ex.st='ok';f.p.grades=f.p.grades||{};f.p.grades[f.n]={ok:true,d:new Date().toISOString(),s:sel[key]||['🌟'],c:c.trim(),by:DB.msgFrom||'Papa',seen:false};f.p.coins=(f.p.coins||0)+50;}
+    else ex.st='redo';save();toast(ok?'🎓 Diplôme envoyé !':'Retour envoyé');vParent();};
+  M.querySelectorAll('[data-gok]').forEach(function(b){b.onclick=function(){fb(b.dataset.gok,true);};});
+  M.querySelectorAll('[data-gredo]').forEach(function(b){b.onclick=function(){fb(b.dataset.gredo,false);};});}
+/* — branchements — */
+(function(){
+  const _go=go;go=function(v,a){if(v==='grades'){VIEW=v;stopDrill();vGrades();window.scrollTo(0,0);return;}return _go.apply(this,arguments);};
+  const _fin=finish;finish=function(){const sid=DR.sid,ex=EXAM&&EXAM.cur&&EXAM.cur.sid===sid;const p0=P(),n0=p0&&p0.log?p0.log.length:0;_fin.apply(this,arguments);
+    if(ex){const p=P(),L=p&&p.log&&p.log.length>n0?p.log[p.log.length-1]:null;examPartDone(L?{st:L.st,ok:L.ok,n:L.n,pct:L.n?Math.round(L.ok/L.n*100):Math.round(L.st/3*100)}:{pct:0});
+      setTimeout(function(){const r=M.querySelector('.card.result');if(r)r.insertAdjacentHTML('beforeend','<div class="pill" style="margin-top:10px">🏁 Examen : épreuve suivante…</div>');},50);}};
+  const _h=vHome;vHome=function(){_h.apply(this,arguments);const p=P();if(!p)return;const G=gCurrent(p),row=document.querySelector('.hbtn');
+    if(row)row.insertAdjacentHTML('beforeend','<button class="btn" id="goGr" style="background:#7B61FF;color:#fff">🎓 Mes grades</button>');const gb=document.getElementById('goGr');if(gb)gb.onclick=function(){go('grades');};
+    if(G){const S=gState(p,G);const d=document.querySelector('.dash');if(d)d.insertAdjacentHTML('afterend','<div class="card gnow" id="gnow"><b>'+G.ic+' Grade '+G.n+' — '+G.t+'</b><div class="bar"><i style="width:'+Math.round(S.lessons/G.isles.length*100)+'%"></i></div><span class="hint" style="margin:0">'+(S.ex&&S.ex.st==='pending'?'📨 examen envoyé à Papa':(S.open?'🏁 l’examen est ouvert !':S.lessons+'/'+G.isles.length+' leçons'))+'</span></div>');const gn=document.getElementById('gnow');if(gn)gn.onclick=function(){go('grades');};}
+    /* un diplôme tout neuf ? */
+    Object.keys(p.grades||{}).forEach(function(n){const gr=p.grades[n];if(gr.ok&&!gr.seen){gr.seen=true;save();setTimeout(function(){confetti(140);play([72,76,79,84,88,91,96],1.4,null,.16);say('Bravo '+p.name+' ! Tu as ton diplôme du grade '+n+' !',true);diplomaShow(p,+n);},700);}});};
+  const _vp=vParent;vParent=function(){_vp.apply(this,arguments);if(!document.getElementById('savepin'))return;const h1=M.querySelector('h1');if(h1)h1.insertAdjacentHTML('afterend',gParentHTML());gParentBind();};
+})();
+
+
 /* ═══════════ ⚡ DÉFI DU JOUR + 🏆 COUPE DE LA SEMAINE (équitable entre grands et petits) ═══════════
    Défi du jour : le même jeu pour toute la famille (tiré par la date), 3 essais, le meilleur compte. Le score est mesuré
    PAR RAPPORT À TON PROPRE RECORD (ou, pour la roue des rythmes, à ton palier) : Raphaëlle peut battre Alyson.
