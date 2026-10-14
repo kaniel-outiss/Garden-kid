@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v3.7 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v3.8 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -273,6 +273,11 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .duop2 span{font-size:24px}.duop2 small{color:var(--gris)}.d4box{background:#1c2350;border-radius:16px;padding:10px 14px;margin-bottom:12px;text-align:left}.d4{display:flex;align-items:center;gap:10px;margin:6px 0}.d4>div{flex:1}
 .kcircw{text-align:center;margin:6px auto}.kcirc{width:min(80vw,300px);height:auto}
 @keyframes lvBreathe{0%,100%{opacity:.2}50%{opacity:1}}@keyframes lvBlink{0%,100%{opacity:1}50%{opacity:.2}}.lv-wait{animation:lvBreathe 1.4s ease-in-out infinite}.lv-bad{animation:lvBlink .5s linear infinite}
+.strow{display:flex;gap:10px;align-items:flex-start;border-top:1px solid var(--gris2);padding:8px 0}.strow .col{display:flex;flex-direction:column;gap:4px}
+#kb .lit{background:#FFC83D!important}.concert{text-align:center;border-color:var(--or)}.ctitle{font:900 28px Nunito,sans-serif;color:var(--or);margin-bottom:6px}
+.cprog{text-align:left;font-size:20px;line-height:1.9;margin:12px auto;max-width:460px}.gopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.gopt{background:var(--bg2);border:3px solid var(--gris2);border-radius:16px;padding:14px 8px;font:900 18px Nunito,sans-serif;color:var(--blanc);cursor:pointer;display:flex;flex-direction:column;gap:2px}.gopt small{font-size:12px;color:var(--gris);font-weight:700}
+.gopt.ok{border-color:var(--vert);background:#1f4d36}.gopt.bad{border-color:#FF5A6A;background:#5a1f2a}
 </style>
 </head>
 <body>
@@ -293,7 +298,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
    Une appli pour enfants : profils, îles, leçons en 3 écrans, drills de 10 questions, étoiles.
    Rien n'est verrouillé : l'ordre est suggéré, pas imposé. Les moteurs viennent de Garden
    (clavier qui écoute, couleurs par fonction, portée, halo, flashs, fausse note expliquée). */
-const VERSION='3.7';
+const VERSION='3.8';
 const NAMES=['do','ré','mi','fa','sol','la','si'];
 const NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],NF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const WPC=[0,2,4,5,7,9,11];
@@ -1684,6 +1689,104 @@ function ryCompose(){const p=P();let W=(p.ryMine||[{id:'poire',at:0},{id:'poire'
     document.getElementById('back').onclick=function(){go('rythme');};};
   render();}
 LVDEF.rythme={t:'🍐 La roue des rythmes',n:30,goal:'Tape le rythme de la roue',play:function(n){go('rythme',n);}};
+/* ═══════════ 🎙 MON STUDIO · 🎪 LE CONCERT DU DIMANCHE · 🎵 DEVINE LA CHANSON ═══════════
+   Studio : j'enregistre ce que je joue (MIDI ou clavier), je réécoute, je garde, j'envoie à Papa.
+   Concert : chaque enfant choisit une pièce qu'il connaît ; on annonce, il joue, on applaudit — tout est enregistré.
+   Devine la chanson : Garden joue le début d'une chanson ou d'une pièce de l'appli, trouve laquelle parmi 4. */
+let STUDIO={recOn:false,ev:[],t0:0};
+(function(){const _on=noteOn,_off=noteOff;
+  noteOn=function(m){if(STUDIO.recOn)STUDIO.ev.push([Math.round(performance.now()-STUDIO.t0),m,1]);return _on.apply(this,arguments);};
+  noteOff=function(m){if(STUDIO.recOn)STUDIO.ev.push([Math.round(performance.now()-STUDIO.t0),m,0]);return _off.apply(this,arguments);};})();
+function stRecStart(){STUDIO={recOn:true,ev:[],t0:performance.now()};}
+function stRecStop(){STUDIO.recOn=false;return STUDIO.ev.slice(0,4000);}
+function stSave(p,lb,ev,extra){if(!ev||ev.length<2)return null;p.rec=p.rec||[];const r=Object.assign({id:'r'+Date.now().toString(36),lb:lb,d:new Date().toISOString(),ev:ev},extra||{});p.rec.push(r);if(p.rec.length>20)p.rec=p.rec.slice(-20);
+  try{save();}catch(e){p.rec.shift();try{save();}catch(_){}}return r;}
+let STPLAY=[];
+function stPlay(ev){stStop();const ons={};ev.forEach(function(e){if(e[2])ons[e[1]]=e[0];else if(ons[e[1]]!=null){const t=ons[e[1]],dur=Math.max(.12,(e[0]-t)/1000);STPLAY.push(setTimeout(function(){play([e[1]],dur);const k=document.querySelector('#kb [data-n="'+e[1]+'"]');if(k){k.classList.add('lit');setTimeout(function(){k.classList.remove('lit');},Math.min(800,dur*1000));}},t));delete ons[e[1]];}});
+  Object.keys(ons).forEach(function(m){STPLAY.push(setTimeout(function(){play([+m],.5);},ons[m]));});}
+function stStop(){STPLAY.forEach(clearTimeout);STPLAY=[];}
+function stRoll(ev){return typeof gRoll==='function'?gRoll(ev):'';}
+function stDur(ev){const t=ev.length?ev[ev.length-1][0]:0;return Math.floor(t/60000)+' min '+String(Math.round(t/1000)%60).padStart(2,'0');}
+function vStudio(){const p=P();if(!p){go('profs');return;}KB={lo:48,hi:84};
+  const list=(p.rec||[]).slice().reverse().map(function(r){return '<div class="strow"><span style="font-size:24px">'+(r.concert?'🎪':'🎙')+'</span><div style="flex:1"><b>'+esc(r.lb)+'</b><div class="hint" style="margin:0">'+r.d.slice(0,16).replace('T',' ')+' · '+stDur(r.ev)+(r.sent?' · 📨 envoyé à Papa':'')+'</div>'+stRoll(r.ev)+'</div><div class="col"><button class="btn s b" data-sp="'+r.id+'">▶</button><button class="btn s g" data-ss="'+r.id+'">'+(r.sent?'✓':'📨')+'</button><button class="btn s g" data-sd="'+r.id+'">🗑</button></div></div>';}).join('');
+  M.innerHTML='<h1>🎙 Mon studio</h1><div class="hint">Appuie sur ● et joue ce que tu veux : ta musique, une pièce, une invention. Réécoute-toi comme un vrai pianiste !</div>'
+    +'<div class="stage" id="stage"><div class="row" style="justify-content:center;gap:8px"><button class="btn v" id="strec">● Enregistrer</button><button class="btn g" id="ststop" disabled>■ Stop</button><button class="btn g" id="stplay" disabled>▶ Réécouter</button><span class="pill" id="stinfo">prêt</span></div>'
+    +'<div id="stnew" style="display:none" class="row"><input type="text" id="stname" placeholder="Le nom de ton morceau" style="flex:1"><button class="btn b" id="stkeep">💾 Garder</button></div><div class="kbw" style="margin-top:8px"><div class="kb" id="kb"></div></div></div>'
+    +(list?'<h2>🎞 Mes enregistrements</h2>'+list:'')+'<div class="row" style="margin-top:12px"><button class="btn g" id="stback">← Accueil</button></div>';
+  kbHTML('kb',48,84,Math.max(18,Math.min(34,Math.floor((M.clientWidth-40)/22))));
+  let last=null,tm=null;const info=function(t){document.getElementById('stinfo').textContent=t;};
+  document.getElementById('strec').onclick=function(){stRecStart();this.disabled=true;document.getElementById('ststop').disabled=false;const t0=Date.now();tm=setInterval(function(){info('● '+Math.round((Date.now()-t0)/1000)+' s · '+STUDIO.ev.filter(function(e){return e[2];}).length+' notes');},300);};
+  document.getElementById('ststop').onclick=function(){clearInterval(tm);last=stRecStop();this.disabled=true;document.getElementById('strec').disabled=false;document.getElementById('stplay').disabled=!last.length;info(last.length?'✓ '+stDur(last):'rien enregistré');if(last.length)document.getElementById('stnew').style.display='';};
+  document.getElementById('stplay').onclick=function(){if(last)stPlay(last);};
+  document.getElementById('stkeep').onclick=function(){const nm=document.getElementById('stname').value.trim()||('Mon morceau du '+new Date().toLocaleDateString('fr-FR'));if(stSave(p,nm,last)){confetti(40);toast('💾 Gardé dans ton studio');}vStudio();};
+  M.querySelectorAll('[data-sp]').forEach(function(b){b.onclick=function(){const r=(p.rec||[]).filter(function(x){return x.id===b.dataset.sp;})[0];if(r)stPlay(r.ev);};});
+  M.querySelectorAll('[data-ss]').forEach(function(b){b.onclick=function(){const r=(p.rec||[]).filter(function(x){return x.id===b.dataset.ss;})[0];if(r){r.sent=true;save();toast('📨 Papa pourra l’écouter');vStudio();}};});
+  M.querySelectorAll('[data-sd]').forEach(function(b){b.onclick=function(){if(!confirm('Effacer cet enregistrement ?'))return;p.rec=(p.rec||[]).filter(function(x){return x.id!==b.dataset.sd;});save();vStudio();};});
+  document.getElementById('stback').onclick=function(){stStop();go('home');};}
+/* — applaudissements (bruit filtré, mains qui claquent au hasard) — */
+function applause(sec){const A=ac();if(!A)return;sec=sec||3;const len=A.sampleRate*.04,buf=A.createBuffer(1,len,A.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+  const g=A.createGain();g.gain.value=.5;g.connect(A.destination);const t0=A.currentTime+.05;const n=Math.round(sec*60);
+  for(let i=0;i<n;i++){const t=t0+Math.random()*sec*(.4+.6*Math.random()),s=A.createBufferSource(),f=A.createBiquadFilter(),gg=A.createGain();s.buffer=buf;f.type='bandpass';f.frequency.value=900+Math.random()*1800;f.Q.value=.8;gg.gain.value=(.25+Math.random()*.5)*(1-Math.max(0,(t-t0)/sec-.7));s.connect(f);f.connect(gg);gg.connect(g);s.start(t);}}
+/* — le concert du dimanche — */
+let CONC=null;
+function concPieces(p){const out=[];ISLES.forEach(function(I){I.steps.forEach(function(s){if(s.drill&&(s.drill.type==='piece'||s.drill.type==='song')&&((p.stars||{})[s.id]||0)>=1)out.push(s);});});return out;}
+function vConcert(){const ps=DB.profs;const sel=(DB.concSel=DB.concSel||{});
+  M.innerHTML='<h1>🎪 Le concert du dimanche</h1><div class="hint">Chaque pianiste choisit une pièce qu’il connaît (au moins une étoile). Garden annonce, tu joues, toute la famille applaudit — et le concert est enregistré dans le studio.</div>'
+    +ps.map(function(p){const L=concPieces(p);return '<div class="card"><h2>'+p.av+' '+esc(p.name)+'</h2>'+(L.length?'<select data-cs="'+p.id+'" style="width:100%;font:inherit;padding:10px;border-radius:12px;background:var(--bg);color:var(--blanc);border:2px solid var(--gris2)"><option value="">— ne joue pas cette fois —</option>'+L.map(function(s){return '<option value="'+s.id+'"'+(sel[p.id]===s.id?' selected':'')+'>'+esc(s.lb)+' '+'⭐'.repeat((p.stars||{})[s.id]||0)+'</option>';}).join('')+'</select>':'<div class="hint">Gagne d’abord une étoile sur une pièce ou une chanson !</div>')+'</div>';}).join('')
+    +'<div class="row" style="justify-content:center;gap:8px"><button class="btn v" id="cgo">🎬 Commencer le concert</button><button class="btn g" id="cback">← Accueil</button></div>';
+  M.querySelectorAll('[data-cs]').forEach(function(x){x.onchange=function(){sel[x.dataset.cs]=x.value;save();};});
+  document.getElementById('cgo').onclick=function(){const prog=ps.filter(function(p){return sel[p.id];}).map(function(p){return {pid:p.id,sid:sel[p.id]};});if(!prog.length){toast('Choisis au moins une pièce');return;}
+    CONC={prog:prog,i:-1,cur0:DB.cur,res:[]};concProgram();};
+  document.getElementById('cback').onclick=function(){go('home');};}
+function concProgram(){M.innerHTML='<div class="card concert"><div class="ctitle">🎪 Programme du concert</div><div class="hint">'+new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+'</div><ol class="cprog">'+CONC.prog.map(function(x){const p=DB.profs.filter(function(q){return q.id===x.pid;})[0],R=stepById(x.sid);return '<li><b>'+p.av+' '+esc(p.name)+'</b> — '+esc(R?R.s.lb:x.sid)+'</li>';}).join('')+'</ol><button class="btn v" id="cstart">🎵 Que le concert commence !</button></div>';
+  try{play([60,64,67,72,76,79,84],1,null,.14);}catch(e){}document.getElementById('cstart').onclick=concNext;}
+function concNext(){CONC.i++;const x=CONC.prog[CONC.i];if(!x){concEnd();return;}const p=DB.profs.filter(function(q){return q.id===x.pid;})[0],R=stepById(x.sid);
+  DB.cur=p.id;UNLOCK=p.id;save();
+  M.innerHTML='<div class="card concert"><div class="ctitle">🎤 Mesdames et messieurs…</div><div style="font-size:70px">'+p.av+'</div><h1>'+esc(p.name)+'</h1><div class="hint" style="font-size:20px">va nous jouer <b style="color:var(--or)">'+esc(R.s.lb)+'</b></div><button class="btn v" id="cplay">🎹 Je suis prêt·e</button></div>';
+  say('Mesdames et messieurs, '+p.name+' va nous jouer '+R.s.lb+' !',true);applause(1.5);
+  document.getElementById('cplay').onclick=function(){CONC.live={pid:p.id,sid:x.sid};stRecStart();go('drill',x.sid);setTimeout(function(){const b=document.getElementById('go');if(b)b.click();},500);};}
+function concEnd(){DB.cur=CONC.cur0;save();const R=CONC.res;CONC=null;
+  M.innerHTML='<div class="card concert"><div class="ctitle">🎉 Merci et bravo !</div><div style="font-size:60px">💐👏🎹</div>'+R.map(function(r){return '<div class="lrow"><span>'+r.av+' '+esc(r.name)+'</span><span>'+esc(r.lb)+'</span><b>'+'⭐'.repeat(r.st)+'</b></div>';}).join('')+'<div class="hint">Le concert est enregistré dans le studio de chaque pianiste.</div><div class="row" style="justify-content:center;margin-top:12px"><button class="btn v" id="chome">🏠 Accueil</button></div></div>';
+  confetti(150);applause(4);say('Merci et bravo à tous les pianistes !',true);document.getElementById('chome').onclick=function(){go('home');};}
+/* — devine la chanson — */
+function guessPool(){const out=[];ISLES.forEach(function(I){I.steps.forEach(function(s){const d=s.drill;if(!d)return;let mel=null;
+    if(d.type==='song'&&d.mel&&d.mel.length>=6)mel=d.mel.slice(0,10).map(function(x){return [x[0],x[1]||1];});
+    else if(d.type==='piece'){try{const c=rsLoad(d.id);if(c&&c.rh){mel=[];c.rh.ev.forEach(function(e){if(mel.length<10&&!e.rest)mel.push([e.ns[e.ns.length-1].m,e.d]);});}}catch(e){}}
+    if(mel&&mel.length>=6&&!out.some(function(o){return o.lb===s.lb.replace(/^[^A-Za-zÀ-ÿ]+/,'');}))out.push({id:s.id,lb:s.lb.replace(/^[^A-Za-zÀ-ÿ]+/,''),mel:mel,isle:I.t});});});return out;}
+function vGuess(){const p=P();if(!p){go('profs');return;}const pool=guessPool().filter(function(x){return !/exercice|échauffement|n°|Étude|cz_/i.test(x.lb);});
+  const known=pool.filter(function(x){return ((p.stars||{})[x.id]||0)>=1;});const base=known.length>=6?known:pool;
+  const G={score:0,lives:3,round:0};const bpm=96;
+  const playMel=function(mel){const A=ac();if(!A)return;let t=A.currentTime+.1;mel.forEach(function(x){play([x[0]],Math.max(.15,x[1]*60/bpm*.9),t);t+=x[1]*60/bpm;});};
+  const round=function(){if(G.lives<=0){const rec=G.score>((p.best||{}).guess||0);p.best=p.best||{};if(rec)p.best.guess=G.score;p.coins=(p.coins||0)+G.score;save();
+      M.innerHTML='<div class="card result"><div class="big medal">'+(rec?'🏆':'🎵')+'</div><h1>'+G.score+' chanson'+(G.score>1?'s':'')+' trouvée'+(G.score>1?'s':'')+(rec?' — RECORD !':'')+'</h1><div class="row" style="justify-content:center;margin-top:14px"><button class="btn v" id="gagain">🔁 Rejouer</button><button class="btn g" id="garc">🕹 L’arcade</button></div></div>';
+      if(rec)confetti(80);document.getElementById('gagain').onclick=vGuess;document.getElementById('garc').onclick=function(){go('arcade');};return;}
+    G.round++;const ans=pick(base),opts=[ans];let guard=0;while(opts.length<4&&guard++<200){const o=pick(pool);if(opts.indexOf(o)<0&&o.lb!==ans.lb)opts.push(o);}opts.sort(function(){return Math.random()-.5;});
+    M.innerHTML='<h2>🎵 Devine la chanson</h2><div class="stage" id="stage"><div class="ghud"><span>🎵 '+G.score+'</span><span>'+'❤️'.repeat(G.lives)+'🖤'.repeat(3-G.lives)+'</span></div><div style="font-size:70px;margin:10px 0">🎧</div><button class="btn b" id="grep">🔊 Réécouter</button><div class="gopts">'+opts.map(function(o,i){return '<button class="gopt" data-go="'+i+'">'+esc(o.lb)+'<small>'+esc(o.isle)+'</small></button>';}).join('')+'</div><div class="row" style="justify-content:center;margin-top:10px"><button class="btn s g" id="quit">Arrêter</button></div></div>';
+    playMel(ans.mel);document.getElementById('grep').onclick=function(){playMel(ans.mel);};document.getElementById('quit').onclick=function(){go('arcade');};
+    M.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){const o=opts[+b.dataset.go],ok=o===ans;b.classList.add(ok?'ok':'bad');
+      if(ok){G.score++;confetti(25);play([76,79,84],.4,null,.14);}else{G.lives--;play([48,44],.5,null,.14);M.querySelectorAll('[data-go]').forEach(function(x){if(opts[+x.dataset.go]===ans)x.classList.add('ok');});}
+      M.querySelectorAll('[data-go]').forEach(function(x){x.disabled=true;});setTimeout(round,1300);};});};
+  round();}
+/* — branchements — */
+(function(){
+  const _go=go;go=function(v,a){const V={studio:vStudio,concert:vConcert,guess:vGuess}[v];if(V){if(VIEW==='studio')stStop();VIEW=v;stopDrill();V(a);window.scrollTo(0,0);return;}return _go.apply(this,arguments);};
+  const _fin=finish;finish=function(){const live=CONC&&CONC.live&&DR&&DR.sid===CONC.live.sid?CONC.live:null;_fin.apply(this,arguments);if(!live)return;
+    const ev=stRecStop(),p=DB.profs.filter(function(q){return q.id===live.pid;})[0],R=stepById(live.sid),st=(p.log&&p.log.length?p.log[p.log.length-1].st:0);
+    stSave(p,'Concert — '+R.s.lb,ev,{concert:true});CONC.res.push({av:p.av,name:p.name,lb:R.s.lb,st:st});CONC.live=null;
+    setTimeout(function(){applause(3.5);confetti(90);const r=M.querySelector('.card.result');if(r)r.insertAdjacentHTML('afterbegin','<div class="d4box" style="text-align:center"><div style="font-size:44px">💐👏</div><b>Bravo '+esc(p.name)+' !</b><div class="row" style="justify-content:center;margin-top:8px"><button class="btn v" id="cnext">'+(CONC.i+1<CONC.prog.length?'🎤 Pianiste suivant':'🎉 Fin du concert')+'</button></div></div>');const n=document.getElementById('cnext');if(n)n.onclick=concNext;},60);};
+  const _h=vHome;vHome=function(){_h.apply(this,arguments);const row=document.querySelector('.hbtn');if(!row)return;row.insertAdjacentHTML('beforeend','<button class="btn g" id="goSt">🎙 Mon studio</button><button class="btn g" id="goCo">🎪 Le concert</button>');
+    document.getElementById('goSt').onclick=function(){go('studio');};document.getElementById('goCo').onclick=function(){go('concert');};};
+  const _arc=vArcade;vArcade=function(){_arc.apply(this,arguments);const g=M.querySelector('.arc');if(!g)return;const B=(P()||{}).best||{};
+    g.insertAdjacentHTML('afterbegin','<div class="ag" data-gg="1" style="--c:#FF6FB5"><div class="ai">🎧🎵</div><h2>Devine la chanson</h2><div class="hint">Garden joue le début d’une chanson ou d’une pièce : laquelle est-ce ?</div><b>🏆 Record : '+(B.guess||0)+'</b></div>');
+    g.querySelector('[data-gg]').onclick=function(){go('guess');};};
+  const _vp=vParent;vParent=function(){_vp.apply(this,arguments);if(!document.getElementById('savepin'))return;const h1=M.querySelector('h1');let h='';
+    DB.profs.forEach(function(p){(p.rec||[]).filter(function(r){return r.sent||r.concert;}).slice().reverse().forEach(function(r){h+='<div class="strow"><span style="font-size:22px">'+p.av+'</span><div style="flex:1"><b>'+esc(p.name)+' — '+esc(r.lb)+'</b><div class="hint" style="margin:0">'+r.d.slice(0,16).replace('T',' ')+' · '+stDur(r.ev)+'</div></div><button class="btn s b" data-psp="'+p.id+'|'+r.id+'">▶</button></div>';});});
+    if(h1&&h)h1.insertAdjacentHTML('afterend','<div class="card"><h2>🎙 Les enregistrements des enfants</h2>'+h+'<div class="row"><button class="btn s g" id="pspst">■ Stop</button></div></div>');
+    M.querySelectorAll('[data-psp]').forEach(function(b){b.onclick=function(){const a=b.dataset.psp.split('|'),p=DB.profs.filter(function(x){return x.id===a[0];})[0],r=(p.rec||[]).filter(function(x){return x.id===a[1];})[0];if(r)stPlay(r.ev);};});
+    const s=document.getElementById('pspst');if(s)s.onclick=stStop;};
+})();
+
+
 /* ═══════════ 📖 AIDES DE LECTURE (pièces) + ⭕ CERCLE DES FORMES (accords) — Garden Kids ═══════════
    Aides, réglables par enfant (p.aid) depuis l'écran de la pièce :
    🔤 le nom dans la note (« auto » : s'efface avec les étoiles de la pièce) · 🧭 les notes repères (sol, fa, do du milieu)
