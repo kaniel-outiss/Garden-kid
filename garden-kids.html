@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.4 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.5 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -292,6 +292,8 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
 .card.prog{display:block!important}.card.prog>*{width:100%}.prog i{background:none!important;display:inline!important;width:auto!important;height:auto!important;border:0!important;padding:0!important;margin:0!important;position:static!important}.prog .ptab td:first-child{white-space:nowrap}.prog .ctip{margin-top:8px}
 .prog .ptab{width:100%;border-collapse:collapse;font-size:16px}.prog .ptab td,.prog .ptab th{padding:4px 6px;text-align:left}.prog .ptab th{font-size:13px;opacity:.7;padding-top:8px}
 .prog.big{font-size:18px;text-align:left}i.up{color:#3ECF8E;font-style:normal;font-weight:800}i.dn{color:#FF8A65;font-style:normal}i.eq{opacity:.6;font-style:normal}.kpis i.up,.kpis i.dn{font-size:13px}
+.coachB{position:fixed;left:12px;bottom:12px;max-width:min(560px,92vw);display:flex;gap:10px;align-items:center;background:#1E2A4A;border:2px solid #4FB3FF;border-radius:18px;padding:10px 14px;z-index:9999;font-size:18px;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.45);transform:translateY(140%);opacity:0;transition:transform .35s,opacity .35s}
+.coachB.on{transform:none;opacity:1}.coachB .cav{font-size:40px;animation:cbob 1.2s ease-in-out infinite}@keyframes cbob{50%{transform:translateY(-4px)}}
 </style>
 </head>
 <body>
@@ -378,7 +380,7 @@ function midiConnect(quiet){if(!navigator.requestMIDIAccess){if(!quiet)toast('Pa
 function spell(m){const pc=m%12,L='CDEFGAB',NAT=[0,2,4,5,7,9,11];let li=NAT.indexOf(pc),acc='';if(li<0){li=NAT.indexOf(pc-1);acc='♯';}return {step:(Math.floor(m/12)-1)*7+li,acc:acc};}
 const KS_N={0:0,7:1,2:2,9:3,4:4,11:5,6:6,5:-1,10:-2,3:-3,8:-4,1:-5};
 function spellK(m,ks){const pc=m%12,L='CDEFGAB',NAT=[0,2,4,5,7,9,11];let li=NAT.indexOf(pc),acc='';if(li<0){if(ks<0){li=NAT.indexOf(pc+1);acc='♭';}else{li=NAT.indexOf(pc-1);acc='♯';}}return {step:(Math.floor(m/12)-1)*7+li,acc:acc,L:L[li]};}
-function staffSVG(cols,o){o=o||{};const sp=o.sp||11;
+function staffSVG(cols,o){o=o||{};const sp=o.sp||11;const NMV=o.names!=null?o.names:(typeof stfNameLevel==='function'?stfNameLevel():0);
   const ksn=o.ks!=null?(KS_N[((o.ks%12)+12)%12]||0):0,ksSharp=ksn>0,ksL=(ksSharp?'FCGDAEB':'BEADGCF').slice(0,Math.abs(ksn)),ksMap={};for(let i=0;i<ksL.length;i++)ksMap[ksL[i]]=ksSharp?'♯':'♭';
   const KS_STEP={'♯':{F:8,C:5,G:9,D:6,A:3,E:7,B:4},'♭':{B:4,E:7,A:3,D:6,G:2,C:5,F:1}};const ksW=ksL.length?ksL.length*sp*.95+sp*.6:0;const all=[];cols.forEach(function(c){all.push.apply(all,c.notes);});if(!all.length)return '';
   const mn=Math.min.apply(null,all.map(function(n){return n.m;})),mx=Math.max.apply(null,all.map(function(n){return n.m;}));
@@ -399,6 +401,7 @@ function staffSVG(cols,o){o=o||{};const sp=o.sp||11;
       if(q.acc)out+='<text x="'+(x-sp*1.9)+'" y="'+(cy+sp*.5)+'" text-anchor="middle" font-family="serif" font-size="'+(sp*2)+'" fill="'+col+'">'+q.acc+'</text>';
       const hollow=q.n.dur>=2;
       out+='<ellipse cx="'+x+'" cy="'+cy+'" rx="'+(sp*.7)+'" ry="'+(sp*.5)+'" transform="rotate(-20 '+x+' '+cy+')" fill="'+(hollow?'none':col)+'"'+(hollow?' stroke="'+col+'" stroke-width="'+(sp*.22)+'"':'')+(q.n.ghost?' fill-opacity=".25" stroke="#FFC83D" stroke-width="'+(sp*.16)+'" stroke-dasharray="3 2"':'')+'/>';
+      if(NMV>0&&!q.n.ghost){const s2=spellK(q.n.m,ksn),fr={C:'do',D:'ré',E:'mi',F:'fa',G:'sol',A:'la',B:'si'}[s2.L]||'';out+='<ellipse cx="'+x+'" cy="'+cy+'" rx="'+(sp*1.05)+'" ry="'+(sp*.72)+'" fill="'+(hollow?'#12162B':col)+'" stroke="'+col+'" stroke-width="1.5" opacity="'+NMV+'"/><text x="'+x+'" y="'+(cy+sp*.32)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="'+(sp*(fr.length>2?.72:.82))+'" fill="'+(hollow?col:'#12162B')+'" opacity="'+NMV+'">'+fr+'</text>';}
       if(q.n.dur===.5)out+='<path d="M'+(x+sp*.66)+','+(cy-sp*3.2)+' q'+(sp*.9)+','+(sp*.8)+' '+(sp*.5)+','+(sp*2)+'" fill="none" stroke="'+col+'" stroke-width="'+(sp*.2)+'"/>';
       if(q.n.lb)out+='<text x="'+x+'" y="'+(cy-sp*1.1)+'" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="'+(sp*1.1)+'" fill="#FFC83D">'+q.n.lb+'</text>';});
     if(N.length&&!(N[0].n.dur>=4)){const lo=N[0],hi=N[N.length-1];out+='<line x1="'+(cx+sp*.66)+'" x2="'+(cx+sp*.66)+'" y1="'+(bot-lo.step*sp/2-sp*.15)+'" y2="'+(bot-hi.step*sp/2-sp*3.2)+'" stroke="#F4F6FF" stroke-width="'+(sp*.11)+'"/>';}
@@ -3175,6 +3178,100 @@ function progHTML(p,big){const t=dayStat(p,new Date()),y0=new Date();y0.setDate(
     +line('🎹 Exercices',t.ex,y.ex)+line('🎯 Justes du 1er coup',accOf(t),accOf(y),pc)+line('⭐ Étoiles',t.st,y.st)+line('⏱ Temps',t.t,y.t,fmtMin)
     +'<tr><th></th><th>Cette semaine</th><th>Sem. dernière</th><th></th></tr>'+line('🎹 Exercices',W.ex,LW.ex)+line('🎯 Justes du 1er coup',accOf(W),accOf(LW),pc)+line('⭐ Étoiles',W.st,LW.st)+line('⏱ Temps',W.t,LW.t,fmtMin)
     +'</table><div class="ctip">'+msg+'</div><div class="hint">La semaine est comparée jour pour jour : du lundi à aujourd’hui, contre les mêmes jours de la semaine dernière.</div></div>';}
+/* ═══════════ v4.5 ✈️ ANNONCES DE BORD : carillon « ding-dong » + voix d'hôtesse, aux moments clés ═══════════
+   But : un rituel qui donne envie de revenir — accueil, zone de bonnes notes, record, descente (fin du tour), relais, arrivée.
+   Si un parent a enregistré sa propre annonce (coin des parents), elle remplace la voix de synthèse. */
+const CAB={last:0,streak:0,lastKind:{},recOn:null};
+const CAB_KINDS=[['welcome','🛫 Bienvenue à bord'],['zone','☁️ Série réussie'],['perfect','🛬 3 étoiles'],['record','🏆 Record'],['daily','🧭 Séance du jour finie'],['descent','⏳ Plus que 2 minutes'],['relay','🔁 Changement de pilote'],['pause','☕ Pause'],['end','🌙 Arrivée / fin']];
+const CAB_TXT={
+ welcome:['Bienvenue à bord, {n}. Ici ton commandant de bord. Attache ta ceinture : nous décollons pour ta séance de piano.','Mesdames et messieurs, {n} vient d’embarquer. Destination : de nouvelles notes. Bon vol !','Bonjour {n}, et bienvenue sur la ligne Garden Kids. Le ciel est dégagé, les touches sont prêtes. Décollage imminent.','{n}, nous sommes ravis de te revoir à bord. C’est ton {d}e jour de vol d’affilée : bravo !'],
+ zone:['Mesdames et messieurs, nous traversons une zone de très bonnes notes. Continue comme ça, {n} !','Ici le commandant : six bonnes réponses d’affilée. Le vol est parfait.','{n}, la tour de contrôle te félicite : quelle régularité !','Nous volons à haute altitude, {n}. Tes doigts sont précis aujourd’hui.'],
+ perfect:['Atterrissage parfait, {n} : trois étoiles !','Trois étoiles ! L’équipage applaudit, {n}.','Mesdames et messieurs, un sans-faute vient d’être réalisé à bord. Bravo {n} !'],
+ record:['Mesdames et messieurs, un nouveau record vient d’être établi à bord. Félicitations, {n} !','Ici le commandant : {n} n’a jamais fait autant d’exercices en une journée. Record battu !'],
+ daily:['{n}, ta séance du jour est terminée. Mission accomplie ! L’arcade t’attend.','Ici la tour de contrôle : séance du jour validée pour {n}. Excellent travail.'],
+ descent:['Nous entamons notre descente. Il te reste deux minutes, {n} : termine ton exercice.','{n}, préparez-vous à l’atterrissage : plus que deux minutes de vol.'],
+ relay:['{p} est arrivé à destination. {n}, préparez-vous à l’embarquement : c’est ton tour !','Changement d’équipage : merci {p}. {n}, prends les commandes !'],
+ pause:['Nous faisons une petite escale. Va boire un verre d’eau, {n}, et reviens quand tu veux.'],
+ end:['Nous sommes arrivés à destination. Merci d’avoir voyagé avec Garden Kids, {n}. À demain !','Fin du vol pour aujourd’hui, {n}. Ton commandant est fier de toi. À bientôt à bord !']};
+function cabChime(){const c=ac();if(!c)return;const t=c.currentTime+.02;[[659.25,0],[523.25,.62]].forEach(function(x){[1,2.01,3.02].forEach(function(h,k){const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=x[0]*h;
+  g.gain.setValueAtTime(0,t+x[1]);g.gain.linearRampToValueAtTime([.22,.06,.03][k],t+x[1]+.01);g.gain.exponentialRampToValueAtTime(.0005,t+x[1]+1.6);o.connect(g);g.connect(c.destination);o.start(t+x[1]);o.stop(t+x[1]+1.7);});});}
+function cabin(kind,o){o=o||{};if(DB.cabin===false)return;const now=Date.now(),urgent=['welcome','relay','end','descent','pause'].indexOf(kind)>=0;
+  if(!urgent&&now-CAB.last<45000)return;if(kind==='zone'&&now-(CAB.lastKind.zone||0)<240000)return;if(kind==='perfect'&&now-(CAB.lastKind.perfect||0)<120000)return;
+  CAB.last=now;CAB.lastKind[kind]=now;cabChime();
+  const rec=DB.cabRec&&DB.cabRec[kind];
+  setTimeout(function(){try{if(rec){new Audio(rec).play();return;}const L=CAB_TXT[kind]||[];if(!L.length||!window.speechSynthesis)return;let t=L[Math.floor(Math.random()*L.length)];
+    if(kind==='welcome'&&!(o.d>=2))t=L[Math.floor(Math.random()*3)];t=t.replace(/\{n\}/g,o.n||'').replace(/\{p\}/g,o.p||'').replace(/\{d\}/g,o.d||'');
+    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';u.rate=.9;u.pitch=1.12;speechSynthesis.speak(u);}catch(e){}},1500);
+  if(o.banner!==false){const T={welcome:'🛫 Bienvenue à bord',zone:'☁️ Zone de bonnes notes',perfect:'🛬 Atterrissage parfait',record:'🏆 Nouveau record à bord',daily:'🧭 Mission du jour accomplie',descent:'⏳ Début de la descente',relay:'🔁 Changement de pilote',end:'🌙 Arrivée à destination'}[kind];if(T&&typeof banner==='function')banner(T,'#4FB3FF');}}
+/* — branchements — */
+(function(){
+  const _ep=enterProfile;enterProfile=function(p){const was=VIEW;_ep(p);if(VIEW==='home'&&was!=='home'){let d=0;try{d=streakOf(p);}catch(e){}cabin('welcome',{n:p.name,d:d});}};
+  const _g=good;good=function(){const w=DR.wrong;_g.apply(this,arguments);if(!w){CAB.streak++;if(CAB.streak>=6){CAB.streak=0;const p=P();if(p)cabin('zone',{n:p.name});}}};
+  const _f=fail;fail=function(){CAB.streak=0;return _f.apply(this,arguments);};
+  const _vR=vRelay;vRelay=function(nid){const prev=P(),nx=DB.profs.filter(function(x){return x.id===nid;})[0];_vR(nid);if(nx)cabin('relay',{n:nx.name,p:prev?prev.name:'',banner:false});};
+  const _vD=vDone;vDone=function(pid){_vD(pid);const p=DB.profs.filter(function(x){return x.id===pid;})[0]||P();cabin('end',{n:p?p.name:'',banner:false});};
+  const _vO=vDayOver;vDayOver=function(){_vO();const p=P();cabin('end',{n:p?p.name:'',banner:false});};
+  const _vP=vPause;vPause=function(){_vP();const p=P();cabin('pause',{n:p?p.name:'',banner:false});};
+  const _dm=dailyMark;dailyMark=function(){const p=P(),was=p&&p.daily&&p.daily.d===today()?p.daily.plan.every(function(_,i){return p.daily.done[i];}):true;_dm.apply(this,arguments);
+    const now=p&&p.daily&&p.daily.d===today()?p.daily.plan.every(function(_,i){return p.daily.done[i];}):false;if(!was&&now)cabin('daily',{n:p.name});};
+  /* fin d'exercice : 3 étoiles, record du jour */
+  const _fi=finish;finish=function(){const p=P();const before=p?((p.stat||{})[today()]||{ex:0}).ex:0;_fi.apply(this,arguments);if(!p)return;
+    const sd=(p.stat||{})[today()]||{ex:0};let best=0;Object.keys(p.stat||{}).forEach(function(k){if(k!==today())best=Math.max(best,p.stat[k].ex||0);});
+    if(best>0&&before<=best&&sd.ex>best&&!(p._recD===today())){p._recD=today();cabin('record',{n:p.name});return;}
+    const st=(p.stars||{})[DR.sid];if(st===3&&Math.random()<.6)cabin('perfect',{n:p.name});};
+  /* descente : 2 minutes avant la fin du tour (ou du temps du jour) */
+  setInterval(function(){const p=P();if(!p||['home','isle','lesson','drill','arcade'].indexOf(VIEW)<0&&VIEW!=='lesson')return;
+    let left=null;if(FAM&&FAM.ids.length>1&&FAM.cur===p.id)left=turnLen(p)-FAM.used;else left=dayLeft(p);
+    if(left!=null&&left<=120&&left>100&&!(CAB.desc===p.id+today()+(FAM?FAM.turns:0))){CAB.desc=p.id+today()+(FAM?FAM.turns:0);cabin('descent',{n:p.name});}},5000);
+  /* coin des parents : activer, écouter, enregistrer sa propre voix pour chaque annonce */
+  const _vPa=vParent;vParent=function(){_vPa();const box=document.createElement('div');box.className='card';
+    const draw=function(){box.innerHTML='<h2>✈️ Annonces de bord</h2><div class="hint">Un carillon « ding-dong » puis une voix d’hôtesse aux moments clés : accueil, séries réussies, records, fin du tour, relais, fin de séance. Vous pouvez enregistrer votre propre voix pour chaque annonce : elle remplacera la voix de synthèse.</div>'
+      +'<label class="pill"><input type="checkbox" id="cabOn" '+(DB.cabin!==false?'checked':'')+'> Annonces activées</label>'
+      +'<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">'+CAB_KINDS.map(function(k){const r=DB.cabRec&&DB.cabRec[k[0]];return '<div class="row" style="gap:6px;align-items:center;flex-wrap:wrap"><b style="min-width:200px">'+k[1]+'</b><button class="btn s g" data-cabt="'+k[0]+'">▶ Écouter</button>'
+        +(CAB.recOn===k[0]?'<button class="btn s v" data-cabstop="'+k[0]+'">⏹ Arrêter</button>':'<button class="btn s g" data-cabrec="'+k[0]+'">🎙 '+(r?'Réenregistrer':'Ma voix')+'</button>')+(r?'<button class="btn s g" data-cabdel="'+k[0]+'">🗑</button><span class="hint">voix de parent ✔</span>':'')+'</div>';}).join('')+'</div>';
+      box.querySelector('#cabOn').onchange=function(){DB.cabin=this.checked;save();};
+      box.querySelectorAll('[data-cabt]').forEach(function(b){b.onclick=function(){CAB.last=0;CAB.lastKind={};const p=DB.profs[0]||{name:''};cabin(b.dataset.cabt,{n:p.name,p:(DB.profs[1]||{}).name||'',d:3,banner:false});};});
+      box.querySelectorAll('[data-cabdel]').forEach(function(b){b.onclick=function(){delete DB.cabRec[b.dataset.cabdel];save();draw();};});
+      box.querySelectorAll('[data-cabrec]').forEach(function(b){b.onclick=async function(){try{const st=await navigator.mediaDevices.getUserMedia({audio:true});const ch=[];const mr=new MediaRecorder(st,MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?{mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:24000}:undefined);
+        mr.ondataavailable=function(ev){if(ev.data&&ev.data.size)ch.push(ev.data);};mr.onstop=function(){st.getTracks().forEach(function(t){t.stop();});const fr=new FileReader();fr.onload=function(){DB.cabRec=DB.cabRec||{};DB.cabRec[b.dataset.cabrec]=fr.result;save();CAB.recOn=null;draw();toast('🎙 Annonce enregistrée');};fr.readAsDataURL(new Blob(ch,{type:mr.mimeType||'audio/webm'}));};
+        CAB.mr=mr;CAB.recOn=b.dataset.cabrec;mr.start();setTimeout(function(){if(mr.state==='recording')mr.stop();},15000);draw();}catch(e){toast('Micro indisponible : autorise-le dans les réglages de la tablette');}};});
+      box.querySelectorAll('[data-cabstop]').forEach(function(b){b.onclick=function(){if(CAB.mr&&CAB.mr.state==='recording')CAB.mr.stop();};});};
+    draw();const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);};
+})();
+/* ═══════════ v4.5 🧑‍🏫 MINI-COACH : il parle quand ça devient dur, pour ne jamais se décourager ═══════════ */
+const COACH={fails:0,last:0};
+const COACH_TXT={
+ two:['Pas grave, {n} ! Les plus grands pianistes se trompent aussi. Respire, et regarde bien le clavier.','Ralentis un peu, {n} : la précision d’abord, la vitesse viendra toute seule.','Chaque erreur apprend quelque chose à ton cerveau. On réessaie ?','Doucement, {n}. Cherche d’abord le groupe de deux ou de trois touches noires : c’est ta boussole.'],
+ four:['Tu bloques un peu ? C’est justement le moment où ton cerveau grandit le plus. Prends ton temps, {n}.','Ce n’est pas grave de ne pas savoir encore. « Pas encore », ça veut dire : bientôt !','Mozart aussi a dû recommencer des centaines de fois. Tu es sur le bon chemin, {n}.','Petite astuce : dis le nom de la note à voix haute avant de la jouer.'],
+ retry:['Tu as eu {k} bonnes réponses, {n}. La deuxième fois, c’est souvent celle qui marche : on recommence ?','Ce n’était pas facile, et tu es allé jusqu’au bout. Ça, c’est déjà une victoire. Rejoue-le, tu vas voir !','{n}, tu n’as pas raté : tu as appris. Recommence tout de suite, pendant que ton cerveau s’en souvient.'],
+ back:['Bravo {n} ! Tu as trouvé après avoir cherché : c’est comme ça qu’on devient fort.','Voilà ! Tu vois que tu en es capable, {n}.']};
+function coachSay(kind,o){o=o||{};const now=Date.now();if(now-COACH.last<25000)return;COACH.last=now;const p=P();const n=p?p.name:'';
+  const L=COACH_TXT[kind];let t=L[Math.floor(Math.random()*L.length)].replace(/\{n\}/g,n).replace(/\{k\}/g,o.k==null?'':o.k);
+  let el=document.getElementById('coachB');if(!el){el=document.createElement('div');el.id='coachB';el.className='coachB';document.body.appendChild(el);}
+  el.innerHTML='<span class="cav">🧑‍🏫</span><span class="ctx">'+esc(t)+'</span>';el.classList.add('on');clearTimeout(COACH.tm);COACH.tm=setTimeout(function(){el.classList.remove('on');},7000);el.onclick=function(){el.classList.remove('on');};
+  if(DB.coach!==false){try{if(window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';u.rate=.92;u.pitch=1.05;speechSynthesis.speak(u);}}catch(e){}}}
+(function(){
+  const _f=fail;fail=function(){const w=DR.wrong;const r=_f.apply(this,arguments);if(!w){COACH.fails++;if(COACH.fails===2)coachSay('two');else if(COACH.fails===4)coachSay('four');}return r;};
+  const _g=good;good=function(){if(COACH.fails>=2&&!DR.chronoOn)coachSay('back');COACH.fails=0;return _g.apply(this,arguments);};
+  const _fi=finish;finish=function(){const ok=(DR.res||[]).filter(function(x){return x===true;}).length;_fi.apply(this,arguments);const p=P();if(!p||DR.review)return;
+    const st=(p.stars||{})[DR.sid];if(!(st>=1))setTimeout(function(){coachSay('retry',{k:ok});},1800);COACH.fails=0;};
+  const _vPa=vParent;vParent=function(){_vPa();const box=document.createElement('div');box.className='card';
+    box.innerHTML='<h2>🧑‍🏫 Mini-coach</h2><div class="hint">Quand ton enfant se trompe deux fois de suite, rate un exercice ou bloque, le coach l’encourage (bulle + voix) avec une petite astuce. Il le félicite aussi quand il trouve après avoir cherché.</div><label class="pill"><input type="checkbox" id="coachOn" '+(DB.coach!==false?'checked':'')+'> Voix du coach</label>';
+    box.querySelector('#coachOn').onchange=function(){DB.coach=this.checked;save();};const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);};
+})();
+
+/* 🔤 le nom dans la note, partout où il y a une portée (comme dans Garden)
+   auto : débutant → affiché, puis il s'efface avec les étoiles ; exercices de LECTURE de notes → seulement en aide (après 2 erreurs) */
+function stfNameLevel(){const p=P();if(!p)return 0;const a=(p.aid||{}).name||'auto';if(a==='on')return 1;if(a==='off')return 0;
+  let dr=null;try{dr=DR&&DR.on&&DR.sid?stepById(DR.sid):null;}catch(e){}
+  if(dr&&dr.s&&dr.s.drill&&(dr.s.drill.type==='staff'||dr.s.drill.type==='staffk'))return DR.help?.9:0;
+  if(dr){const st=(p.stars||{})[DR.sid]||0;return st===0?1:(st===1?.55:0);}
+  let tot=0;try{tot=totalStars(p);}catch(e){}return tot<40?1:0;}
+(function(){const _vPa=vParent;vParent=function(){_vPa();const box=document.createElement('div');box.className='card';
+  const draw=function(){box.innerHTML='<h2>🔤 Le nom dans les notes</h2><div class="hint">Pour ceux qui ne savent pas encore lire la portée : le nom (do, ré, mi…) s’écrit dans la tête de chaque note. « Auto » : affiché au début, il s’efface quand l’enfant gagne des étoiles ; dans les exercices de lecture, il n’apparaît qu’en aide, après deux erreurs.</div>'
+    +DB.profs.map(function(p){const v=(p.aid||{}).name||'auto';return '<div class="row" style="gap:6px;align-items:center"><b style="min-width:120px">'+p.av+' '+esc(p.name)+'</b>'+[['auto','Auto'],['on','Toujours'],['off','Jamais']].map(function(x){return '<button class="btn s '+(v===x[0]?'v':'g')+'" data-nmp="'+p.id+'" data-nmv="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';}).join('');
+    box.querySelectorAll('[data-nmp]').forEach(function(b){b.onclick=function(){const p=DB.profs.filter(function(x){return x.id===b.dataset.nmp;})[0];p.aid=p.aid||{};p.aid.name=b.dataset.nmv;save();draw();};});};
+  draw();const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);};})();
 </script>
 </body>
 </html>
