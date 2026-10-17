@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.5 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.6 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -304,7 +304,7 @@ table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:left;p
   <button class="pill midi" id="btnMidi">🎹 Brancher le piano</button>
   <button class="pill" id="btnSound" title="Lire les consignes à voix haute">🔊 Voix</button>
   <button class="pill" id="btnJoin" style="display:none" title="Quelqu’un d’autre veut jouer">✋ Moi aussi</button>
-  <button class="pill" id="btnHome">🏠</button>
+  <button class="pill" id="btnHome" style="font-weight:900">🏠 Accueil</button>
   <button class="pill" id="btnParent">👨‍👩‍👧 Parents</button>
 </div>
 <main id="main"></main>
@@ -3272,6 +3272,19 @@ function stfNameLevel(){const p=P();if(!p)return 0;const a=(p.aid||{}).name||'au
     +DB.profs.map(function(p){const v=(p.aid||{}).name||'auto';return '<div class="row" style="gap:6px;align-items:center"><b style="min-width:120px">'+p.av+' '+esc(p.name)+'</b>'+[['auto','Auto'],['on','Toujours'],['off','Jamais']].map(function(x){return '<button class="btn s '+(v===x[0]?'v':'g')+'" data-nmp="'+p.id+'" data-nmv="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';}).join('');
     box.querySelectorAll('[data-nmp]').forEach(function(b){b.onclick=function(){const p=DB.profs.filter(function(x){return x.id===b.dataset.nmp;})[0];p.aid=p.aid||{};p.aid.name=b.dataset.nmv;save();draw();};});};
   draw();const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);};})();
+
+/* ═══════════ v4.6 ↩ BOUTON RETOUR D'ANDROID : il revient en arrière dans l'appli au lieu de la fermer ═══════════
+   exercice → leçon/île → accueil → « Qui est là ? » → (deux appuis) quitter */
+const NAV={h:[],arg:null,back:false,last:0};
+(function(){const _go=go;go=function(v,a){if(!NAV.back&&VIEW&&VIEW!==v&&['code','relay','pause','done','dayover'].indexOf(VIEW)<0){NAV.h.push([VIEW,NAV.arg]);if(NAV.h.length>40)NAV.h.shift();}
+  if(v==='profs'||v==='who')NAV.h=[];NAV.arg=a;NAV.back=false;return _go(v,a);};})();
+function navBack(){try{const ov=document.querySelector('.ov,.overlay,.modal');if(ov&&ov.offsetParent!==null&&ov.querySelector('button')){const b=ov.querySelector('[data-r],.close,button');if(b){b.click();return;}}}catch(e){}
+  if(VIEW==='profs'||VIEW==='who'){const now=Date.now();if(now-NAV.last<2200){try{window.Capacitor.Plugins.App.exitApp();}catch(e){}return;}NAV.last=now;toast('↩ Appuie encore une fois pour quitter Garden Kids');return;}
+  if(['relay','done','dayover','code','newprof','famplan'].indexOf(VIEW)>=0){FAM=null;go('profs');return;}
+  if(VIEW==='home'){go('profs');return;}
+  while(NAV.h.length){const e=NAV.h.pop();if(e[0]!==VIEW&&e[0]!=='profs'&&e[0]!=='who'){NAV.back=true;go(e[0],e[1]);return;}}
+  go(canEnter(P())?'home':'profs');}
+(function(){try{const A=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App;if(A&&A.addListener)A.addListener('backButton',function(){navBack();});}catch(e){}})();
 </script>
 </body>
 </html>
