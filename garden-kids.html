@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.7 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.8 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -328,6 +328,10 @@ body.gkHubOn main{max-width:none;padding:0}
 .gkBarB{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(20,26,48,.96);border-top:1px solid rgba(255,255,255,.12);padding:10px 16px 14px;display:flex;align-items:center;gap:10px}.gkBarB .gbL{font-weight:800}
 body:has(#gkBarB:not([style*="none"])) main{padding-bottom:90px}
 @media (max-width:600px){.gkHero{flex-direction:column-reverse;text-align:center}.gkHi{justify-content:center}.gkDays{justify-content:center}.gkBarB .gbL{display:none}}
+.kHelp{position:fixed;right:14px;bottom:86px;z-index:30;width:92px;height:92px;border-radius:46px;border:0;background:#FFC93C;color:#1F3B2E;font-size:34px;font-weight:900;box-shadow:0 8px 0 #E0A51F,0 12px 24px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;cursor:pointer;font-family:inherit;animation:kHelpP 2.4s ease-in-out infinite}
+.kHelp small{font-size:10.5px;font-weight:900;line-height:1.1;margin-top:3px}.kHelp:active{transform:translateY(4px);box-shadow:0 4px 0 #E0A51F}
+@keyframes kHelpP{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}@media (prefers-reduced-motion: reduce){.kHelp{animation:none}}
+.kNr{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:18px;font-weight:800;cursor:pointer}.kNr input{width:26px;height:26px}.kNr small{font-weight:600;opacity:.75}
 </style>
 </head>
 <body>
@@ -3412,6 +3416,44 @@ CAB_KINDS.splice(0,CAB_KINDS.length,['welcome','🌱 Arrivée au jardin'],['zone
 cabChime=function(){const c=ac();if(!c)return;const t=c.currentTime+.02;[[1046.5,0],[1318.5,.18],[1568,.36]].forEach(function(x){[1,2.76,5.4].forEach(function(h,k){const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=x[0]*h;
   g.gain.setValueAtTime(0,t+x[1]);g.gain.linearRampToValueAtTime([.12,.025,.01][k],t+x[1]+.008);g.gain.exponentialRampToValueAtTime(.0004,t+x[1]+1.4);o.connect(g);g.connect(c.destination);o.start(t+x[1]);o.stop(t+x[1]+1.5);});});};
 (function(){const _cab=cabin;cabin=function(kind,o){o=o||{};if(o.banner!==false){o=Object.assign({},o,{banner:false});const T={welcome:'🌱 Bienvenue au jardin',zone:'🌷 Tes notes fleurissent',perfect:'🌸 Une fleur vient d’éclore',record:'🍎 Nouveau record',daily:'💧 Plante arrosée',descent:'⏳ Encore 2 minutes'}[kind];if(T&&DB.cabin!==false&&typeof banner==='function')setTimeout(function(){banner(T,'#6DD39A');},10);}return _cab(kind,o);};})();
+/* ═══════════ v4.8 🔊 « NE SAIT PAS ENCORE LIRE » — tout est dit à voix haute, et un gros bouton « Qu’est-ce que je fais ? » ═══════════ */
+function noRead(p){p=p||P();return !!(p&&p.aid&&p.aid.noread);}
+function kidSay(t){if(!t)return;const v=DB.voice;DB.voice=true;try{say(String(t).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());}catch(e){}DB.voice=v;}
+const KID_HELP={note:'Joue sur le clavier la note que je te dis.',chord:'Joue l’accord demandé : plusieurs notes en même temps.',voice:'Joue l’accord demandé : plusieurs notes en même temps.',inv:'Joue l’accord demandé, dans la position que je te dis.',drop:'Joue l’accord demandé : plusieurs notes en même temps.',diat:'Joue l’accord demandé : plusieurs notes en même temps.',
+  scale:'Joue les notes de la gamme, une après l’autre, en montant.',step:'Joue les notes une après l’autre, comme un escalier.',staff:'Regarde la note dessinée sur les lignes, et joue-la sur le clavier.',staffk:'Regarde la note dessinée sur les lignes, et joue-la sur le clavier.',staffc:'Regarde les notes dessinées sur les lignes, et joue-les sur le clavier.',
+  ear:'Écoute bien, puis rejoue ce que tu as entendu.',interval:'Écoute les deux notes, puis rejoue-les.',melody:'Écoute la petite chanson, puis rejoue-la note par note.',simon:'Écoute, puis rejoue les notes dans le même ordre.',rhythm:'Tape le rythme sur une touche, en même temps que les ronds.',
+  song:'Joue les notes qui s’allument sur le clavier, une après l’autre.',piece:'Joue les notes qui s’allument sur le clavier, une après l’autre.',free:'Joue les notes qui s’allument sur le clavier.',prog:'Joue les accords qui s’allument, l’un après l’autre.',lead:'Joue l’accord demandé avec la mélodie en haut.',flash:'Regarde bien l’accord, il va disparaître. Puis joue-le de mémoire.'};
+function kidTypeHelp(){try{const R=stepById(DR.sid);const t=R.s.drill.type;return KID_HELP[t]||(String(t).charAt(0)==='q'||['quiz','degree','mix','chrono','duel','review','anyq','qdq'].indexOf(t)>=0?'Écoute la question, puis touche la bonne réponse.':'Écoute la consigne, puis joue sur le clavier.');}catch(e){return 'Écoute la consigne, puis joue sur le clavier.';}}
+function kidChoices(){const c=document.getElementById('choices');if(!c||c.style.display==='none')return '';const b=Array.from(c.querySelectorAll('button')).map(function(x){return x.textContent.trim();}).filter(Boolean);return b.length&&b.length<=6?' Les réponses : '+b.join(', ')+'.':'';}
+/* chaque nouvelle question est lue ; la première avec l'explication de l'exercice */
+(function(){const _sq=showQ;showQ=function(){_sq.apply(this,arguments);if(!noRead()||!DR||!DR.on)return;const q=DR.qs&&DR.qs[DR.i];if(!q||DR._kSaid===DR.i)return;DR._kSaid=DR.i;const first=DR.i===0;
+  setTimeout(function(){if(!DR.on)return;const qq=DR.qs[DR.i];if(qq!==q)return;kidSay((first?kidTypeHelp()+' ':'')+(q.lb||'')+'.'+kidChoices()+(first?' Si tu ne sais pas, touche le bouton jaune : je te montre.':''));},first?700:350);};})();
+/* le bouton « Qu’est-ce que je fais ? » — toujours au même endroit */
+function kidHelpNow(){const v=VIEW,p=P();
+  if(v==='drill'&&DR&&DR.on){const q=DR.qs[DR.i];kidSay(kidTypeHelp()+' '+(q?(q.lb||''):'')+'.'+kidChoices()+' Regarde : je te montre sur le clavier.');DR.help=true;try{showQ();}catch(e){}return;}
+  if(v==='lesson'){const t=M.querySelector('.lesson .txt');kidSay((t?t.textContent:'')+' Quand tu es prêt, touche le bouton vert pour jouer.');return;}
+  if(v==='home')return kidSay('Bonjour '+(p?p.name:'')+' ! Touche le grand bouton vert, « Commencer ma séance ». Je te guide pas à pas. Quand tu as fini, touche le drapeau.');
+  if(v==='isle')return kidSay('Choisis un exercice : touche une des cartes. Les étoiles montrent ceux que tu as déjà réussis.');
+  if(v==='game'||v==='arcade')return kidSay('C’est le moment de jouer ! Touche un jeu pour commencer.');
+  if(v==='pause')return kidSay('C’est la pause. Touche le bouton pour reprendre quand tu es prêt.');
+  kidSay('Touche le bouton Accueil pour revenir à ton jardin.');}
+function kidHelpBtn(){let b=document.getElementById('kHelp');const show=noRead()&&['profs','who','newprof','parent','code','setcode'].indexOf(VIEW)<0;
+  if(!show){if(b)b.style.display='none';return;}
+  if(!b){b=document.createElement('button');b.id='kHelp';b.className='kHelp';b.innerHTML='🔊<small>Qu’est-ce<br>que je fais ?</small>';b.onclick=kidHelpNow;document.body.appendChild(b);}
+  b.style.display='';}
+(function(){const _go=go;go=function(v,a){const r=_go(v,a);try{kidHelpBtn();if(noRead()&&v==='home'){clearTimeout(kidHelpBtn._t);kidHelpBtn._t=setTimeout(function(){if(VIEW==='home')kidHelpNow();},7000);}}catch(e){}return r;};})();
+/* la leçon est déjà lue ; on ajoute la suite logique */
+(function(){const _vP=vParent;vParent=function(){_vP();const box=document.createElement('div');box.className='card';
+  const draw=function(){box.innerHTML='<h2>🔊 Ne sait pas encore lire</h2><div class="hint">Pour l’enfant qui ne peut pas lire les consignes : chaque question est dite à voix haute (la première avec l’explication de l’exercice et les réponses possibles), et un gros bouton jaune « 🔊 Qu’est-ce que je fais ? » reste toujours à l’écran. Il explique l’écran en cours et, dans un exercice, montre la réponse sur le clavier. La voix est forcée pour cet enfant, même si elle est coupée ailleurs.</div>'
+    +DB.profs.map(function(p){const on=noRead(p);return '<div class="row" style="gap:6px;align-items:center"><b style="min-width:120px">'+p.av+' '+esc(p.name)+'</b><button class="btn s '+(on?'v':'g')+'" data-nrd="'+p.id+'">'+(on?'✓ ne sait pas lire — tout est dit':'sait lire')+'</button></div>';}).join('');
+    box.querySelectorAll('[data-nrd]').forEach(function(b){b.onclick=function(){const p=DB.profs.filter(function(x){return x.id===b.dataset.nrd;})[0];p.aid=p.aid||{};p.aid.noread=p.aid.noread?0:1;if(p.aid.noread&&(!p.aid.name||p.aid.name==='auto'))p.aid.name='on';save();draw();};});};
+  draw();const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);};})();
+/* nouveau joueur : la case dès la création */
+(function(){const _vn=vNewProf;vNewProf=function(){_vn();const row=M.querySelector('#ok')&&M.querySelector('#ok').closest('.row');if(!row)return;const d=document.createElement('label');d.className='kNr';d.innerHTML='<input type="checkbox" id="nrd"> 🔊 Je ne sais pas encore lire <small>(tout me sera dit à voix haute)</small>';row.parentNode.insertBefore(d,row);
+  const ok=document.getElementById('ok'),_c=ok.onclick;ok.onclick=function(){const n0=DB.profs.length;_c.apply(this,arguments);if(DB.profs.length>n0&&document.getElementById('nrd')&&document.getElementById('nrd').checked){}};
+  const cb=d.querySelector('input');cb.onchange=function(){if(cb.checked)kidSay('D’accord ! Je te dirai tout à voix haute. Écris ton prénom avec l’aide d’un grand, puis choisis ton animal.');};
+  /* on mémorise la case avant que l'écran change */
+  const _ok=ok.onclick;ok.onclick=function(){const want=cb.checked,n0=DB.profs.length;_ok.apply(this,arguments);if(want&&DB.profs.length>n0){const p=DB.profs[DB.profs.length-1];p.aid=p.aid||{};p.aid.noread=1;p.aid.name='on';save();kidHelpBtn();}};};})();
 </script>
 </body>
 </html>
