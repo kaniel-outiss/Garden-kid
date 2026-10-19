@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.9 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.10 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -3478,6 +3478,25 @@ function gkFuture(){const t=today(),out=[];DB.profs.forEach(function(p){Object.k
      +'<button class="btn s g" id="clkClr" style="margin-top:6px">Effacer ces alertes</button>':'<div class="hint" style="color:#6DD39A;margin-top:6px">✓ Aucune manipulation de l’horloge détectée.</div>');
   const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);
   const c=box.querySelector('#clkClr');if(c)c.onclick=function(){DB.clk.log=[];const t=today();DB.profs.forEach(function(p){Object.keys(p.stat||{}).forEach(function(k){if(k>t)delete p.stat[k];});});save();vParent();};};})();
+/* ═══════════ v4.10 🧾 LE GRAND LIVRE DU TEMPS : le temps joué ne peut plus jamais redescendre ═══════════
+   Android peut perdre les dernières écritures de l'appli quand on la ferme d'un geste : le temps de chacun
+   revenait alors en arrière (= du temps « rajouté »). On tient un 2e registre (fichier + clé séparée),
+   et au démarrage on garde toujours le PLUS GRAND des deux, enfant par enfant. */
+const GKL_KEY='gk_ledger',GKL_PATH='PianoTools/garden-kids-temps.json';
+function gkLedger(){const o={d:today(),t:{},fam:DB.famLast||null,at:Date.now()};DB.profs.forEach(function(p){o.t[p.id]=todaySec(p);});return o;}
+function gkLedgerMerge(o){if(!o||o.d!==today()||!o.t)return 0;let n=0;DB.profs.forEach(function(p){const v=+o.t[p.id]||0;if(v>todaySec(p)){statDay(p).t=v;n+=1;}});
+  if(o.fam&&(!DB.famLast||o.fam.at>DB.famLast.at))DB.famLast=o.fam;if(n)save();return n;}
+function gkFS(){const C=window.Capacitor;try{return C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.Filesystem||null;}catch(e){return null;}}
+let GKL_BUSY=false;
+function gkLedgerWrite(){try{const o=gkLedger();localStorage.setItem(GKL_KEY,JSON.stringify(o));const fs=gkFS();if(fs&&!GKL_BUSY){GKL_BUSY=true;fs.writeFile({path:GKL_PATH,data:JSON.stringify(o),directory:'DOCUMENTS',encoding:'utf8',recursive:true}).then(function(){GKL_BUSY=false;},function(){GKL_BUSY=false;});}}catch(e){}}
+/* au démarrage : clé séparée tout de suite, fichier dès qu'il est lu */
+try{gkLedgerMerge(JSON.parse(localStorage.getItem(GKL_KEY)||'null'));}catch(e){}
+(function(){const fs=gkFS();if(!fs)return;fs.readFile({path:GKL_PATH,directory:'DOCUMENTS',encoding:'utf8'}).then(function(r){let o=null;try{o=JSON.parse(r.data);}catch(e){}
+  if(gkLedgerMerge(o)){try{if(['profs','who'].indexOf(VIEW)>=0)go('profs');else if(VIEW==='home')go('home');}catch(e){}}},function(){});})();
+/* on écrit le registre toutes les 5 s de jeu et à chaque sortie */
+(function(){const _s=gkSaveNow;gkSaveNow=function(){_s.apply(this,arguments);gkLedgerWrite();};})();
+/* la barre du bas : en jeu à plusieurs, on distingue le tour et la journée (ce sont deux compteurs différents) */
+(function(){const _b=gkBar;gkBar=function(p){_b.apply(this,arguments);try{const el=document.querySelector('#gkBarB .gbL');if(el&&FAM&&FAM.ids.length>1&&FAM.cur===p.id&&DB.turnMode!=='full')el.innerHTML='Ton tour : '+fmtMin(Math.max(0,turnLen(p)-FAM.used))+' <small style="opacity:.75">· aujourd’hui : '+fmtMin(Math.max(0,dayLeft(p)))+'</small>';}catch(e){}};})();
 </script>
 </body>
 </html>
