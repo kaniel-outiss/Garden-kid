@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.10 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.11 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -3362,7 +3362,7 @@ vWho=function(){document.getElementById('who').style.display='none';UNLOCK=null;
     let defT='',lead=null;try{if(P0[0]){const D=defiOf(P0[0]);defT=(DEFI_T.filter(function(x){return x.k===D.k;})[0]||{}).t||'';}P0.forEach(function(q){if(q.defi&&q.defi.d===today()&&(lead==null||q.defi.pct>lead.defi.pct))lead=q;});}catch(e){}
     const msgs=DB.msg?1:0;
     const kids=P0.map(function(p,i){const st=plantStage(p),left=dayLeft(p),played=todaySec(p)>=60,on=sel.indexOf(p.id)>=0;
-      const tag=left<=0?['Arrosée ✓ · fini pour aujourd’hui','ok']:(played?['Arrosée · encore '+fmtMin(left),'ok']:['À arroser · '+fmtMin(left),'todo']);
+      const ts=todaySec(p),tag=left<=0?['A joué '+fmtMin(ts)+' · fini pour aujourd’hui ✓','ok']:(ts>=60?['A joué '+fmtMin(ts)+' · reste '+fmtMin(left),'ok']:['Pas encore joué · '+fmtMin(left),'todo']);
       return '<button class="gkKid'+(on?' on':'')+'" data-k="'+p.id+'">'+(on?'<span class="gkOrd">'+(sel.indexOf(p.id)+1)+'</span>':'')+plantSVG(st,140,i%2?'gk-sway2':'gk-sway')+'<div class="gkKn">'+avHTML(p)+' <b>'+(p.code?'🔒 ':'')+esc(p.name)+'</b></div><div class="gkTag '+tag[1]+'">'+tag[0]+'</div><div class="gkSt">'+PLANT_LB[st]+(streakOf(p)?' · '+streakOf(p)+' j':'')+'</div></button>';}).join('')
       +'<button class="gkKid add" data-new="1">'+plantSVG(0,140)+'<div class="gkKn"><b>➕ Nouveau jardinier</b></div></button>';
     const names=sel.map(function(id){return (P0.filter(function(p){return p.id===id;})[0]||{}).name;});
