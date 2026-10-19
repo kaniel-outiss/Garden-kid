@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Garden Kids 🌱 v4.8 — J'apprends le piano</title>
+<title>Garden Kids 🌱 v4.9 — J'apprends le piano</title>
 <style>
 :root{--bg:#0f1220;--bg2:#181c30;--bg3:#222742;--blanc:#F4F6FF;--gris:#9AA3C7;--gris2:#2E3454;
   --or:#FFC83D;--vert:#3ECF8E;--rouge:#FF5A6A;--bleu:#58A6FF;--violet:#A78BFA;--rose:#FF6FB5;--orange:#FF9F43}
@@ -859,7 +859,7 @@ function vHome(){
   M.innerHTML='<h1>Bonjour '+p.name+' '+p.av+' <span class="hint" style="font-size:18px">🏅 '+(p.badges||[]).length+'/'+BADGES.length+' badges</span></h1>'+(sug?'<div class="hint">Prochaine étape conseillée : <b style="color:var(--or)">'+sug.I.t+' › '+sug.s.lb+'</b> — mais tu peux aller où tu veux.</div>':'<div class="hint">🏆 Tu as fini tout le parcours ! Rejoue ce que tu veux pour gagner 3 étoiles partout.</div>')
     +(DB.msg?'<div class="card msg">💌 '+esc(DB.msg)+'</div>':'')
     +'<div class="dash"><div class="dc"><b>🔥 '+streakOf(p)+'</b><span>jour'+(streakOf(p)>1?'s':'')+' de suite</span></div><div class="dc"><b>⭐ Niv. '+lvlOf(p.xp)+'</b><div class="bar"><i style="width:'+(function(){const r=lvlRange(lvlOf(p.xp));return Math.round(((p.xp||0)-r[0])/(r[1]-r[0])*100);})()+'%"></i></div><span>'+(p.xp||0)+' XP</span></div><div class="dc"><b>🪙 '+(p.coins||0)+'</b><span>pièces</span></div></div>'
-    +'<div class="row hbtn"><button class="btn b" id="goArc">🕹 L’arcade</button><button class="btn v" id="goShop">🛍 Boutique</button><button class="btn g" id="goCode">'+(p.code?'🔒 Mon code':'🔓 Créer mon code')+'</button><button class="btn g" id="goBil">📊 Mon bilan</button></div><div class="row hbtn"><button class="btn g" id="goPause">⏸ Pause</button><button class="btn g" id="goStop">🏁 J’ai fini</button></div>'+favHTML(p)+dailyHTML(p)+progHTML(p)+debtHTML(p)+coachHTML(p)+revHTML(p)+missionsHTML(p)+leagueHTML()+'<h2 style="margin-top:18px">🗺 Le monde de Garden</h2>'+worldHTML(p)+'<div style="display:none">'
+    +'<div class="row hbtn"><button class="btn b" id="goArc">🕹 L’arcade</button><button class="btn v" id="goShop">🛍 Boutique</button><button class="btn g" id="goCode">'+(p.code?'🔒 Mon code':'🔓 Créer mon code')+'</button><button class="btn g" id="goBil">📊 Mon bilan</button></div><div class="row hbtn"><button class="btn g" id="goPause">⏸ Pause</button><button class="btn g" id="goStop">🏁 J’ai fini</button></div>'+favHTML(p)+dailyHTML(p)+(typeof progHTML==='function'?progHTML(p):'')+debtHTML(p)+coachHTML(p)+revHTML(p)+missionsHTML(p)+leagueHTML()+'<h2 style="margin-top:18px">🗺 Le monde de Garden</h2>'+worldHTML(p)+'<div style="display:none">'
     +CUPS.map(function(C){const cs=cupState(p,C);const IS=ISLES.filter(function(I){return C.isles.indexOf(I.id)>=0;});return '<div class="cup"><div class="cuph"><span class="cupi'+(cs.gold?' gold':(cs.done?' won':''))+'">'+(cs.gold?'🏆':(cs.done?'🏆':C.ic))+'</span><div><div class="cupt">'+C.ic+' '+C.t+'</div><div class="hint">'+C.d+'</div></div><div class="cupp">'+cs.one+'/'+cs.n+'<div class="bar"><i style="width:'+Math.round(cs.one/Math.max(1,cs.n)*100)+'%"></i></div></div></div><div class="isles">'+IS.map(function(I){const pr=isleProg(p,I),done=I.steps.every(function(s){return (p.stars||{})[s.id]>=1;});
       return '<div class="isle'+(sug&&sug.I.id===I.id?' sug':'')+'" data-i="'+I.id+'" style="border-color:'+(sug&&sug.I.id===I.id?'var(--or)':I.col+'55')+'">'+(done?'<div class="tro">🏆</div>':'')+'<div class="ic">'+I.ic+'</div><div class="t">'+I.t+'</div><div class="d">'+I.d+'</div><div class="bar"><i style="width:'+Math.round(pr*100)+'%"></i></div></div>';}).join('')+'</div></div>';}).join('')+'</div>'+albumHTML(p);
   whoUpdate();
@@ -3454,6 +3454,30 @@ function kidHelpBtn(){let b=document.getElementById('kHelp');const show=noRead()
   const cb=d.querySelector('input');cb.onchange=function(){if(cb.checked)kidSay('D’accord ! Je te dirai tout à voix haute. Écris ton prénom avec l’aide d’un grand, puis choisis ton animal.');};
   /* on mémorise la case avant que l'écran change */
   const _ok=ok.onclick;ok.onclick=function(){const want=cb.checked,n0=DB.profs.length;_ok.apply(this,arguments);if(want&&DB.profs.length>n0){const p=DB.profs[DB.profs.length-1];p.aid=p.aid||{};p.aid.noread=1;p.aid.name='on';save();kidHelpBtn();}};};})();
+/* ═══════════ v4.9 🔒 ANTI-TRICHE : le temps ne se « recharge » plus en quittant l'appli ═══════════
+   1) sauvegarde à chaque sortie (et toutes les 5 s) ; 2) le tour en cours reprend là où il était ;
+   3) l'horloge de la tablette est surveillée ; 4) créer un joueur demande le code parent */
+function gkSaveNow(){try{if(FAM&&FAM.cur)DB.famLast={id:FAM.cur,used:FAM.used,warned:FAM.warned,d:today(),at:Date.now(),mode:DB.turnMode||'share'};save();}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')gkSaveNow();});
+window.addEventListener('pagehide',gkSaveNow);window.addEventListener('beforeunload',gkSaveNow);
+try{const CA=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App;if(CA&&CA.addListener){CA.addListener('appStateChange',function(s){if(!s.isActive)gkSaveNow();});CA.addListener('pause',gkSaveNow);}}catch(e){}
+(function(){const _t=famTick;famTick=function(){const p=P(),b=p?statDay(p).t:0;_t.apply(this,arguments);if(p&&statDay(p).t!==b){gkClock();if(statDay(p).t%5===0)gkSaveNow();}};})();
+/* le tour interrompu reprend (même enfant, même jour, moins de 30 min, personne d'autre n'a joué entre-temps) */
+(function(){const _ep=enterProfile;enterProfile=function(p){_ep.apply(this,arguments);try{const L=DB.famLast;
+  if(FAM&&FAM.cur===p.id&&L&&L.id===p.id&&L.d===today()&&Date.now()-L.at<30*60000&&L.mode===(DB.turnMode||'share')&&L.used>FAM.used){FAM.used=L.used;FAM.warned=L.warned||0;toast('⏱ Ton tour continue : il te reste '+fmtMin(Math.max(0,turnLen(p)-FAM.used)));}}catch(e){}};})();
+/* l'horloge : si on la recule, ou si des minutes ont été jouées « dans le futur », les parents le voient */
+function gkClock(){const now=Date.now();DB.clk=DB.clk||{max:now,log:[]};if(now<DB.clk.max-10*60000){DB.clk.log.push({at:now,back:Math.round((DB.clk.max-now)/60000)});if(DB.clk.log.length>20)DB.clk.log.shift();DB.clk.max=now;save();}else if(now>DB.clk.max)DB.clk.max=now;}
+gkClock();
+function gkFuture(){const t=today(),out=[];DB.profs.forEach(function(p){Object.keys(p.stat||{}).forEach(function(k){if(k>t&&p.stat[k].t>0)out.push(p.name+' : '+fmtMin(p.stat[k].t)+' le '+k);});});return out;}
+/* nouveau joueur : code parent s'il y en a un */
+(function(){const _vn=vNewProf;vNewProf=function(){if(DB.pin&&DB.profs.length&&!DR.parentOk){const v=prompt('Code parent pour créer un nouveau joueur :');if(v!==DB.pin){if(v!=null)toast('Mauvais code');go('profs');return;}DR.parentOk=true;}_vn.apply(this,arguments);};})();
+/* coin des parents : ce qui a été détecté + conseils */
+(function(){const _vP=vParent;vParent=function(){_vP();if(DB.pin&&!DR.parentOk)return;const box=document.createElement('div');box.className='card';const lg=(DB.clk&&DB.clk.log)||[],fu=gkFuture();
+  box.innerHTML='<h2>🔒 Triche au temps</h2><div class="hint">Le temps est enregistré toutes les 5 secondes et à chaque sortie de l’appli ; un tour interrompu reprend où il en était (même enfant, moins de 30 min). Pour fermer les dernières portes : mettez un <b>code parent</b> (sinon « + 15 min » et « nouveau joueur » sont libres), et réglez la tablette sur <b>date et heure automatiques</b> — idéalement verrouillé avec Google Family Link — car changer la date de la tablette crée un « nouveau jour ».</div>'
+   +(lg.length||fu.length?'<div style="margin-top:8px;color:#FF9F43;font-weight:800">⚠️ Détecté :</div>'+lg.slice(-5).map(function(x){const d=new Date(x.at);return '<div class="hint" style="margin:2px 0">• Horloge reculée de '+(x.back>=120?Math.round(x.back/60)+' h':x.back+' min')+' le '+d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';}).join('')+fu.map(function(x){return '<div class="hint" style="margin:2px 0">• Joué à une date future : '+esc(x)+'</div>';}).join('')
+     +'<button class="btn s g" id="clkClr" style="margin-top:6px">Effacer ces alertes</button>':'<div class="hint" style="color:#6DD39A;margin-top:6px">✓ Aucune manipulation de l’horloge détectée.</div>');
+  const back=M.querySelector('#back');const host=back?back.closest('.row'):null;if(host)M.insertBefore(box,host);else M.appendChild(box);
+  const c=box.querySelector('#clkClr');if(c)c.onclick=function(){DB.clk.log=[];const t=today();DB.profs.forEach(function(p){Object.keys(p.stat||{}).forEach(function(k){if(k>t)delete p.stat[k];});});save();vParent();};};})();
 </script>
 </body>
 </html>
